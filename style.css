@@ -2508,6 +2508,17 @@ input:checked + .slider-round:before {
   .hero-graphic-container {
     height: 320px;
   }
+  .hud-circle-outer {
+    width: 300px;
+    height: 300px;
+  }
+  .hud-circle-inner {
+    width: 240px;
+    height: 240px;
+  }
+  .hud-scanner {
+    width: 260px;
+  }
   .steam-grid-layout {
     grid-template-columns: 1fr;
   }
@@ -2625,6 +2636,21 @@ input:checked + .slider-round:before {
     grid-column: span 2;
   }
   
+  .hud-circle-outer {
+    width: 250px !important;
+    height: 250px !important;
+  }
+  .hud-circle-inner {
+    width: 190px !important;
+    height: 190px !important;
+  }
+  .hud-scanner {
+    width: 210px !important;
+  }
+  .hero-graphic-container {
+    height: 270px !important;
+  }
+  
   .camera-grid {
     grid-template-columns: 1fr;
     padding: 10px;
@@ -2641,6 +2667,11 @@ input:checked + .slider-round:before {
   }
   .hero-lead {
     font-size: 12px;
+  }
+  
+  .ai-action-buttons {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   
   /* Modal inputs on mobile screen sizes */
