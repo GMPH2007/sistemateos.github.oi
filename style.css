@@ -2448,72 +2448,218 @@ input:checked + .slider-round:before {
 /* ==========================================================================
    RESPONSIVE DESIGN / MEDIA QUERIES
    ========================================================================== */
+/* ==========================================================================
+   RESPONSIVE DESIGN / MEDIA QUERIES
+   ========================================================================== */
+
+/* 1. Large Screens & Smart TVs (Optimization for 1080p, 4K & large monitors) */
+@media (min-width: 1800px) {
+  .content-wrapper {
+    max-width: 1600px;
+    padding: 40px 30px;
+  }
+  .hero-content h1 {
+    font-size: 52px;
+  }
+  .hero-lead {
+    font-size: 18px;
+    max-width: 800px;
+  }
+  .stat-val {
+    font-size: 28px;
+  }
+  .feature-box h3 {
+    font-size: 22px;
+  }
+}
+
+/* 2. Laptops & Compact Desktops (Standard layout wraps safely) */
 @media (max-width: 1200px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
   .camera-room-card {
     grid-column: 1 / 2;
   }
 }
 
+/* 3. Tablets & iPads (Vertical layout with compact navigation) */
 @media (max-width: 992px) {
   .hero-section {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 35px;
     text-align: center;
+  }
+  .hero-logo-wrapper {
+    justify-content: center;
   }
   .hero-content h1 {
     font-size: 32px;
+  }
+  .hero-lead {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
   }
   .hero-buttons {
     justify-content: center;
   }
   .hero-graphic-container {
-    height: 350px;
+    height: 320px;
   }
   .steam-grid-layout {
     grid-template-columns: 1fr;
   }
   .camera-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   .flight-control-layout {
     grid-template-columns: 1fr;
   }
   .guides-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   .ai-trainer-wrapper {
     grid-template-columns: 1fr;
   }
 }
 
+/* 4. Small Tablets & Phones (Stacking elements, adjusting sizes and grid columns) */
 @media (max-width: 768px) {
+  .content-wrapper {
+    padding: 20px 15px;
+  }
   .header-container {
     flex-direction: column;
-    gap: 15px;
-    padding: 10px;
+    gap: 12px;
+    padding: 12px 10px;
   }
   .main-nav {
     width: 100%;
     justify-content: center;
+    gap: 6px;
+  }
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 11px;
   }
   .header-actions {
     width: 100%;
     justify-content: space-between;
+    gap: 15px;
+  }
+  .stats-overview-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 50px;
+  }
+  .sensor-gauges-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .telemetry-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .flight-sim-wrapper {
+    grid-template-columns: 1fr;
+  }
+  .guides-grid {
+    grid-template-columns: 1fr;
+  }
+  .features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .steam-teaser-wrapper {
+    padding: 25px;
+    text-align: center;
+  }
+  .steam-pillars {
+    justify-content: center;
+  }
+}
+
+/* 5. Mobile Devices & Small Phones (Optimizations for vertical space & inputs) */
+@media (max-width: 576px) {
+  .logo-area {
+    justify-content: center;
+  }
+  .logo-title {
+    font-size: 18px;
+  }
+  .header-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .system-status {
+    width: 100%;
+    justify-content: center;
+  }
+  .session-logged-out {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+  .session-logged-out .btn {
+    flex: 1;
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+  .user-profile-badge {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .cockpit-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px 15px;
+  }
+  .cockpit-meta-item {
+    width: 100%;
+  }
+  .cockpit-meta-item:last-child {
+    grid-column: span 2;
+  }
+  
+  .camera-grid {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+  .sensor-gauges-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
   .stats-overview-grid {
     grid-template-columns: 1fr;
   }
-  .sensor-gauges-row {
-    grid-template-columns: 1fr;
+  .hero-content h1 {
+    font-size: 24px;
   }
-  .telemetry-bottom-grid {
-    grid-template-columns: 1fr;
+  .hero-lead {
+    font-size: 12px;
   }
-  .flight-sim-wrapper {
-    grid-template-columns: 1fr;
+  
+  /* Modal inputs on mobile screen sizes */
+  .auth-modal-card {
+    margin: 10px;
+    max-width: calc(100% - 20px);
+  }
+  .auth-modal-body {
+    padding: 15px;
+  }
+  .form-group input, .auth-dropdown {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .chatbot-container {
+    width: calc(100% - 50px);
+    right: -10px;
+    height: 350px;
   }
 }
 
