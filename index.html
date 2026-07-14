@@ -13,7 +13,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=2.3">
+  <link rel="stylesheet" href="style.css?v=2.4">
 </head>
 <body class="theme-dark">
 
@@ -516,7 +516,10 @@
               <div class="lock-icon-glow"><i class="fa-solid fa-user-shield"></i></div>
               <h4>ACCESO OPERADOR REQUERIDO</h4>
               <p>Inicia sesión como <strong>Operador Autorizado</strong> para desbloquear y controlar la navegación terrestre y aérea del robot.</p>
-              <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+              <div style="display: flex; gap: 8px; justify-content: center; margin-top: 8px;">
+                <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+                <button class="btn btn-secondary btn-micro btn-bypass-lock">MODO DEMO</button>
+              </div>
             </div>
           </div>
 
@@ -639,7 +642,10 @@
                 <div class="lock-icon-glow"><i class="fa-solid fa-user-graduate"></i></div>
                 <h4>AULA STEAM RESTRINGIDA</h4>
                 <p>Se requiere acceso como <strong>Estudiante STEAM</strong> o <strong>Docente</strong> para realizar simulaciones e interactuar con los laboratorios.</p>
-                <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+                <div style="display: flex; gap: 8px; justify-content: center; margin-top: 8px;">
+                  <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+                  <button class="btn btn-secondary btn-micro btn-bypass-lock">MODO DEMO</button>
+                </div>
               </div>
             </div>
 
@@ -782,7 +788,10 @@
                 <div class="lock-icon-glow"><i class="fa-solid fa-chalkboard-user"></i></div>
                 <h4>ACCESO DOCENTE REQUERIDO</h4>
                 <p>Se requiere acceso con perfil de <strong>Docente</strong> para interactuar con las herramientas de exportación de telemetría y guías didácticas.</p>
-                <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+                <div style="display: flex; gap: 8px; justify-content: center; margin-top: 8px;">
+                  <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+                  <button class="btn btn-secondary btn-micro btn-bypass-lock">MODO DEMO</button>
+                </div>
               </div>
             </div>
 
@@ -1134,7 +1143,7 @@
   </div>
 
   <!-- Code Script imports -->
-  <script src="auth.js?v=2.3"></script>
-  <script src="app.js?v=2.3"></script>
+  <script src="auth.js?v=2.4"></script>
+  <script src="app.js?v=2.4"></script>
 </body>
 </html>
