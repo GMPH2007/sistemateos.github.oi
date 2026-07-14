@@ -272,6 +272,31 @@ document.addEventListener('DOMContentLoaded', () => {
       playClickSound();
       showModal(loginModal);
     }
+    if (e.target && e.target.classList.contains('btn-bypass-lock')) {
+      playClickSound();
+      const parentCard = e.target.closest('.panel-locked');
+      if (parentCard) {
+        parentCard.classList.remove('panel-locked');
+        
+        // Flight Control specific bypass logic
+        if (parentCard.id === 'flight-control-card') {
+          const manualControls = document.getElementById('manual-controls-card');
+          if (manualControls) manualControls.classList.remove('locked');
+          const flightStatus = document.getElementById('flight-system-status');
+          if (flightStatus) {
+            flightStatus.className = 'system-level unlocked';
+            flightStatus.textContent = 'CONTROL MANUAL (DEMO)';
+          }
+          const droneFeed = document.getElementById('drone-feed-overlay');
+          if (droneFeed) {
+            droneFeed.classList.remove('offline');
+            // Hide camera offline overlay text
+            const offlineText = droneFeed.querySelector('.offline-overlay-text');
+            if (offlineText) offlineText.style.display = 'none';
+          }
+        }
+      }
+    }
   });
 
   // --- SESSION CORE LOGIC ---
