@@ -4019,3 +4019,93 @@ input:checked + .slider-toggle:before {
   color: #fff !important;
 }
 
+/* ==========================================================================
+   GAME UPGRADES STYLING
+   ========================================================================== */
+.trivia-timer-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+.trivia-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan) 0%, #00e676 100%);
+  box-shadow: 0 0 8px var(--accent-cyan-glow);
+  transition: width 0.1s linear;
+}
+.trivia-combo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #ff9100 0%, #ff3d00 100%);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(255, 61, 0, 0.4);
+}
+
+.routing-panel {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 15px;
+  text-align: left;
+  animation: tabFadeIn 0.3s ease;
+}
+.routing-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--accent-cyan);
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.routing-meta {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.routing-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.routing-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 6px var(--accent-cyan-glow);
+  transition: width 0.1s ease;
+}
+
+.terminal-diagnostics {
+  background: rgba(3, 4, 8, 0.95);
+  border: 1px solid #1b4a5a;
+  border-left: 3px solid var(--accent-cyan);
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #00ff66;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  box-shadow: inset 0 0 10px rgba(0,255,102,0.05);
+}
+.terminal-diagnostics-header {
+  color: #fff;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+}
+
