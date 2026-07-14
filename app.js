@@ -1404,7 +1404,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startDriving = (e) => {
       if (e) e.preventDefault();
-      if (state.currentProfile === 'publico') return;
       if (driveInterval) return; // Prevent double trigger
       
       state.locoMoving = true;
@@ -1500,7 +1499,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function unlockFlightControls() {
-    if (state.droneStatus === 'flying' && state.currentProfile !== 'publico') {
+    if (state.droneStatus === 'flying') {
       if (manualControlsCard) manualControlsCard.classList.remove('locked');
       if (flightSystemStatus) {
         flightSystemStatus.className = 'system-level unlocked';
@@ -1575,7 +1574,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnPreFlight) {
     btnPreFlight.addEventListener('click', () => {
-      if (state.currentProfile === 'publico') return;
       if (state.droneStatus === 'hangar') {
         sendRobotCommand({ type: "drone", action: "takeoff" });
         runTakeoffSequence();
@@ -1589,7 +1587,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startFlying = (e) => {
       if (e) e.preventDefault();
-      if (state.droneStatus !== 'flying' || state.currentProfile === 'publico') return;
+      if (state.droneStatus !== 'flying') return;
       if (flightInterval) return; // Prevent double interval
 
       appendLog('console', `[PILOTO] Comando manual de vuelo: Moviendo dron ${directionName}...`, 'info');
@@ -1637,7 +1635,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (droneAltSlider) {
     droneAltSlider.addEventListener('input', (e) => {
-      if (state.droneStatus !== 'flying' || state.currentProfile === 'publico') return;
+      if (state.droneStatus !== 'flying') return;
       state.droneAlt = parseFloat(e.target.value);
       if (sliderAltVal) sliderAltVal.textContent = state.droneAlt.toFixed(1);
       if (hudDroneAlt) hudDroneAlt.textContent = `ALT: ${state.droneAlt.toFixed(1)} m`;
@@ -1696,7 +1694,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnRTL) {
     btnRTL.addEventListener('click', () => {
-      if (state.currentProfile === 'publico') return;
       sendRobotCommand({ type: "drone", action: "rtl" });
       runLandingSequence('rtl');
     });
@@ -1704,7 +1701,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnLand) {
     btnLand.addEventListener('click', () => {
-      if (state.currentProfile === 'publico') return;
       sendRobotCommand({ type: "drone", action: "land" });
       runLandingSequence('land');
     });
