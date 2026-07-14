@@ -238,27 +238,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const currentRole = role || 'publico';
     
-    // 1. Flight Control: unlocked only for 'operador'
+    // Flight Control & Student Labs are always unlocked for all users (including guest public)
     if (flightCard) {
-      if (currentRole === 'operador') {
-        flightCard.classList.remove('panel-locked');
-      } else {
-        flightCard.classList.add('panel-locked');
-      }
+      flightCard.classList.remove('panel-locked');
     }
     
-    // 2. Student labs: unlocked for 'estudiante' and 'docente'
     if (studentModule) {
-      if (currentRole === 'estudiante' || currentRole === 'docente') {
-        studentModule.classList.remove('panel-locked');
-      } else {
-        studentModule.classList.add('panel-locked');
-      }
+      studentModule.classList.remove('panel-locked');
     }
     
-    // 3. Teacher console: unlocked only for 'docente'
+    // Teacher Console is unlocked only for 'docente' and 'operador' (for demo purposes)
     if (teacherModule) {
-      if (currentRole === 'docente') {
+      if (currentRole === 'docente' || currentRole === 'operador') {
         teacherModule.classList.remove('panel-locked');
       } else {
         teacherModule.classList.add('panel-locked');
