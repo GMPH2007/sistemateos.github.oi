@@ -2417,189 +2417,232 @@ document.addEventListener('DOMContentLoaded', () => {
         <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 25px;">${desc}</p>
         <div style="display: flex; gap: 10px; justify-content: center;">
           <button class="btn btn-primary btn-micro" onclick="startTriviaGame()"><i class="fa-solid fa-rotate-right"></i> Jugar de Nuevo</button>
-          <button class="btn btn-outline btn-micro" onclick="resetArcadeHome()"><i class="fa-solid fa-house"></i> Menú de Juegos</button>
-        </div>
-      </div>
-    `;
-  }
-
-  window.startTriviaGame = function() {
-    currentTriviaIndex = 0;
-    triviaScore = 0;
-    renderTriviaQuestion();
-  };
-
-  // SOPA DE LETRAS JAVASCRIPT GAME STATE
-  const wordSearchWords = [
-    { text: "SENSOR", id: "w-sensor" },
-    { text: "SOLAR", id: "w-solar" },
-    { text: "ESP32", id: "w-esp" },
-    { text: "ALARMA", id: "w-alarma" },
-    { text: "LLUVIA", id: "w-lluvia" },
-    { text: "FUEGO", id: "w-fuego" },
-    { text: "DRON", id: "w-dron" }
+          <button class="btn btn-outline btn-micro" onclick  // ==========================================================================
+  // INTERACTIVE MISSION SIMULATOR GAME STATE (MAP GAME)
+  // ==========================================================================
+  const mapMissions = [
+    {
+      id: "m-incendio",
+      name: "Sector Residencial (Alerta de Incendio)",
+      icon: "fa-solid fa-fire",
+      x: 75,
+      y: 20,
+      question: "El sensor de temperatura infrarrojo de ARGOS registra 120°C en la pared de una vivienda y detecta radiación de flama. ¿Cuál es el protocolo de seguridad cívica correcto?",
+      options: [
+        { text: "Activar la sirena acústica local, transmitir coordenadas GPS en vivo a los Bomberos y alertar por voz a los vecinos para evacuar.", correct: true },
+        { text: "Continuar patrullando de forma silenciosa para no causar pánico y esperar a que el sensor de humedad suba.", correct: false },
+        { text: "Apagar el faro lumínico para conservar batería y apagar los motores del robot.", correct: false }
+      ],
+      points: 150,
+      completed: false
+    },
+    {
+      id: "m-sismo",
+      name: "Puente Río Teos (Estabilidad Estructural)",
+      icon: "fa-solid fa-triangle-exclamation",
+      x: 20,
+      y: 70,
+      question: "Durante un sismo leve, el osciloscopio del acelerómetro MPU-6050 de ARGOS detecta vibraciones inerciales anormales en las vigas del puente. ¿Qué acción debe tomar el robot?",
+      options: [
+        { text: "Ignorar las vibraciones si no superan los 8.0 grados Richter y regresar a la base.", correct: false },
+        { text: "Emitir señales estroboscópicas de advertencia visual para restringir el paso de vehículos, registrar fotografías de las grietas con la cámara de exploración y enviar la telemetría al panel del Serenazgo.", correct: true },
+        { text: "Apagar la conexión de radio y entrar en modo de reposo automático.", correct: false }
+      ],
+      points: 150,
+      completed: false
+    },
+    {
+      id: "m-inundacion",
+      name: "Cuenca del Río (Riesgo de Desborde)",
+      icon: "fa-solid fa-cloud-showers-water",
+      x: 55,
+      y: 45,
+      question: "El sensor barométrico indica una caída drástica de presión atmosférica (tormenta inminente) y el sensor de lluvia se activa en modo continuo. ¿Cuál es la prioridad del robot?",
+      options: [
+        { text: "Detenerse a recargar la batería solar bajo la tormenta.", correct: false },
+        { text: "Desplegar el Dron Explorador para monitorear el cauce del río desde el aire y enviar alertas sonoras con traducción de texto a las zonas bajas del río.", correct: true },
+        { text: "Entrar en modo apagón lumínico y desconectar los sensores de lluvia.", correct: false }
+      ],
+      points: 150,
+      completed: false
+    }
   ];
 
-  let selectedCells = [];
-  let foundWords = [];
+  let selectedMission = null;
+  let activeRobotX = 10;
+  let activeRobotY = 50;
+  let misionesScore = 0;
 
-  window.startSopaGame = function() {
-    selectedCells = [];
-    foundWords = [];
+  window.startMisionesGame = function() {
+    selectedMission = null;
+    activeRobotX = 10;
+    activeRobotY = 50;
+    misionesScore = 0;
+    mapMissions.forEach(m => m.completed = false);
+    renderMisionesMap();
+  };
 
-    const size = 12;
-    let grid = Array(size * size).fill('');
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    // Place words horizontally or vertically
-    wordSearchWords.forEach(word => {
-      let placed = false;
-      let attempts = 0;
-      
-      while (!placed && attempts < 150) {
-        const isHorizontal = Math.random() > 0.5;
-        const row = Math.floor(Math.random() * size);
-        const col = Math.floor(Math.random() * size);
-        const startIdx = row * size + col;
-
-        if (isHorizontal && col + word.text.length > size) { attempts++; continue; }
-        if (!isHorizontal && row + word.text.length > size) { attempts++; continue; }
-
-        let collides = false;
-        let cellsTemp = [];
-        
-        for (let i = 0; i < word.text.length; i++) {
-          const idx = startIdx + i * (isHorizontal ? 1 : size);
-          if (grid[idx] !== '' && grid[idx] !== word.text[i]) {
-            collides = true;
-            break;
-          }
-          cellsTemp.push(idx);
-        }
-
-        if (!collides) {
-          for (let i = 0; i < word.text.length; i++) {
-            const idx = startIdx + i * (isHorizontal ? 1 : size);
-            grid[idx] = word.text[i];
-          }
-          word.indices = cellsTemp;
-          placed = true;
-        }
-        attempts++;
-      }
+  function renderMisionesMap() {
+    let nodesHtml = "";
+    mapMissions.forEach(mission => {
+      const activeClass = (selectedMission && selectedMission.id === mission.id) ? "active-target" : "";
+      const completedClass = mission.completed ? "completed" : "";
+      nodesHtml += `
+        <div class="map-node ${activeClass} ${completedClass}" 
+             style="left: ${mission.x}%; top: ${mission.y}%;" 
+             onclick="selectMissionNode('${mission.id}')"
+             title="${mission.name}">
+          <i class="${mission.icon}"></i>
+        </div>
+      `;
     });
 
-    // Fill remaining cells with random letters
-    for (let i = 0; i < grid.length; i++) {
-      if (grid[i] === '') {
-        grid[i] = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-      }
-    }
+    const allCompleted = mapMissions.every(m => m.completed);
+    let detailsHtml = "";
 
-    // Render cells HTML
-    let cellsHtml = "";
-    grid.forEach((char, idx) => {
-      cellsHtml += `<div class="sopa-cell" data-idx="${idx}" onclick="toggleSopaCell(this)">${char}</div>`;
-    });
-
-    // Render word list HTML
-    let listHtml = "";
-    wordSearchWords.forEach(word => {
-      listHtml += `<div class="sopa-word-item" id="${word.id}">${word.text}</div>`;
-    });
-
-    if (arcadeWorkspace) {
-      arcadeWorkspace.innerHTML = `
-        <div style="animation: tabFadeIn 0.3s ease; text-align: center;">
-          <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 10px;">Encuentra los elementos clave del hardware robótico y de prevención.</p>
-          
-          <div class="sopa-grid">
-            ${cellsHtml}
-          </div>
-
-          <div class="sopa-word-list">
-            ${listHtml}
-          </div>
-
-          <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
-            <button class="btn btn-primary btn-micro" onclick="validateSopaSelection()"><i class="fa-solid fa-circle-check"></i> Validar Palabras</button>
-            <button class="btn btn-outline btn-micro" onclick="startSopaGame()"><i class="fa-solid fa-rotate-right"></i> Nuevo Tablero</button>
+    if (allCompleted) {
+      detailsHtml = `
+        <div class="mission-details-card" style="text-align: center; border-color: var(--accent-green);">
+          <h4 style="color: var(--accent-green); justify-content: center;">
+            <i class="fa-solid fa-trophy"></i> ¡TODAS LAS MISIONES COMPLETADAS!
+          </h4>
+          <p style="font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 15px;">
+            Felicidades Comandante. Has resuelto todas las crisis en el mapa, protegiendo a la comunidad y coordinando las defensas civiles de manera exitosa.<br>
+            <strong>Puntaje Total: ${misionesScore} Puntos STEAM (+300 Bonus de Excelencia)</strong>
+          </p>
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn btn-primary btn-micro" onclick="startMisionesGame()"><i class="fa-solid fa-rotate-right"></i> Jugar de Nuevo</button>
             <button class="btn btn-outline btn-micro" onclick="resetArcadeHome()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
           </div>
-          <div id="sopa-alert" style="margin-top: 15px; font-size: 11px; font-weight: bold; min-height: 18px; font-family: var(--font-display);"></div>
+        </div>
+      `;
+      synth.victory();
+    } else if (selectedMission) {
+      let optionsHtml = "";
+      selectedMission.options.forEach((opt, idx) => {
+        optionsHtml += `
+          <button class="mission-option-btn" onclick="checkMissionAnswer(${idx}, this)">
+            ${opt.text}
+          </button>
+        `;
+      });
+
+      detailsHtml = `
+        <div class="mission-details-card" id="mission-card-pane">
+          <h4><i class="${selectedMission.icon}"></i> Misión Táctica: ${selectedMission.name}</h4>
+          <p class="question">${selectedMission.question}</p>
+          <div id="mission-options-box">
+            ${optionsHtml}
+          </div>
+          <div id="mission-feedback" style="margin-top: 12px; font-size: 11px; font-weight: bold; min-height: 15px;"></div>
+        </div>
+      `;
+    } else {
+      detailsHtml = `
+        <div class="mission-details-card" style="text-align: center; border-color: rgba(255,255,255,0.06);">
+          <h4><i class="fa-solid fa-circle-info"></i> Consola Táctica de Misiones</h4>
+          <p style="font-size: 11px; color: var(--text-muted); line-height: 1.6; margin: 0 auto; max-width: 420px;">
+            Haz clic en cualquiera de los nodos parpadeantes del mapa para enviar al robot ARGOS. Una vez llegue al sector, evalúa la telemetría y resuelve el desafío cívico.
+          </p>
+          <div style="margin-top: 15px; display: flex; justify-content: center;">
+            <button class="btn btn-outline btn-micro" onclick="resetArcadeHome()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+          </div>
         </div>
       `;
     }
-  };
 
-  window.toggleSopaCell = function(element) {
-    const idx = parseInt(element.getAttribute('data-idx'));
-    element.classList.toggle('selected');
-    
-    if (element.classList.contains('selected')) {
-      selectedCells.push(idx);
-      synth.beep(600, 'sine', 0.03);
-    } else {
-      selectedCells = selectedCells.filter(cellIdx => cellIdx !== idx);
-      synth.beep(400, 'sine', 0.03);
+    if (arcadeWorkspace) {
+      arcadeWorkspace.innerHTML = `
+        <div style="animation: tabFadeIn 0.3s ease;">
+          <p style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-bottom: 10px;">
+            Controla las misiones simuladas de ARGOS sobre el mapa de la comunidad.
+          </p>
+          
+          <div class="mission-map-container">
+            <div class="map-grid-overlay"></div>
+            
+            <div class="map-base-hangar">
+              <i class="fa-solid fa-warehouse"></i>
+              <span>HANGAR</span>
+            </div>
+            
+            ${nodesHtml}
+            
+            <!-- Robot Animated Icon -->
+            <div class="map-robot-icon" id="map-robot-element" style="left: ${activeRobotX}%; top: ${activeRobotY}%;">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+          </div>
+
+          ${detailsHtml}
+        </div>
+      `;
     }
+  }
+
+  window.selectMissionNode = function(missionId) {
+    const mission = mapMissions.find(m => m.id === missionId);
+    if (!mission || mission.completed) return;
+
+    selectedMission = mission;
+    activeRobotX = mission.x;
+    activeRobotY = mission.y;
+
+    renderMisionesMap();
+    synth.beep(800, 'sine', 0.08);
   };
 
-  window.validateSopaSelection = function() {
-    let wordFoundInThisCheck = false;
+  window.checkMissionAnswer = function(optIdx, btnEl) {
+    if (!selectedMission) return;
+    const option = selectedMission.options[optIdx];
+    const feedbackBox = document.getElementById('mission-feedback');
+    const optionsBox = document.getElementById('mission-options-box');
 
-    wordSearchWords.forEach(word => {
-      if (foundWords.includes(word.text)) return;
+    if (optionsBox) {
+      const allButtons = optionsBox.querySelectorAll('button');
+      allButtons.forEach(btn => btn.disabled = true);
+    }
 
-      const isWordSelected = word.indices && word.indices.every(idx => selectedCells.includes(idx));
-      
-      if (isWordSelected) {
-        foundWords.push(word.text);
-        wordFoundInThisCheck = true;
-
-        word.indices.forEach(idx => {
-          const cell = document.querySelector(`.sopa-cell[data-idx="${idx}"]`);
-          if (cell) {
-            cell.classList.remove('selected');
-            cell.classList.add('found');
-          }
-        });
-
-        const wordEl = document.getElementById(word.id);
-        if (wordEl) wordEl.classList.add('found');
-
-        selectedCells = selectedCells.filter(idx => !word.indices.includes(idx));
+    if (option.correct) {
+      btnEl.classList.add('correct-ans');
+      if (feedbackBox) {
+        feedbackBox.style.color = "var(--accent-green)";
+        feedbackBox.textContent = `¡Respuesta Correcta! Protocolo de resiliencia ejecutado con éxito. +${selectedMission.points} Puntos STEAM`;
       }
-    });
+      misionesScore += selectedMission.points;
+      selectedMission.completed = true;
+      synth.beep(900, 'sine', 0.1);
 
-    const alertBox = document.getElementById('sopa-alert');
-    if (wordFoundInThisCheck) {
-      if (alertBox) {
-        alertBox.style.color = "var(--accent-green)";
-        alertBox.textContent = "¡Palabra encontrada con éxito!";
-      }
-      synth.beep(950, 'sine', 0.08);
-
-      if (foundWords.length === wordSearchWords.length) {
-        if (alertBox) {
-          alertBox.innerHTML = "<strong>¡Felicidades!</strong> Has completado la sopa de letras cívica. <br><strong>+200 Puntos STEAM</strong>";
-        }
-        synth.victory();
-      }
+      setTimeout(() => {
+        selectedMission = null;
+        renderMisionesMap();
+      }, 2000);
     } else {
-      if (alertBox) {
-        alertBox.style.color = "var(--accent-red)";
-        alertBox.textContent = "No se ha formado ninguna palabra nueva. ¡Sigue buscando!";
+      btnEl.classList.add('wrong-ans');
+      if (feedbackBox) {
+        feedbackBox.style.color = "var(--accent-red)";
+        feedbackBox.textContent = "Error de protocolo. Ese paso no garantiza la evacuación o seguridad. ¡Intenta de nuevo!";
       }
-      synth.beep(200, 'sawtooth', 0.2);
+      synth.beep(200, 'sawtooth', 0.25);
+
+      setTimeout(() => {
+        if (optionsBox) {
+          const allButtons = optionsBox.querySelectorAll('button');
+          allButtons.forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('wrong-ans');
+          });
+        }
+        if (feedbackBox) feedbackBox.textContent = "";
+      }, 2000);
     }
   };
 
   window.startArcadeGame = function(gameName) {
     if (gameName === 'trivia') {
       startTriviaGame();
-    } else if (gameName === 'sopa') {
-      startSopaGame();
+    } else if (gameName === 'misiones') {
+      startMisionesGame();
     }
   };
 
@@ -2615,12 +2658,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="btn btn-secondary btn-micro btn-block">Jugar Trivia</button>
           </div>
 
-          <!-- Sopa de Letras Card Selector -->
-          <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(245, 158, 11, 0.15); cursor: pointer; transition: all 0.3s;" id="play-sopa-btn" onclick="startArcadeGame('sopa')">
-            <i class="fa-solid fa-border-all" style="font-size: 3rem; color: var(--accent-orange); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-orange);"></i>
-            <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Sopa de Letras Cívica</h3>
-            <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Descubre las piezas mecánicas y los elementos del kit de rescate camuflados en el tablero de datos.</p>
-            <button class="btn btn-secondary btn-micro btn-block" style="border-color: var(--accent-orange); color: var(--accent-orange);">Buscar Palabras</button>
+          <!-- Simulador de Misiones Card Selector -->
+          <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(245, 158, 11, 0.15); cursor: pointer; transition: all 0.3s;" id="play-sopa-btn" onclick="startArcadeGame('misiones')">
+            <i class="fa-solid fa-map-location-dot" style="font-size: 3rem; color: var(--accent-orange); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-orange);"></i>
+            <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Simulador de Misiones</h3>
+            <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Despliega al robot ARGOS en un mapa táctico interactivo. Resuelve emergencias de sismos, inundaciones e incendios en tiempo real.</p>
+            <button class="btn btn-secondary btn-micro btn-block" style="border-color: var(--accent-orange); color: var(--accent-orange);">Iniciar Misiones</button>
           </div>
         </div>
       `;
