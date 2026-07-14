@@ -55,6 +55,10 @@ body {
   position: relative;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
@@ -172,6 +176,7 @@ body {
 
 .main-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -2557,7 +2562,8 @@ input:checked + .slider-round:before {
   }
   .header-actions {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 15px;
   }
   .stats-overview-grid {
@@ -2593,34 +2599,92 @@ input:checked + .slider-round:before {
 
 /* 5. Mobile Devices & Small Phones (Optimizations for vertical space & inputs) */
 @media (max-width: 576px) {
-  .logo-area {
-    justify-content: center;
-  }
-  .logo-title {
-    font-size: 18px;
-  }
-  .header-actions {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  .system-status {
-    width: 100%;
-    justify-content: center;
-  }
-  .session-logged-out {
-    width: 100%;
-    justify-content: center;
+  .header-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
     gap: 8px;
+    padding: 8px 10px;
+    align-items: center;
   }
-  .session-logged-out .btn {
-    flex: 1;
-    font-size: 10px;
-    padding: 6px 8px;
+  
+  .logo-area {
+    grid-column: 1 / 2;
+    justify-content: flex-start;
+    gap: 6px;
   }
-  .user-profile-badge {
+  
+  .logo-title {
+    font-size: 16px;
+  }
+  
+  .logo-subtitle {
+    display: none; /* Hide subtitle on small phones to save space */
+  }
+  
+  .header-logo-img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .main-nav {
+    grid-column: 2 / 3;
+    width: auto;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+  
+  .nav-btn span {
+    display: none; /* Hide tab text labels, show only icons */
+  }
+  
+  .nav-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .header-actions {
+    grid-column: 1 / 3;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
+    margin-top: 2px;
+  }
+  
+  .system-status {
+    width: auto;
     justify-content: center;
+    padding: 3px 8px;
+  }
+  
+  .session-logged-out {
+    width: auto;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  
+  .session-logged-out .btn {
+    flex: none;
+    font-size: 9px;
+    padding: 5px 8px;
+  }
+  
+  .user-profile-badge {
+    width: auto;
+    justify-content: flex-end;
+  }
+  
+  .user-info-text {
+    display: none; /* Hide detailed user email/role labels on phones */
+  }
+  
+  .session-logged-in {
+    gap: 8px;
   }
   
   .cockpit-bar {
