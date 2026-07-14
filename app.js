@@ -2400,7 +2400,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 25px;">${desc}</p>
         <div style="display: flex; gap: 10px; justify-content: center;">
           <button class="btn btn-primary btn-micro" onclick="startTriviaGame()"><i class="fa-solid fa-rotate-right"></i> Jugar de Nuevo</button>
-          <button class="btn btn-outline btn-micro" onclick  // ==========================================================================
+          <button class="btn btn-outline btn-micro" onclick="resetArcadeHome()"><i class="fa-solid fa-house"></i> Menú de Juegos</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // ==========================================================================
   // INTERACTIVE MISSION SIMULATOR GAME STATE (MAP GAME)
   // ==========================================================================
   const mapMissions = [
