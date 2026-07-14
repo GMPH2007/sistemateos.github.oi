@@ -2276,34 +2276,52 @@ document.addEventListener('DOMContentLoaded', () => {
   // TRIVIA JAVASCRIPT GAME STATE
   const triviaQuestions = [
     {
-      q: "¿Qué microcontrolador actúa como el 'cerebro' principal de ARGOS?",
+      q: "¿Qué microcontrolador actúa como el 'cerebro' principal del chasis de ARGOS?",
       options: ["Arduino Uno", "Raspberry Pi 4", "ESP32 Devkit", "Micro:bit"],
       correct: 2
     },
     {
-      q: "Durante un corte de luz masivo, el robot activa su 'Modo Apagón'. ¿Qué acción realiza?",
-      options: ["Se apaga para conservar energía", "Enciende focos LED de alta potencia como faro cívico", "Emite una alarma sonora constante", "Se desconecta de la red local"],
+      q: "Durante un corte de luz masivo en el vecindario, el robot activa su 'Modo Apagón'. ¿Qué acción realiza?",
+      options: ["Se apaga para conservar energía", "Enciende su faro LED central de alta potencia para iluminar como baliza cívica por 48h", "Emite una alarma sonora constante", "Se desconecta de la red local"],
       correct: 1
     },
     {
-      q: "¿Cuál es la función principal del sensor MPU-6050 en el chasis?",
-      options: ["Detectar sismos e inclinaciones en vivo", "Medir la temperatura ambiental", "Reconocimiento de imágenes", "Medir la distancia de objetos frontales"],
+      q: "¿Cuál es la función principal del sensor giroscópico MPU-6050 en el chasis?",
+      options: ["Detectar sismos e inclinaciones estructurales en tiempo real", "Medir la temperatura ambiental del aire", "Procesar el video de exploración", "Medir la distancia de objetos frontales"],
       correct: 0
     },
     {
       q: "¿Cómo garantiza ARGOS la inclusión de personas con discapacidad auditiva en emergencias?",
-      options: ["Aumentando al máximo el volumen del timbre", "Mediante luces estroboscópicas y textos informativos en pantalla", "Realizando llamadas automáticas al móvil", "Desplegando un dron de altavoz"],
+      options: ["Aumentando al máximo el volumen del timbre", "Mediante alertas de luces estroboscópicas de alta frecuencia y avisos en pantalla", "Realizando llamadas automáticas al móvil", "Desplegando un dron de altavoz"],
       correct: 1
+    },
+    {
+      q: "Si la batería del robot desciende críticamente en patrullaje diurno, ¿cuál es su método de continuidad?",
+      options: ["Apagarse en la calle", "Regresar a la toma eléctrica", "Carga fotovoltaica mediante panel monocristalino superior y regulador MPPT", "Cambio manual de celdas por los vecinos"],
+      correct: 2
     }
   ];
 
   let currentTriviaIndex = 0;
   let triviaScore = 0;
+  let triviaStreak = 0;
+  let triviaTimer = null;
+  let triviaTimeLeft = 15;
+
+  window.startTriviaGame = function() {
+    currentTriviaIndex = 0;
+    triviaScore = 0;
+    triviaStreak = 0;
+    renderTriviaQuestion();
+  };
 
   function renderTriviaQuestion() {
     if (!arcadeWorkspace) return;
     const qData = triviaQuestions[currentTriviaIndex];
     
+    // Speak the question dynamically for immersion
+    synth.speak(qData.q);
+
     let optionsHtml = "";
     qData.options.forEach((opt, idx) => {
       optionsHtml += `
@@ -2313,38 +2331,118 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     });
 
+    const comboHtml = triviaStreak > 1 ? `<span class="trivia-combo-badge">🔥 Combo x${triviaStreak}</span>` : '';
+
     arcadeWorkspace.innerHTML = `
       <div style="animation: tabFadeIn 0.3s ease; max-width: 500px; margin: 0 auto;">
-        <div style="display: flex; justify-content: space-between; font-family: var(--font-display); font-size: 10px; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-family: var(--font-display); font-size: 10px; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 15px;">
           <span>Pregunta ${currentTriviaIndex + 1} de ${triviaQuestions.length}</span>
-          <span>Puntaje: <strong style="color: var(--accent-cyan);">${triviaScore}</strong></span>
+          <div style="display:flex; gap: 8px; align-items:center;">
+            ${comboHtml}
+            <span>Puntaje: <strong style="color: var(--accent-cyan);" id="trivia-live-score">${triviaScore}</strong></span>
+          </div>
         </div>
+        
+        <div class="trivia-timer-container">
+          <div class="trivia-timer-fill" id="trivia-timer-fill" style="width: 100%;"></div>
+        </div>
+
         <h4 style="font-family: var(--font-main); color: #fff; line-height: 1.5; margin-bottom: 20px; font-size: 13px;">
           ${qData.q}
         </h4>
         <div id="trivia-options-box">
           ${optionsHtml}
         </div>
-        <button class="btn btn-outline btn-micro" onclick="resetArcadeHome()" style="margin-top: 15px;"><i class="fa-solid fa-arrow-left"></i> Volver al Arcade</button>
+        <div id="trivia-feedback" style="margin-top: 10px; font-size: 11px; font-weight: bold; min-height: 15px; font-family: var(--font-display);"></div>
+        <button class="btn btn-outline btn-micro" onclick="exitTrivia()" style="margin-top: 15px;"><i class="fa-solid fa-arrow-left"></i> Volver al Arcade</button>
       </div>
     `;
+
+    // Start timer interval (15 seconds per question)
+    if (triviaTimer) clearInterval(triviaTimer);
+    triviaTimeLeft = 15;
+    const timerFill = document.getElementById('trivia-timer-fill');
+    
+    triviaTimer = setInterval(() => {
+      triviaTimeLeft--;
+      if (timerFill) {
+        timerFill.style.width = `${(triviaTimeLeft / 15) * 100}%`;
+        if (triviaTimeLeft <= 5) {
+          timerFill.style.background = 'var(--accent-red)';
+          synth.beep(1000, 'sine', 0.02);
+        }
+      }
+
+      if (triviaTimeLeft <= 0) {
+        clearInterval(triviaTimer);
+        handleTriviaTimeout();
+      }
+    }, 1000);
+  }
+
+  window.exitTrivia = function() {
+    if (triviaTimer) clearInterval(triviaTimer);
+    resetArcadeHome();
+  };
+
+  function handleTriviaTimeout() {
+    synth.beep(200, 'sawtooth', 0.35);
+    triviaStreak = 0;
+    
+    const feedbackEl = document.getElementById('trivia-feedback');
+    if (feedbackEl) {
+      feedbackEl.style.color = 'var(--accent-red)';
+      feedbackEl.textContent = '¡Tiempo agotado!';
+    }
+
+    const allButtons = document.getElementById('trivia-options-box').querySelectorAll('button');
+    allButtons.forEach(btn => btn.disabled = true);
+
+    const qData = triviaQuestions[currentTriviaIndex];
+    const correctBtn = allButtons[qData.correct];
+    correctBtn.style.borderColor = 'var(--accent-green)';
+    correctBtn.style.color = 'var(--accent-green)';
+
+    setTimeout(() => {
+      currentTriviaIndex++;
+      if (currentTriviaIndex < triviaQuestions.length) {
+        renderTriviaQuestion();
+      } else {
+        renderTriviaResults();
+      }
+    }, 2000);
   }
 
   window.checkTriviaAnswer = function(selectedIdx, btnElement) {
+    if (triviaTimer) clearInterval(triviaTimer);
     const qData = triviaQuestions[currentTriviaIndex];
     const isCorrect = selectedIdx === qData.correct;
     const allButtons = document.getElementById('trivia-options-box').querySelectorAll('button');
+    const feedbackEl = document.getElementById('trivia-feedback');
     
     allButtons.forEach(btn => btn.disabled = true);
 
     if (isCorrect) {
-      triviaScore += 100;
-      btnElement.style.background = 'rgba(0, 240, 255, 0.12)';
-      btnElement.style.borderColor = 'var(--accent-cyan)';
+      triviaStreak++;
+      // Score calculation: 100 base + speed bonus + streak combo bonus
+      const speedBonus = triviaTimeLeft * 5;
+      const streakBonus = (triviaStreak > 1) ? (triviaStreak - 1) * 30 : 0;
+      const pointsEarned = 100 + speedBonus + streakBonus;
+      triviaScore += pointsEarned;
+      
+      btnElement.style.background = 'rgba(0, 230, 118, 0.12)';
+      btnElement.style.borderColor = 'var(--accent-green)';
       btnElement.style.color = '#fff';
-      btnElement.innerHTML += ' <i class="fa-solid fa-circle-check" style="color: var(--accent-cyan); float: right; margin-top: 2px;"></i>';
+      btnElement.innerHTML += ' <i class="fa-solid fa-circle-check" style="color: var(--accent-green); float: right; margin-top: 2px;"></i>';
+      
+      if (feedbackEl) {
+        feedbackEl.style.color = 'var(--accent-green)';
+        feedbackEl.innerHTML = `¡Correcto! +${pointsEarned} Puntos <span style="font-size:9px;color:var(--text-muted);">(${speedBonus}s de velocidad + ${streakBonus} combo)</span>`;
+      }
+      
       synth.beep(880, 'sine', 0.08);
     } else {
+      triviaStreak = 0;
       btnElement.style.background = 'rgba(255, 59, 48, 0.1)';
       btnElement.style.borderColor = 'var(--accent-red)';
       btnElement.style.color = '#fff';
@@ -2353,6 +2451,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const correctBtn = allButtons[qData.correct];
       correctBtn.style.borderColor = 'var(--accent-green)';
       correctBtn.style.color = 'var(--accent-green)';
+      
+      if (feedbackEl) {
+        feedbackEl.style.color = 'var(--accent-red)';
+        feedbackEl.textContent = 'Incorrecto.';
+      }
       synth.beep(220, 'sawtooth', 0.2);
     }
 
@@ -2363,32 +2466,32 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         renderTriviaResults();
       }
-    }, 1500);
+    }, 2000);
   };
 
   function renderTriviaResults() {
     if (!arcadeWorkspace) return;
     const maxScore = triviaQuestions.length * 100;
-    const pct = (triviaScore / maxScore) * 100;
+    const pct = (triviaScore / 600) * 100; // max score with bonuses is around 600-800
     
     let title = "";
     let color = "";
     let desc = "";
 
-    if (pct === 100) {
+    if (triviaScore >= 500) {
       title = "¡Operador de Nivel Experto!";
       color = "var(--accent-green)";
-      desc = "Has respondido todas las preguntas correctamente. ¡Estás listo para operar ARGOS en campo!";
+      desc = `Excelente. Lograste un puntaje de ${triviaScore} puntos. ¡Estás listo para operar el ecosistema ARGOS en situaciones reales de desastre!`;
       synth.victory();
-    } else if (pct >= 50) {
+    } else if (triviaScore >= 300) {
       title = "Buen Trabajo";
       color = "var(--accent-cyan)";
-      desc = "Posees conocimientos sólidos sobre el hardware del robot. Repasa la pestaña de Documentación para la puntuación perfecta.";
+      desc = `Obtuviste ${triviaScore} puntos. Tienes conocimientos sólidos sobre el hardware y funciones cívicas.`;
       synth.beep(600, 'sine', 0.2);
     } else {
       title = "Necesitas Entrenamiento";
       color = "var(--accent-red)";
-      desc = "Te sugerimos explorar la arquitectura con el escáner de Rayos X para aprender más sobre los componentes.";
+      desc = `Puntaje: ${triviaScore}. Te sugerimos explorar la arquitectura del robot o repasar las guías STEAM en el aula.`;
       synth.beep(150, 'sawtooth', 0.35);
     }
 
@@ -2396,7 +2499,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="animation: tabFadeIn 0.3s ease; text-align: center; padding: 20px 0; max-width: 400px; margin: 0 auto;">
         <i class="fa-solid fa-trophy" style="font-size: 3.5rem; color: ${color}; margin-bottom: 15px; text-shadow: 0 0 15px ${color};"></i>
         <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 5px; font-size:16px;">${title}</h3>
-        <h4 style="color: ${color}; font-family: var(--font-display); margin-bottom: 15px; font-size:14px;">Puntaje: ${triviaScore} / ${maxScore}</h4>
+        <h4 style="color: ${color}; font-family: var(--font-display); margin-bottom: 15px; font-size:14px;">Puntaje: ${triviaScore}</h4>
         <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 25px;">${desc}</p>
         <div style="display: flex; gap: 10px; justify-content: center;">
           <button class="btn btn-primary btn-micro" onclick="startTriviaGame()"><i class="fa-solid fa-rotate-right"></i> Jugar de Nuevo</button>
@@ -2461,12 +2564,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeRobotX = 10;
   let activeRobotY = 50;
   let misionesScore = 0;
+  
+  // Transit Routing panel state
+  let isRouting = false;
+  let routingProgress = 0;
+  let routingTimer = null;
+  let targetMission = null;
 
   window.startMisionesGame = function() {
     selectedMission = null;
     activeRobotX = 10;
     activeRobotY = 50;
     misionesScore = 0;
+    isRouting = false;
     mapMissions.forEach(m => m.completed = false);
     renderMisionesMap();
   };
@@ -2474,7 +2584,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderMisionesMap() {
     let nodesHtml = "";
     mapMissions.forEach(mission => {
-      const activeClass = (selectedMission && selectedMission.id === mission.id) ? "active-target" : "";
+      const activeClass = (targetMission && targetMission.id === mission.id) ? "active-target" : "";
       const completedClass = mission.completed ? "completed" : "";
       nodesHtml += `
         <div class="map-node ${activeClass} ${completedClass}" 
@@ -2506,6 +2616,16 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
       synth.victory();
+    } else if (isRouting) {
+      detailsHtml = `
+        <div class="routing-panel">
+          <div class="routing-title"><i class="fa-solid fa-spinner fa-spin"></i> ENRUTANDO ROBOT ARGOS...</div>
+          <div class="routing-meta">Trayectoria trazada: Hangar ➡️ ${targetMission ? targetMission.name : 'Destino'}<br>Velocidad de avance: 1.5 m/s | Dirección: [X: ${activeRobotX}%, Y: ${activeRobotY}%]</div>
+          <div class="routing-progress-bar">
+            <div class="routing-progress-fill" id="routing-progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      `;
     } else if (selectedMission) {
       let optionsHtml = "";
       selectedMission.options.forEach((opt, idx) => {
@@ -2516,10 +2636,41 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       });
 
+      let diagnosticsHtml = "";
+      if (selectedMission.id === 'm-incendio') {
+        diagnosticsHtml = `
+          <div class="terminal-diagnostics">
+            <div class="terminal-diagnostics-header"><i class="fa-solid fa-terminal"></i> TELEMETRÍA DE INCENDIO (INFRARROJO)</div>
+            - TEMPERATURA DETECTADA: 120.4 °C (CRÍTICO)<br>
+            - DETECTOR RADIACIÓN DE FLAMA: ACTIVO (FUEGO DETECTADO)<br>
+            - PROPAGACIÓN DE INCENDIO: 100% RIESGO EVACUAR
+          </div>
+        `;
+      } else if (selectedMission.id === 'm-sismo') {
+        diagnosticsHtml = `
+          <div class="terminal-diagnostics">
+            <div class="terminal-diagnostics-header"><i class="fa-solid fa-terminal"></i> TELEMETRÍA ACELERÓMETRO SÍSMICO (MPU-6050)</div>
+            - ACELERACIÓN DETECTADA: 8.45 m/s² (RANGO SÍSMICO)<br>
+            - INCLINACIÓN DE ESTRUCTURA: 12.5° (DAÑO GRAVE)<br>
+            - TRÁNSITO VEHICULAR: RIESGO DE COLAPSO ESTRUCTURAL
+          </div>
+        `;
+      } else if (selectedMission.id === 'm-inundacion') {
+        diagnosticsHtml = `
+          <div class="terminal-diagnostics">
+            <div class="terminal-diagnostics-header"><i class="fa-solid fa-terminal"></i> TELEMETRÍA PRECIPITACIÓN Y BARÓMETRO</div>
+            - PRESIÓN ATMOSFÉRICA: 980 hPa (TORMENTA EXTREMA)<br>
+            - DETECTOR DE LLUVIA: ACTIVADO (MOJADO CONTINUO)<br>
+            - RÍO TEOS: ALERTA DE RIESGO DE DESBORDE DE CUENCA
+          </div>
+        `;
+      }
+
       detailsHtml = `
         <div class="mission-details-card" id="mission-card-pane">
           <h4><i class="${selectedMission.icon}"></i> Misión Táctica: ${selectedMission.name}</h4>
-          <p class="question">${selectedMission.question}</p>
+          ${diagnosticsHtml}
+          <p class="question"><strong>Desafío de Decisión:</strong> ${selectedMission.question}</p>
           <div id="mission-options-box">
             ${optionsHtml}
           </div>
@@ -2570,15 +2721,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.selectMissionNode = function(missionId) {
+    if (isRouting) return; // Prevent clicking nodes while robot is moving
     const mission = mapMissions.find(m => m.id === missionId);
     if (!mission || mission.completed) return;
 
-    selectedMission = mission;
+    // Start Transit routing
+    isRouting = true;
+    selectedMission = null;
+    targetMission = mission;
     activeRobotX = mission.x;
     activeRobotY = mission.y;
+    routingProgress = 0;
 
     renderMisionesMap();
     synth.beep(800, 'sine', 0.08);
+
+    if (routingTimer) clearInterval(routingTimer);
+    routingTimer = setInterval(() => {
+      routingProgress += 10;
+      const progressFill = document.getElementById('routing-progress-fill');
+      if (progressFill) {
+        progressFill.style.width = `${routingProgress}%`;
+      }
+      
+      // Robot drive motor hum beeps
+      synth.beep(300 + routingProgress * 4, 'sine', 0.02);
+
+      if (routingProgress >= 100) {
+        clearInterval(routingTimer);
+        isRouting = false;
+        selectedMission = targetMission;
+        targetMission = null;
+        
+        // Rapid victory arrival chime
+        synth.beep(880, 'sine', 0.08);
+        setTimeout(() => synth.beep(1100, 'sine', 0.12), 70);
+        synth.speak("Sector alcanzado. Iniciando telemetría.");
+        
+        renderMisionesMap();
+      }
+    }, 150);
   };
 
   window.checkMissionAnswer = function(optIdx, btnEl) {
@@ -2594,6 +2776,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (option.correct) {
       btnEl.classList.add('correct-ans');
+      btnEl.innerHTML += ' <i class="fa-solid fa-circle-check" style="color: var(--accent-green); float: right; margin-top: 2px;"></i>';
       if (feedbackBox) {
         feedbackBox.style.color = "var(--accent-green)";
         feedbackBox.textContent = `¡Respuesta Correcta! Protocolo de resiliencia ejecutado con éxito. +${selectedMission.points} Puntos STEAM`;
@@ -2608,6 +2791,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 2000);
     } else {
       btnEl.classList.add('wrong-ans');
+      btnEl.innerHTML += ' <i class="fa-solid fa-circle-xmark" style="color: var(--accent-red); float: right; margin-top: 2px;"></i>';
       if (feedbackBox) {
         feedbackBox.style.color = "var(--accent-red)";
         feedbackBox.textContent = "Error de protocolo. Ese paso no garantiza la evacuación o seguridad. ¡Intenta de nuevo!";
@@ -2620,6 +2804,8 @@ document.addEventListener('DOMContentLoaded', () => {
           allButtons.forEach(btn => {
             btn.disabled = false;
             btn.classList.remove('wrong-ans');
+            const icon = btn.querySelector('.fa-circle-xmark');
+            if (icon) icon.remove();
           });
         }
         if (feedbackBox) feedbackBox.textContent = "";
