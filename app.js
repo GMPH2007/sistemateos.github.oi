@@ -435,40 +435,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (steamProfileDisplay) steamProfileDisplay.textContent = profileLabelText;
 
-    // Keep both visible so the user can see what they contain, permissions are handled by overlay locks
+    // Keep both visible so the user can see what they contain
     if (teacherModule) teacherModule.classList.remove('hidden');
     if (studentModule) studentModule.classList.remove('hidden');
 
-    // Toggle dashboard controls lock
+    // Toggle dashboard controls lock (unlocked for all profiles in demo mode)
     const locomotionControls = [btnLocoForward, btnLocoBack, btnLocoLeft, btnLocoRight, locoSpeedSlider];
 
-    if (selectedProfile === 'publico') {
-      if (btnPreFlight) {
-        btnPreFlight.disabled = true;
-        btnPreFlight.style.opacity = '0.5';
-        btnPreFlight.textContent = 'MONITOREO AUTOMÁTICO (SOLO LECTURA)';
+    if (btnPreFlight) {
+      btnPreFlight.disabled = false;
+      btnPreFlight.style.opacity = '1';
+      if (state.droneStatus === 'hangar') {
+        btnPreFlight.textContent = 'PREPARAR DESPEGUE';
       }
-      
-      appendLog('console', '[PERMISOS] Modo Público. Control manual bloqueado.', 'warning');
-      lockFlightControls();
-      
-      locomotionControls.forEach(el => { if (el) el.disabled = true; });
-    } else {
-      if (btnPreFlight) {
-        btnPreFlight.disabled = false;
-        btnPreFlight.style.opacity = '1';
-        if (state.droneStatus === 'hangar') {
-          btnPreFlight.textContent = 'PREPARAR DESPEGUE';
-        }
-      }
-      
-      appendLog('console', `[SISTEMA] Nivel de acceso: ${profileLabelText.toUpperCase()}.`, 'success');
-      
-      locomotionControls.forEach(el => { if (el) el.disabled = false; });
+    }
+    
+    appendLog('console', `[SISTEMA] Nivel de acceso: ${profileLabelText.toUpperCase()}.`, 'success');
+    
+    locomotionControls.forEach(el => { if (el) el.disabled = false; });
 
-      if (state.droneStatus === 'flying') {
-        unlockFlightControls();
-      }
+    if (state.droneStatus === 'flying') {
+      unlockFlightControls();
     }
   }
 
