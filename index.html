@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARGOS - Plataforma de Prevención, Monitoreo y Educación STEAM</title>
+  <!-- Google Fonts: Orbitron (for tech metrics) and Inter (for body text) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons for futuristic iconography -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js for real-time telemetry graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-dark">
+
+  <!-- Futuristic Glowing Grid Background Canvas -->
+  <div class="space-bg"></div>
+  <div class="grid-overlay"></div>
+  <!-- Headlight Overlay Simulation -->
+  <div class="headlight-glow-overlay" id="led-light-overlay"></div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="logo-glow-icon"><img src="argos_logo.jpg" class="header-logo-img" alt="ARGOS Logo"></div>
+        <div class="logo-text">
+          <span class="logo-title">ARGOS</span>
+          <span class="logo-subtitle">SISTEMA MULTI-AGENTE</span>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <button class="nav-btn active" data-tab="inicio"><i class="fa-solid fa-house"></i> Inicio</button>
+        <button class="nav-btn" data-tab="dashboard"><i class="fa-solid fa-gauge-high"></i> Panel de Control</button>
+        <button class="nav-btn" data-tab="steam"><i class="fa-solid fa-graduation-cap"></i> Aula STEAM</button>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Status Indicator -->
+        <div class="system-status online" id="global-status-badge">
+          <span class="status-dot"></span>
+          <span class="status-text" id="global-status-text">ONLINE - EN BASE</span>
+        </div>
+        
+        <!-- Profile Selector (Hidden, integrated with authentication) -->
+        <div class="profile-selector-container" style="display: none !important;">
+          <label for="profile-select" class="profile-label"><i class="fa-solid fa-id-card"></i> Rol:</label>
+          <select id="profile-select" class="profile-dropdown">
+            <option value="publico" selected>Público General</option>
+            <option value="operador">Operador Autorizado</option>
+            <option value="estudiante">Estudiante STEAM</option>
+            <option value="docente">Docente</option>
+          </select>
+        </div>
+
+        <!-- User Session Control -->
+        <div class="user-session-container" id="user-session-area">
+          <!-- Logged Out View -->
+          <div class="session-logged-out" id="session-logged-out">
+            <button class="btn btn-secondary btn-micro" id="btn-open-login">
+              <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+            </button>
+            <button class="btn btn-primary btn-micro btn-glow" id="btn-open-register">
+              <i class="fa-solid fa-user-plus"></i> Registrarse
+            </button>
+          </div>
+          <!-- Logged In View -->
+          <div class="session-logged-in hidden" id="session-logged-in">
+            <div class="user-profile-badge">
+              <i class="fa-solid fa-user-gear" id="user-role-icon"></i>
+              <div class="user-info-text">
+                <span class="user-name-display" id="user-name-display">Operador</span>
+                <span class="user-role-display" id="user-role-display">Operador Autorizado</span>
+              </div>
+            </div>
+            <button class="btn-icon-logout" id="btn-logout" title="Cerrar Sesión">
+              <i class="fa-solid fa-power-off"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="content-wrapper">
+
+    <!-- 1. LANDING PAGE SECTION -->
+    <section id="inicio" class="tab-content active">
+      <div class="hero-section">
+        <div class="hero-content">
+          <div class="hero-logo-wrapper">
+            <img src="argos_logo.jpg" class="hero-logo-cover" alt="ARGOS Platform Logo">
+          </div>
+          <div class="badge-accent">TECNOLOGÍA DE VANGUARDIA</div>
+          <h1>Plataforma Autónoma para la <span class="text-glow-cyan">Prevención, Monitoreo y Educación</span> frente a Riesgos Naturales</h1>
+          <p class="hero-lead">
+            ARGOS es un ecosistema robótico inteligente que integra inteligencia artificial, robótica terrestre, exploración aérea automatizada e IoT para la detección temprana de riesgos naturales y la enseñanza práctica STEAM en comunidades.
+          </p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary btn-glow" data-target="dashboard">
+              <i class="fa-solid fa-desktop"></i> Consola Operador
+            </button>
+            <button class="btn btn-secondary" data-target="steam">
+              <i class="fa-solid fa-graduation-cap"></i> Explorar Aula STEAM
+            </button>
+          </div>
+        </div>
+
+        <!-- 3D-like HUD Graphic representing the Robot + Drone -->
+        <div class="hero-graphic-container">
+          <div class="hud-circle-outer"></div>
+          <div class="hud-circle-inner"></div>
+          <div class="hud-scanner"></div>
+          <div class="robot-schematic-card">
+            <div class="schematic-header">
+              <span class="schematic-title">DIAGRAMA INTERACTIVO (HAZ CLIC EN LAS PARTES)</span>
+              <span class="schematic-version">ARGOS V1.4 - ACTIVE</span>
+            </div>
+            
+            <!-- SVG Graphic showing Robot and Drone Integration -->
+            <svg class="schematic-svg" viewBox="0 0 400 300">
+              <!-- Grid background -->
+              <defs>
+                <pattern id="schematic-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(0, 240, 255, 0.05)" stroke-width="1"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#schematic-grid)" />
+              
+              <!-- Ground level line -->
+              <line x1="20" y1="260" x2="380" y2="260" stroke="rgba(255, 255, 255, 0.2)" stroke-width="2" stroke-dasharray="5 5" />
+              
+              <!-- Robot Base Chassis (Orugas) -->
+              <g class="svg-robot">
+                <!-- Clickable Tracks Group -->
+                <g id="svg-part-orugas" class="clickable-part" cursor="pointer">
+                  <!-- Tracks (Orugas) -->
+                  <rect x="100" y="220" width="200" height="30" rx="15" fill="none" stroke="var(--accent-cyan)" stroke-width="3" />
+                  <circle id="wheel-1" cx="120" cy="235" r="10" fill="none" stroke="var(--accent-cyan)" stroke-width="2" />
+                  <circle id="wheel-2" cx="150" cy="235" r="10" fill="none" stroke="var(--accent-cyan)" stroke-width="2" />
+                  <circle id="wheel-3" cx="180" cy="235" r="10" fill="none" stroke="var(--accent-cyan)" stroke-width="2" />
+                  <circle id="wheel-4" cx="210" cy="235" r="10" fill="none" stroke="var(--accent-cyan)" stroke-width="2" />
+                  <circle id="wheel-5" cx="240" cy="235" r="10" fill="none" stroke="var(--accent-cyan)" stroke-width="2" />
+                  <circle id="wheel-6" cx="270" cy="235" r="10" fill="none" stroke="var(--accent-cyan)" stroke-width="2" />
+                  <circle cx="280" cy="235" r="5" fill="none" stroke="var(--accent-cyan)" stroke-width="1.5" />
+                  <circle cx="110" cy="235" r="5" fill="none" stroke="var(--accent-cyan)" stroke-width="1.5" />
+                </g>
+                
+                <!-- Chassis structure -->
+                <path d="M 120 220 L 140 160 L 260 160 L 280 220 Z" fill="rgba(0, 240, 255, 0.1)" stroke="var(--accent-cyan)" stroke-width="2" />
+                
+                <!-- Clickable Solar panel group -->
+                <g id="svg-part-solar" class="clickable-part" cursor="pointer">
+                  <line x1="150" y1="160" x2="250" y2="160" stroke="var(--accent-green)" stroke-width="6" />
+                  <line x1="140" y1="156" x2="260" y2="156" stroke="var(--accent-green)" stroke-width="1" />
+                </g>
+                
+                <!-- Sensors & Arm -->
+                <path d="M 260 180 L 290 170 L 300 150" fill="none" stroke="var(--accent-cyan)" stroke-width="2" />
+                <circle cx="300" cy="150" r="6" fill="var(--accent-orange)" />
+                <text x="315" y="152" fill="var(--text-primary)" font-size="8" font-family="var(--font-display)">CÁMARA IA</text>
+                
+                <!-- Clickable Hangar group -->
+                <g id="svg-part-hangar" class="clickable-part" cursor="pointer">
+                  <rect x="165" y="175" width="70" height="35" rx="5" fill="rgba(255,255,255,0.02)" stroke="var(--text-muted)" stroke-dasharray="3 3" />
+                  <text x="200" y="195" fill="var(--text-muted)" font-size="7" font-family="var(--font-display)" text-anchor="middle">HANGAR DRON</text>
+                </g>
+              </g>
+              
+              <!-- Deployable Drone -->
+              <g class="svg-drone" id="schematic-drone">
+                <!-- Rotors -->
+                <line x1="160" y1="80" x2="200" y2="80" stroke="var(--accent-cyan)" stroke-width="2" />
+                <line x1="200" y1="80" x2="240" y2="80" stroke="var(--accent-cyan)" stroke-width="2" />
+                
+                <line x1="150" y1="75" x2="170" y2="75" stroke="var(--accent-cyan)" stroke-width="1" class="rotor-spin" />
+                <line x1="230" y1="75" x2="250" y2="75" stroke="var(--accent-cyan)" stroke-width="1" class="rotor-spin" />
+                
+                <!-- Drone Body -->
+                <path d="M 175 80 L 185 95 L 215 95 L 225 80 Z" fill="rgba(0, 240, 255, 0.2)" stroke="var(--accent-cyan)" stroke-width="2" />
+                <circle cx="200" cy="95" r="4" fill="var(--accent-cyan)" />
+                
+                <!-- Signal lines/Exploration rays -->
+                <path d="M 190 100 L 160 140 M 210 100 L 240 140" stroke="var(--accent-cyan)" stroke-dasharray="2 2" stroke-width="1" />
+                <text x="200" y="70" fill="var(--accent-cyan)" font-size="8" font-family="var(--font-display)" text-anchor="middle">UAV RECON</text>
+              </g>
+            </svg>
+
+            <!-- Detail overlay card -->
+            <div class="schematic-detail-panel hidden" id="schematic-detail-card">
+              <div class="detail-header">
+                <span class="detail-title" id="detail-part-name">Componente</span>
+                <button class="btn-close" id="btn-close-details"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="detail-body" id="detail-part-desc">
+                Haz clic en un componente para ver las especificaciones.
+              </div>
+            </div>
+            
+            <div class="schematic-labels">
+              <div class="label-item"><span class="bullet cyan"></span> ESP32 & Arduino</div>
+              <div class="label-item"><span class="bullet green"></span> Panel Solar</div>
+              <div class="label-item"><span class="bullet orange"></span> Detección Térmica</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Stats Overview -->
+      <div class="stats-overview-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-microchip"></i></div>
+          <div class="stat-val">3 x ESP32</div>
+          <div class="stat-desc">Arquitectura Distribuida</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-battery-three-quarters"></i></div>
+          <div class="stat-val" id="solar-stat-val">18.4 W</div>
+          <div class="stat-desc">Carga Solar Fotovoltaica</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+          <div class="stat-val">Riesgo Climático</div>
+          <div class="stat-desc">Detección en Tiempo Real</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div class="stat-val">STEAM Metodología</div>
+          <div class="stat-desc">Datos Reales en Aula</div>
+        </div>
+      </div>
+
+      <!-- Feature Deep Dive -->
+      <div class="section-title-wrapper">
+        <h2 class="section-title">Ecosistema Tecnológico de Prevención</h2>
+        <p class="section-subtitle">Cómo opera el sistema robótico para proteger comunidades</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-header-icon"><i class="fa-solid fa-binoculars"></i></div>
+          <h3>Monitoreo Activo Multi-Sensor</h3>
+          <p>Equipado con barómetro, sensores de temperatura, humedad, lluvia y acelerómetro, rastreando variables ambientales clave para prevenir inundaciones, deslaves y caídas estructurales.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-header-icon"><i class="fa-solid fa-crosshairs"></i></div>
+          <h3>Visión por Computadora & IA</h3>
+          <p>Posee 3 cámaras integradas que corren algoritmos inteligentes en paralelo para detectar focos de fuego, evaluar grietas en concreto y prever colapsos de infraestructura vial.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-header-icon"><i class="fa-solid fa-helicopter"></i></div>
+          <h3>Drone Desplegable Automático</h3>
+          <p>Un sistema de elevación mecánica y compuerta deslizable en la parte trasera del robot libera un drone en segundos, ampliando el rango de visión aérea ante terrenos imposibles para el robot.</p>
+        </div>
+      </div>
+
+      <!-- STEAM Segment -->
+      <div class="steam-teaser-wrapper">
+        <div class="steam-teaser-info">
+          <h2>Una Herramienta de Innovación Educativa STEAM</h2>
+          <p>
+            ARGOS no solo monitorea, también educa. Cuando no está en misión, se convierte en un laboratorio móvil STEAM que lleva a los estudiantes datos de exploración reales para que realicen análisis estadísticos, modelado 3D, programación e investigación física.
+          </p>
+          <div class="steam-pillars">
+            <div class="pillar" style="--accent-p: var(--accent-cyan)"><span class="pillar-letter">S</span> Ciencia</div>
+            <div class="pillar" style="--accent-p: var(--accent-blue)"><span class="pillar-letter">T</span> Tecnología</div>
+            <div class="pillar" style="--accent-p: var(--accent-green)"><span class="pillar-letter">E</span> Ingeniería</div>
+            <div class="pillar" style="--accent-p: var(--accent-orange)"><span class="pillar-letter">A</span> Arte</div>
+            <div class="pillar" style="--accent-p: var(--accent-red)"><span class="pillar-letter">M</span> Matemáticas</div>
+          </div>
+          <button class="btn btn-primary" data-target="steam">Ingresar al Aula Virtual</button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 2. COCKPIT OPERATOR DASHBOARD SECTION -->
+    <section id="dashboard" class="tab-content">
+      <!-- Dashboard Sub-Header with Status details -->
+      <div class="cockpit-bar">
+        <div class="cockpit-meta-item">
+          <span class="meta-label">COORDENADAS GPS:</span>
+          <span class="meta-value text-glow-cyan" id="gps-coords">9.9324° N, 84.0792° W</span>
+        </div>
+        <div class="cockpit-meta-item">
+          <span class="meta-label">ALTITUD ROBOT:</span>
+          <span class="meta-value" id="robot-alt">1,120 m s.n.m.</span>
+        </div>
+        <div class="cockpit-meta-item">
+          <span class="meta-label">BATERÍA SISTEMA:</span>
+          <span class="meta-value text-glow-green" id="robot-battery-pct">98% (CARGANDO)</span>
+        </div>
+        <div class="cockpit-meta-item">
+          <span class="meta-label">SEÑAL TELEMETRÍA:</span>
+          <span class="meta-value text-glow-cyan" id="telemetry-latency"><i class="fa-solid fa-wifi"></i> 94 ms</span>
+        </div>
+      </div>
+
+      <!-- Connection Controls Sub-Header -->
+      <div class="cockpit-bar connection-bar">
+        <div class="cockpit-meta-item">
+          <span class="meta-label">MODO OPERACIÓN:</span>
+          <div class="mode-switch">
+            <span id="label-sim" class="active">Simulación Local</span>
+            <label class="switch">
+              <input type="checkbox" id="esp32-toggle">
+              <span class="slider-toggle"></span>
+            </label>
+            <span id="label-real">Enlace ESP32 Real</span>
+          </div>
+        </div>
+        <div class="cockpit-meta-item">
+          <span class="meta-label">DIRECCIÓN IP ROBOT:</span>
+          <input type="text" id="robot-ip" value="192.168.4.1" placeholder="192.168.4.1" class="mini-input">
+        </div>
+        <div class="cockpit-meta-item">
+          <span class="meta-label">RUTA OV2640:</span>
+          <input type="text" id="camera-stream-path" value=":81/stream" placeholder=":81/stream" class="mini-input" style="width: 100px;">
+        </div>
+        <div class="cockpit-meta-item">
+          <span class="meta-label">CÁMARA FEED:</span>
+          <select id="cam-source-select" class="profile-dropdown" style="padding: 2px 6px;">
+            <option value="simulado" selected>Simulación Táctica</option>
+            <option value="esp32">ESP32 (Wi-Fi MJPEG)</option>
+            <option value="usb">Cámara USB (Tipo-C)</option>
+          </select>
+        </div>
+        <div class="cockpit-meta-item hidden" id="cam-device-container">
+          <span class="meta-label">DISPOSITIVO:</span>
+          <select id="cam-device-select" class="profile-dropdown" style="padding: 2px 6px; max-width: 140px;"></select>
+        </div>
+        <div class="cockpit-meta-item">
+          <span class="meta-label">ESTADO CONEXIÓN:</span>
+          <span class="status-badge" id="conn-status"><i class="fa-solid fa-wifi"></i> NODO AISLADO (LOCAL)</span>
+        </div>
+      </div>
+
+      <!-- Main Operator Dashboard Grid -->
+      <div class="dashboard-grid">
+        
+        <!-- LEFT: Camera Feeds Room -->
+        <div class="cockpit-card camera-room-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-video"></i> MONITOREO DE VIDEO EN VIVO (3 CÁMARAS)</h3>
+            <div class="camera-filters-control">
+              <!-- Led Headlight Toggle -->
+              <div class="led-light-control">
+                <span class="toggle-label"><i class="fa-regular fa-lightbulb"></i> Focos LED:</span>
+                <label class="switch">
+                  <input type="checkbox" id="led-light-switch">
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+              <button class="btn-micro active" id="toggle-scanlines"><i class="fa-solid fa-list"></i> Scanlines</button>
+              <button class="btn-micro" id="toggle-static"><i class="fa-solid fa-bolt"></i> Ruido Táctico</button>
+            </div>
+          </div>
+          
+          <div class="camera-grid">
+            <!-- CAMERA 1: Frontal -->
+            <div class="camera-container" id="feed-frontal-container">
+              <div class="camera-badge">CÁM 01 - DELANTERA (ROBOT)</div>
+              <div class="camera-feed-overlay">
+                <div class="feed-crosshair"></div>
+                <div class="telemetry-hud-top">
+                  <span>RES: 1080P</span>
+                  <span>FPS: 30</span>
+                </div>
+                <div class="ai-box hidden" id="ai-box-frontal">
+                  <div class="ai-box-label">GRIETA DETECTADA [94.2%]</div>
+                </div>
+                <div class="scanlines"></div>
+                <div class="static-noise"></div>
+              </div>
+              <canvas class="camera-canvas" id="canvas-cam-frontal"></canvas>
+            </div>
+
+            <!-- CAMERA 2: Trasera -->
+            <div class="camera-container" id="feed-trasera-container">
+              <div class="camera-badge">CÁM 02 - TRASERA (ROBOT)</div>
+              <div class="camera-feed-overlay">
+                <div class="feed-crosshair"></div>
+                <div class="telemetry-hud-top">
+                  <span>RES: 1080P</span>
+                  <span>FPS: 30</span>
+                </div>
+                <div class="ai-box hidden" id="ai-box-trasera">
+                  <div class="ai-box-label">OBSTÁCULO: DESPRENDIMIENTO [89.1%]</div>
+                </div>
+                <div class="scanlines"></div>
+                <div class="static-noise"></div>
+              </div>
+              <canvas class="camera-canvas" id="canvas-cam-trasera"></canvas>
+            </div>
+
+            <!-- CAMERA 3: Dron -->
+            <div class="camera-container" id="feed-drone-container">
+              <div class="camera-badge">CÁM 03 - UAV EXPLORADOR (AÉREA)</div>
+              <div class="camera-feed-overlay offline" id="drone-feed-overlay">
+                <div class="offline-overlay-text">
+                  <i class="fa-solid fa-video-slash"></i>
+                  <span>DRON EN HANGAR</span>
+                  <span class="sub">Despliegue requerido para activar feed</span>
+                </div>
+                <div class="feed-crosshair"></div>
+                <div class="telemetry-hud-top">
+                  <span id="hud-drone-alt">ALT: -- m</span>
+                  <span id="hud-drone-bat">BAT: --%</span>
+                </div>
+                <div class="ai-box hidden" id="ai-box-drone">
+                  <div class="ai-box-label">FOCO DE INCENDIO [98.5%]</div>
+                </div>
+                <div class="scanlines"></div>
+                <div class="static-noise"></div>
+              </div>
+              <canvas class="camera-canvas" id="canvas-cam-drone"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT TOP: Telemetry & Sensors -->
+        <div class="cockpit-card telemetry-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-satellite-dish"></i> VARIABLES AMBIENTALES & TELEMETRÍA</h3>
+            <span class="tag-status">HISTORIAL ACTIVO</span>
+          </div>
+          
+          <div class="telemetry-dashboard-layout">
+            <!-- Row of Gauges & Badges -->
+            <div class="sensor-gauges-row">
+              
+              <!-- Pressure circular gauge -->
+              <div class="gauge-box">
+                <div class="gauge-svg-wrapper">
+                  <svg width="80" height="80" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+                    <circle id="pressure-gauge-ring" cx="50" cy="50" r="40" fill="none" stroke="var(--accent-cyan)" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="60" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="gauge-value" id="gauge-press-val">1013</div>
+                </div>
+                <span class="gauge-label">Presión (hPa)</span>
+              </div>
+
+              <!-- Rain detector -->
+              <div class="indicator-badge-box" id="rain-indicator-box">
+                <div class="box-icon"><i class="fa-solid fa-cloud-showers-water"></i></div>
+                <div class="box-value" id="sensor-rain-val">NO DETECTADA</div>
+                <span class="box-label">Sensor de Lluvia</span>
+              </div>
+
+              <!-- Flame detector -->
+              <div class="indicator-badge-box danger" id="flame-indicator-box">
+                <div class="box-icon blinking-icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                <div class="box-value" id="sensor-flame-val">NORMAL</div>
+                <span class="box-label">Detector de Fuego</span>
+              </div>
+            </div>
+
+            <!-- Chart.js widget for Temp & Humidity -->
+            <div class="telemetry-chart-container">
+              <canvas id="tempHumChart"></canvas>
+            </div>
+
+            <!-- Bottom row: Accelerometer Oscilloscope & GPS radar mapping -->
+            <div class="telemetry-bottom-grid">
+              
+              <!-- Accelerometer Wave Oscilloscope -->
+              <div class="sensor-tile">
+                <span class="tile-title"><i class="fa-solid fa-wave-square"></i> Acelerómetro / Osciloscopio Sísmico</span>
+                <div class="oscilloscope-wrapper">
+                  <canvas id="oscilloscope-canvas" class="oscilloscope-canvas"></canvas>
+                </div>
+                <div class="tilt-metrics">
+                  <div>X: <span id="tilt-x">0°</span></div>
+                  <div>Y: <span id="tilt-y">0°</span></div>
+                </div>
+              </div>
+
+              <!-- GPS Radar mapping -->
+              <div class="sensor-tile">
+                <span class="tile-title"><i class="fa-solid fa-compass"></i> Radar de Posición GPS</span>
+                <div class="radar-hud-wrapper">
+                  <div class="radar-grid">
+                    <div class="radar-sweep"></div>
+                    <div class="radar-ping" id="radar-pos-ping"></div>
+                    <div class="radar-ring r1"></div>
+                    <div class="radar-ring r2"></div>
+                    <div class="radar-ring r3"></div>
+                  </div>
+                </div>
+                <div class="radar-coordinates">
+                  <span id="radar-lat">N 9.93242</span> | <span id="radar-lon">W 84.07921</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT BOTTOM: Terrestrial & Aerial Flight Control Panels -->
+        <div class="cockpit-card flight-card" id="flight-control-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-cubes"></i> MANDOS DE NAVEGACIÓN Y DESPLIEGUE DRON</h3>
+            <span class="system-level" id="flight-system-status">SISTEMA LOCK</span>
+          </div>
+          
+          <!-- Lock Overlay -->
+          <div class="access-lock-overlay" id="lock-overlay-flight">
+            <div class="lock-content">
+              <div class="lock-icon-glow"><i class="fa-solid fa-user-shield"></i></div>
+              <h4>ACCESO OPERADOR REQUERIDO</h4>
+              <p>Inicia sesión como <strong>Operador Autorizado</strong> para desbloquear y controlar la navegación terrestre y aérea del robot.</p>
+              <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+            </div>
+          </div>
+
+          <div class="flight-control-layout">
+            
+            <!-- Left Panel: Terrestrial Locomotion (Tracks) -->
+            <div class="locomotive-console-panel">
+              <span class="ctrl-group-label"><i class="fa-solid fa-truck-monster"></i> Tracción Robot (Orugas)</span>
+              
+              <div class="loco-joystick-grid">
+                <div class="loco-joystick-ring">
+                  <button class="joy-btn up" id="btn-loco-forward"><i class="fa-solid fa-arrow-up"></i></button>
+                  <button class="joy-btn left" id="btn-loco-left"><i class="fa-solid fa-arrow-left"></i></button>
+                  <button class="joy-btn right" id="btn-loco-right"><i class="fa-solid fa-arrow-right"></i></button>
+                  <button class="joy-btn down" id="btn-loco-back"><i class="fa-solid fa-arrow-down"></i></button>
+                  <div class="joy-core green-glow"></div>
+                </div>
+                
+                <div class="loco-speed-control">
+                  <span class="mini-label">Motor 12V</span>
+                  <input type="range" id="loco-speed-slider" class="speed-slider" min="1" max="3" value="1" step="1">
+                  <div class="speed-ticks">
+                    <span>1x</span>
+                    <span>2x</span>
+                    <span>3x</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="console-screen" id="takeoff-logs">
+                <div class="log-line text-muted">[SISTEMA] Sistema cargado. Orugas 12V e iluminaciones calibradas.</div>
+              </div>
+            </div>
+
+            <!-- Right Panel: Hangar Takeoff & Aerial Drone Flight Controls -->
+            <div class="takeoff-console-panel">
+              <span class="ctrl-group-label"><i class="fa-solid fa-plane-departure"></i> Reconocimiento Aéreo (Dron)</span>
+              <button class="btn btn-primary btn-glow btn-block btn-micro" id="btn-pre-flight">
+                <i class="fa-solid fa-rocket"></i> PREPARAR DESPEGUE
+              </button>
+
+              <div class="manual-controls-panel locked" id="manual-controls-card">
+                <div class="lock-overlay" id="manual-controls-lock">
+                  <i class="fa-solid fa-lock"></i>
+                  <span>DESPLEGAR DRON PARA ACTIVAR</span>
+                </div>
+                
+                <div class="controls-joystick-grid">
+                  <!-- Virtual Joystick (Directional Arrow buttons) -->
+                  <div class="joystick-wrapper">
+                    <div class="joystick-ring">
+                      <button class="joy-btn up" id="ctrl-forward"><i class="fa-solid fa-caret-up"></i></button>
+                      <button class="joy-btn left" id="ctrl-left"><i class="fa-solid fa-caret-left"></i></button>
+                      <button class="joy-btn right" id="ctrl-right"><i class="fa-solid fa-caret-right"></i></button>
+                      <button class="joy-btn down" id="ctrl-back"><i class="fa-solid fa-caret-down"></i></button>
+                      <div class="joy-core"></div>
+                    </div>
+                  </div>
+
+                  <!-- Vertical Flight controls -->
+                  <div class="altitude-control-wrapper">
+                    <input type="range" id="drone-alt-slider" class="ver-slider" min="1" max="30" value="5" step="0.5">
+                    <div class="alt-slider-value"><span id="slider-alt-val">5.0</span> m</div>
+                  </div>
+
+                  <!-- Emergency controls -->
+                  <div class="quick-commands">
+                    <button class="btn btn-warning btn-block btn-micro" id="btn-rtl"><i class="fa-solid fa-house-chimney"></i> Volver a Casa (RTL)</button>
+                    <button class="btn btn-danger btn-block btn-micro" id="btn-land"><i class="fa-solid fa-down-long"></i> Aterrizar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- 3. STEAM EDUCATION HUB SECTION -->
+    <section id="steam" class="tab-content">
+      
+      <!-- Role Customizer Information Bar -->
+      <div class="steam-intro-bar">
+        <div class="steam-intro-text">
+          <h2><i class="fa-solid fa-graduation-cap"></i> Aula de Ciencia y Exploración STEAM</h2>
+          <p>Esta sección transforma las misiones de monitoreo en el campo en actividades prácticas interactivas alineadas a la metodología STEAM.</p>
+        </div>
+        <div class="steam-badge-role">
+          <i class="fa-solid fa-user-graduate"></i> Módulo Activo: <span id="steam-profile-display">Estudiante</span>
+        </div>
+      </div>
+
+      <!-- STEAM Sub-Navigation tabs -->
+      <div class="steam-nav-tabs">
+        <button class="steam-sub-btn active" data-subtab="labs"><i class="fa-solid fa-flask"></i> Laboratorios de Ingeniería</button>
+        <button class="steam-sub-btn" data-subtab="anatomy"><i class="fa-solid fa-microchip"></i> Explorador de Hardware (Rayos X)</button>
+        <button class="steam-sub-btn" data-subtab="theory"><i class="fa-solid fa-book"></i> Fundamentos y Documentación</button>
+        <button class="steam-sub-btn" data-subtab="games"><i class="fa-solid fa-gamepad"></i> Videojuegos y Desafíos</button>
+      </div>
+
+      <!-- SUB-TAB 1: Engineering Laboratories -->
+      <div class="steam-sub-content active" id="steam-sub-labs">
+        <!-- Core STEAM layout container -->
+        <div class="steam-grid-layout">
+          
+          <!-- Tabbed view based on profile -->
+          <!-- STUDENT VIEWS -->
+          <div class="steam-interactive-card" id="student-module">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-flask"></i> Laboratorios Virtuales de Exploración</h3>
+              <span class="tag-status" id="student-labs-progress">COMPLETADOS: 0/3</span>
+            </div>
+            
+            <!-- Lock Overlay -->
+            <div class="access-lock-overlay" id="lock-overlay-labs">
+              <div class="lock-content">
+                <div class="lock-icon-glow"><i class="fa-solid fa-user-graduate"></i></div>
+                <h4>AULA STEAM RESTRINGIDA</h4>
+                <p>Se requiere acceso como <strong>Estudiante STEAM</strong> o <strong>Docente</strong> para realizar simulaciones e interactuar con los laboratorios.</p>
+                <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+              </div>
+            </div>
+
+            <div class="labs-showcase">
+              <!-- Lab 1: Climate Prediction -->
+              <div class="lab-card">
+                <div class="lab-card-header">
+                  <h4>Laboratorio 1: Análisis de Presión y Lluvias</h4>
+                  <span class="lab-badge">Física / Matemáticas</span>
+                </div>
+                <p>Analiza el comportamiento barométrico antes de un aguacero e identifica patrones predictivos.</p>
+                
+                <div class="lab-interactive-area">
+                  <div class="lab-controls">
+                    <button class="btn-micro btn-glow" id="btn-load-lab-data">Cargar Datos de Misión 04</button>
+                    <span class="status-indicator-inline text-muted" id="lab-data-status">Sin cargar</span>
+                  </div>
+                  
+                  <div class="lab-mini-chart-wrapper">
+                    <canvas id="labMiniChart"></canvas>
+                  </div>
+
+                  <div class="lab-quiz-box hidden" id="lab-quiz">
+                    <p class="quiz-question"><strong>Pregunta:</strong> Al observar los datos, ¿qué fenómeno ocurre en la presión barométrica justo antes de que el sensor detecte agua (lluvia)?</p>
+                    <div class="quiz-options">
+                      <label class="quiz-option">
+                        <input type="radio" name="quiz-ans" value="a"> La presión atmosférica sube rápidamente.
+                      </label>
+                      <label class="quiz-option">
+                        <input type="radio" name="quiz-ans" value="b"> La presión atmosférica desciende drásticamente.
+                      </label>
+                      <label class="quiz-option">
+                        <input type="radio" name="quiz-ans" value="c"> La presión se mantiene constante sin cambios.
+                      </label>
+                    </div>
+                    <button class="btn btn-secondary btn-micro" id="btn-submit-quiz">Enviar Respuesta</button>
+                    <div class="quiz-feedback" id="quiz-feedback-box"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lab 2: Drone Flight Simulator -->
+              <div class="lab-card">
+                <div class="lab-card-header">
+                  <h4>Laboratorio 2: Simulación de Estabilidad del Drone</h4>
+                  <span class="lab-badge">Tecnología / Ingeniería</span>
+                </div>
+                <p>Controla las RPM de los rotores del dron en condiciones de viento fuerte. ¡Mantén el dron en la zona verde sin tocar las líneas de advertencia!</p>
+                
+                <div class="lab-interactive-area flight-sim-wrapper">
+                  <div class="sim-view-pane">
+                    <div class="sim-wind-indicator">VIENTO: <span id="sim-wind-speed">15</span> km/h <i class="fa-solid fa-wind"></i></div>
+                    <div class="sim-target-zone">ZONA DE MUESTREO</div>
+                    <!-- Simulated drone graphic element -->
+                    <div class="sim-drone" id="sim-drone-element">
+                      <div class="sim-drone-prop-l"></div>
+                      <div class="sim-drone-prop-r"></div>
+                      <div class="sim-drone-body"><i class="fa-solid fa-helicopter"></i></div>
+                    </div>
+                    <div class="sim-warning-line top"></div>
+                    <div class="sim-warning-line bottom"></div>
+                  </div>
+
+                  <div class="sim-controls-pane">
+                    <div class="rpm-dial-wrapper">
+                      <label for="rpm-slider">RPM Rotores (%):</label>
+                      <input type="range" id="rpm-slider" min="0" max="100" value="50">
+                      <span id="rpm-display-val">50%</span>
+                    </div>
+                    <div class="sim-actions">
+                      <button class="btn btn-primary btn-micro" id="btn-start-sim">Iniciar Simulación</button>
+                      <button class="btn btn-danger btn-micro" id="btn-reset-sim">Resetear</button>
+                    </div>
+                    <div class="sim-status-msg" id="sim-feedback-msg">Listo para vuelo.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lab 3: AI Model Trainer (New V2 Addition) -->
+              <div class="lab-card">
+                <div class="lab-card-header">
+                  <h4>Laboratorio 3: Entrenador de Red Neuronal (Detección de Grietas)</h4>
+                  <span class="lab-badge">Ciencia / Inteligencia Artificial</span>
+                </div>
+                <p>Clasifica las muestras fotográficas de concreto capturadas por ARGOS para entrenar el modelo de visión del robot en la detección estructural.</p>
+                
+                <div class="lab-interactive-area ai-trainer-wrapper">
+                  <div class="ai-trainer-column">
+                    <div class="crack-sample-box">
+                      <span class="sample-label">MUESTRA DE IMAGEN</span>
+                      <canvas id="canvas-ai-crack" width="160" height="120"></canvas>
+                    </div>
+                    <div class="ai-trainer-controls">
+                      <span class="desc-question">Clasificación:</span>
+                      <div class="ai-action-buttons">
+                        <button class="btn btn-secondary btn-micro" id="btn-ai-sano">Sano</button>
+                        <button class="btn btn-secondary btn-micro" id="btn-ai-leve">Fisura Leve</button>
+                        <button class="btn btn-secondary btn-micro" id="btn-ai-grave">Grieta Grave</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="ai-trainer-dashboard">
+                    <div class="ai-metric-panel">
+                      <span class="metric-lbl">Precisión de Red Neuronal</span>
+                      <div class="metric-meter-container">
+                        <div class="metric-meter-fill" id="ai-accuracy-bar" style="width: 0%"></div>
+                      </div>
+                      <div class="metric-percent" id="ai-accuracy-pct">0%</div>
+                    </div>
+                    
+                    <div class="ai-feedback-box" id="ai-training-feedback">
+                      Entrena el modelo clasificando la muestra de la izquierda.
+                    </div>
+
+                    <!-- Achievement Certificate Badge -->
+                    <div class="ai-certificate-badge hidden" id="ai-cert-badge">
+                      <div class="badge-icon-glowing"><i class="fa-solid fa-award"></i></div>
+                      <div class="badge-texts">
+                        <h5>Certificado de IA ARGOS</h5>
+                        <span>Modelo entrenado al 100% con éxito</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEACHER VIEWS (Conditional UI) -->
+          <div class="steam-interactive-card" id="teacher-module">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-folder-open"></i> Consola del Docente</h3>
+              <span class="tag-status">SESIÓN DE AULA ACTIVA</span>
+            </div>
+            
+            <!-- Lock Overlay -->
+            <div class="access-lock-overlay" id="lock-overlay-teacher">
+              <div class="lock-content">
+                <div class="lock-icon-glow"><i class="fa-solid fa-chalkboard-user"></i></div>
+                <h4>ACCESO DOCENTE REQUERIDO</h4>
+                <p>Se requiere acceso con perfil de <strong>Docente</strong> para interactuar con las herramientas de exportación de telemetría y guías didácticas.</p>
+                <button class="btn btn-primary btn-micro btn-glow btn-lock-action-trigger">INICIAR SESIÓN</button>
+              </div>
+            </div>
+
+            <div class="teacher-tools">
+              <div class="tool-section">
+                <h4>Exportar Datos de Monitoreo para Proyectos en el Aula</h4>
+                <p>Genera archivos con variables físicas recolectadas para realizar análisis en Excel, Python o GeoGebra.</p>
+                <div class="export-btn-group">
+                  <button class="btn btn-secondary btn-micro" id="btn-export-csv"><i class="fa-solid fa-file-csv"></i> Exportar Telemetría (CSV)</button>
+                  <button class="btn btn-secondary btn-micro" id="btn-export-json"><i class="fa-solid fa-file-code"></i> Exportar Telemetría (JSON)</button>
+                </div>
+                <div class="export-feedback" id="export-msg"></div>
+              </div>
+
+              <div class="tool-section">
+                <h4>Guías de Actividades STEAM Desarrolladas</h4>
+                <div class="guides-grid">
+                  <div class="guide-item">
+                    <div class="guide-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="guide-details">
+                      <h5>Actividad 1: Correlaciones Atmosféricas</h5>
+                      <span>Guía para el análisis de tormentas y frentes fríos.</span>
+                    </div>
+                  </div>
+                  <div class="guide-item">
+                    <div class="guide-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="guide-details">
+                      <h5>Actividad 2: Estructuras y Acelerometría</h5>
+                      <span>Monitoreo de sismicidad estructural con osciloscopio virtual.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Project Vision, details & Info Cards -->
+          <div class="steam-sidebar-info">
+            <div class="cockpit-card">
+              <div class="card-header">
+                <h3><i class="fa-solid fa-circle-info"></i> Impacto Social & Visión</h3>
+              </div>
+              <div class="sidebar-text-block">
+                <h4>Monitoreo Preventivo</h4>
+                <p>ARGOS genera una cultura de gestión del riesgo y resiliencia comunitaria. Permite registrar factores de riesgo ambientales críticos antes de que se tornen en emergencias.</p>
+                
+                <h4>Exploración sin Exposición</h4>
+                <p>Al explorar grietas, puentes y áreas afectadas por desastres con cámaras de alta resolución en un robot terrestre u orugas robustas, se resguarda la integridad de rescatistas y civiles.</p>
+
+                <h4>Formación STEAM</h4>
+                <p>Promueve vocaciones científicas y tecnológicas al integrar problemas del mundo real en las misiones de aprendizaje, de manera interactiva y lúdica.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SUB-TAB 2: Interactive X-Ray Anatomy Explorer -->
+      <div class="steam-sub-content" id="steam-sub-anatomy">
+        <div class="steam-interactive-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-microchip"></i> Vista de Rayos X: Arquitectura de Hardware</h3>
+            <span class="tag-status">DIAGRAMA ACTIVO</span>
+          </div>
+          <div class="blueprint-card">
+            <div style="padding: 20px;">
+              <div class="esquema-argos">
+                <div class="blueprint-cable blueprint-cable-1"></div>
+                <div class="blueprint-cable blueprint-cable-2"></div>
+                
+                <div class="comp-node comp-motor-l" data-comp="motor">
+                  <i class="fa-solid fa-gear fa-spin" style="margin-bottom: 80px; --fa-animation-duration: 4s;"></i>
+                  <i class="fa-solid fa-truck-monster"></i>
+                </div>
+                <div class="comp-node comp-motor-r" data-comp="motor">
+                  <i class="fa-solid fa-gear fa-spin" style="margin-bottom: 80px; --fa-animation-duration: 4s; animation-direction: reverse;"></i>
+                  <i class="fa-solid fa-truck-monster"></i>
+                </div>
+                
+                <div class="comp-node comp-pir" data-comp="pir">
+                  <i class="fa-solid fa-satellite-dish" style="font-size: 1.5rem; margin-bottom: 5px; color: var(--accent-red);"></i>
+                  <span style="font-size: 8px; font-weight: 500;">PIR / Ultrasonido</span>
+                </div>
+                
+                <div class="comp-node comp-esp32" data-comp="esp32">
+                  <i class="fa-solid fa-microchip" style="font-size: 2.5rem; margin-bottom: 10px; color: var(--accent-cyan); text-shadow: 0 0 15px var(--accent-cyan-glow);"></i>
+                  <span style="font-weight: 700; letter-spacing: 1px; font-size: 10px;">ESP32 CORE</span>
+                  <span style="font-size: 8px; color: var(--text-muted); margin-top: 3px;">Wi-Fi / Bluetooth</span>
+                </div>
+                
+                <div class="comp-node comp-mpu" data-comp="mpu">
+                  <i class="fa-solid fa-cube" style="font-size: 1.5rem; margin-bottom: 5px; color: var(--accent-orange);"></i>
+                  <span style="font-size: 9px; font-weight: 500;">MPU-6050</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cockpit-card" style="padding: 25px; border-color: rgba(0,240,255,0.15);">
+              <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                <h3><i class="fa-solid fa-radar"></i> Panel del Escáner Rayos X</h3>
+              </div>
+              <div id="blueprint-info-box" style="line-height: 1.6; font-size: 12px; color: var(--text-secondary);">
+                <div style="text-align: center; padding: 30px 0;">
+                  <i class="fa-solid fa-hand-pointer" style="font-size: 36px; margin-bottom: 15px; opacity: 0.3; color: var(--accent-cyan);"></i>
+                  <h4 style="font-family: var(--font-display); color: #fff; margin-bottom: 5px;">Escáner en Espera</h4>
+                  <p style="font-size: 11px; max-width: 260px; margin: 0 auto; color: var(--text-muted);">Pasa el cursor o pulsa sobre los componentes del diagrama de la izquierda para interceptar sus especificaciones técnicas y telemetrías.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 3: Fundamentos y Documentación -->
+      <div class="steam-sub-content" id="steam-sub-theory">
+        <div class="steam-interactive-card" style="border-color: rgba(239, 68, 68, 0.15);">
+          <div class="card-header" style="border-bottom: 1.5px solid rgba(239, 68, 68, 0.15); padding-bottom: 15px; margin-bottom: 20px;">
+            <h3><i class="fa-solid fa-book"></i> Ecosistema ARGOS: Fundamentos y Base Teórica</h3>
+            <span class="tag-status" style="border-color: rgba(239,68,68,0.3); color: var(--accent-red);">DOCUMENTACIÓN OFICIAL</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr; gap: 25px; line-height: 1.7;">
+            
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent-red);">
+              <h4 style="color: #fff; font-family: var(--font-display); margin-bottom: 10px; font-size: 13px;">
+                <i class="fa-solid fa-robot" style="color: var(--accent-red); margin-right: 8px;"></i> 1. DESCRIPCIÓN DEL PROYECTO
+              </h4>
+              <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                <strong>TEOS / ARGOS (Tecnología Emergente Orientada a la Seguridad)</strong> es un asistente robótico diseñado para convivir en las zonas urbanas y centros educativos, resguardando a los vecinos y enseñando sobre prevención de riesgos climáticos e inerciales.
+              </p>
+              <ul style="padding-left: 20px; font-size: 11px; color: var(--text-muted); margin: 0;">
+                <li style="margin-bottom: 5px;">El robot realiza patrullajes autónomos y controlados mediante chips ESP32.</li>
+                <li style="margin-bottom: 5px;">Registra video en tiempo real e interactúa con el entorno mediante interfaces de voz y luces.</li>
+                <li>Frente a desastres naturales (lluvias extremas, sismos o fuegos), el robot alerta y guía a la población.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 style="color: #fff; font-family: var(--font-display); margin-bottom: 12px; font-size: 13px;">
+                <i class="fa-solid fa-bullseye" style="color: var(--accent-red); margin-right: 8px;"></i> 2. OBJETIVOS DE LA PROPUESTA
+              </h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; font-size: 11px; color: var(--text-secondary);">
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                  <strong style="color: #fff; display: block; margin-bottom: 5px;"><i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i> Optimizar la Seguridad</strong>
+                  Monitoreo predictivo de deslaves e inundaciones mediante sensores barométricos, de humedad, giroscopio e infrarrojo de flamas.
+                </div>
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                  <strong style="color: #fff; display: block; margin-bottom: 5px;"><i class="fa-solid fa-hands-asl-interpreting" style="color:var(--accent-green);"></i> Promover la Inclusión</strong>
+                  Traducción de sirenas acústicas a espectros de luces estroboscópicas y alertas visuales para personas con discapacidades sensoriales.
+                </div>
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                  <strong style="color: #fff; display: block; margin-bottom: 5px;"><i class="fa-solid fa-solar-panel" style="color:var(--accent-orange);"></i> Continuidad Energética</strong>
+                  Operabilidad garantizada mediante carga solar fotovoltaica y "Modo Apagón" con faro lumínico de alta intensidad de 48 horas.
+                </div>
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                  <strong style="color: #fff; display: block; margin-bottom: 5px;"><i class="fa-solid fa-tower-broadcast" style="color:var(--accent-red);"></i> Geolocalización de Crisis</strong>
+                  Transmisión automática de coordenadas GPS satelitales a centros de Serenazgo, Bomberos y Policía para acortar tiempos de rescate.
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="color: #fff; font-family: var(--font-display); margin-bottom: 12px; font-size: 13px;">
+                <i class="fa-solid fa-layer-group" style="color: var(--accent-red); margin-right: 8px;"></i> 3. PILARES TEÓRICOS DE DISEÑO
+              </h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; font-size: 11px;">
+                <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border-top: 3px solid var(--accent-cyan);">
+                  <h5 style="color: var(--accent-cyan); font-family: var(--font-display); margin-bottom: 8px; font-size: 11px;">INCLUSIÓN RADICAL</h5>
+                  Los desastres no discriminan, pero las alertas sonoras sí. ARGOS traduce alertas auditivas a patrones estroboscópicos y texto urgente para que la información de evacuación alcance a personas sordas o de habla limitada.
+                </div>
+                <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border-top: 3px solid var(--accent-green);">
+                  <h5 style="color: var(--accent-green); font-family: var(--font-display); margin-bottom: 8px; font-size: 11px;">AUTOSOSTENIBILIDAD</h5>
+                  El colapso de las redes eléctricas es el primer síntoma de un desastre. El módulo de energía solar con controlador de carga le permite al robot funcionar de manera autónoma como una baliza cívica de emergencia en el campo.
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 12px; border-top: 3px solid var(--accent-orange);">
+                  <h5 style="color: var(--accent-orange); font-family: var(--font-display); margin-bottom: 8px; font-size: 11px;">INNOVACIÓN LOCAL</h5>
+                  Programado bajo código abierto en ESP32, demuestra que las soluciones a las crisis estructurales de la comunidad no requieren presupuestos exorbitantes, fomentando el desarrollo tecnológico desde los colegios.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 4: Videojuegos y Desafíos Didácticos -->
+      <div class="steam-sub-content" id="steam-sub-games">
+        <div class="steam-interactive-card" style="border-color: rgba(46, 196, 182, 0.15);">
+          <div class="card-header" style="border-bottom: 1.5px solid rgba(46, 196, 182, 0.15); padding-bottom: 15px; margin-bottom: 20px;">
+            <h3><i class="fa-solid fa-gamepad"></i> Terminal Arcade STEAM: Desafíos Interactivos</h3>
+            <span class="tag-status" style="border-color: rgba(46,196,182,0.3); color: var(--accent-green);">JUEGOS EDUCATIVOS</span>
+          </div>
+
+          <!-- Interactive Workspace for Games -->
+          <div id="arcade-workspace">
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 15px 0;">
+              <!-- Trivia Card Selector -->
+              <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(0, 240, 255, 0.15); cursor: pointer; transition: all 0.3s;" id="play-trivia-btn" onclick="startArcadeGame('trivia')">
+                <i class="fa-solid fa-bolt" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-cyan-glow);"></i>
+                <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Trivia de Prevención</h3>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Pon a prueba tus reflejos cognitivos y tus conocimientos sobre el hardware y protocolos ante riesgos.</p>
+                <button class="btn btn-secondary btn-micro btn-block">Jugar Trivia</button>
+              </div>
+
+              <!-- Sopa de Letras Card Selector -->
+              <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(245, 158, 11, 0.15); cursor: pointer; transition: all 0.3s;" id="play-sopa-btn" onclick="startArcadeGame('sopa')">
+                <i class="fa-solid fa-border-all" style="font-size: 3rem; color: var(--accent-orange); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-orange);"></i>
+                <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Sopa de Letras Cívica</h3>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Descubre las piezas mecánicas y los elementos del kit de rescate camuflados en el tablero de datos.</p>
+                <button class="btn btn-secondary btn-micro btn-block" style="border-color: var(--accent-orange); color: var(--accent-orange);">Buscar Palabras</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Futuristic Footer -->
+  <footer class="main-footer">
+    <p>© 2026 Ecosistema Tecnológico ARGOS. Todos los derechos reservados. Diseñado para la resiliencia comunitaria y la formación STEAM.</p>
+  </footer>
+
+  <!-- Floating AI Assistant Chatbot -->
+  <div class="chatbot-wrapper">
+    <button class="chatbot-toggle-btn" id="chatbot-toggle" title="Asistente de IA ARGOS">
+      <i class="fa-solid fa-robot"></i>
+      <span class="pulse-ring"></span>
+    </button>
+    
+    <div class="chatbot-container hidden" id="chatbot-container">
+      <div class="chatbot-header">
+        <div class="chatbot-title">
+          <i class="fa-solid fa-circle-nodes"></i> Asistente de IA ARGOS
+        </div>
+        <button class="chatbot-close-btn" id="chatbot-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="chatbot-messages" id="chatbot-messages">
+        <div class="chat-msg ai">
+          ¡Hola! Soy el asistente virtual de ARGOS. Estoy conectado a la telemetría en vivo del robot. Pregúntame lo que quieras sobre los sensores, la velocidad de las orugas, el estado del dron o los laboratorios STEAM. ¿Qué deseas saber?
+        </div>
+      </div>
+      <div class="chatbot-input-bar">
+        <input type="text" id="chatbot-input" placeholder="Pregunta algo al robot..." autocomplete="off">
+        <button id="chatbot-send-btn" class="btn btn-primary btn-micro"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modales de Autenticación Holográficos -->
+  <!-- Modal de Inicio de Sesión -->
+  <div class="auth-modal-overlay hidden" id="login-modal-overlay">
+    <div class="auth-modal-card">
+      <div class="auth-modal-header">
+        <h3 class="auth-modal-title"><i class="fa-solid fa-shield-halved text-glow-cyan"></i> ACCESO AL SISTEMA</h3>
+        <button class="btn-close-modal" id="btn-close-login"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="auth-modal-body">
+        <div class="auth-brand-area">
+          <img src="argos_logo.jpg" class="auth-modal-logo" alt="ARGOS Logo">
+          <p class="auth-brand-subtitle">SISTEMA MULTI-AGENTE AUTÓNOMO</p>
+        </div>
+        <form id="login-form" onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <label for="login-username"><i class="fa-solid fa-user"></i> Usuario</label>
+            <input type="text" id="login-username" placeholder="Ingresa tu usuario" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="login-password"><i class="fa-solid fa-lock"></i> Contraseña</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('login-password', this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="auth-error-msg hidden" id="login-error-msg">Usuario o contraseña incorrectos.</div>
+          <button type="submit" class="btn btn-primary btn-block btn-glow" id="btn-submit-login">
+            <i class="fa-solid fa-right-to-bracket"></i> INGRESAR AL NODO
+          </button>
+        </form>
+        <div class="auth-modal-footer">
+          ¿No tienes una cuenta? <a href="#" id="link-to-register">Regístrate aquí</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Registro -->
+  <div class="auth-modal-overlay hidden" id="register-modal-overlay">
+    <div class="auth-modal-card">
+      <div class="auth-modal-header">
+        <h3 class="auth-modal-title"><i class="fa-solid fa-user-plus text-glow-green"></i> REGISTRO DE USUARIO</h3>
+        <button class="btn-close-modal" id="btn-close-register"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="auth-modal-body">
+        <div class="auth-brand-area">
+          <img src="argos_logo.jpg" class="auth-modal-logo" alt="ARGOS Logo">
+          <p class="auth-brand-subtitle">SISTEMA MULTI-AGENTE AUTÓNOMO</p>
+        </div>
+        <form id="register-form" onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <label for="register-fullname"><i class="fa-solid fa-signature"></i> Nombre Completo</label>
+            <input type="text" id="register-fullname" placeholder="Nombre y apellido" required>
+          </div>
+          <div class="form-group">
+            <label for="register-username"><i class="fa-solid fa-user"></i> Nombre de Usuario</label>
+            <input type="text" id="register-username" placeholder="Ej. operador_carlos" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="register-role"><i class="fa-solid fa-id-card"></i> Rol Asignado</label>
+            <select id="register-role" class="auth-dropdown" required>
+              <option value="publico">Público General (Solo Lectura)</option>
+              <option value="operador">Operador Autorizado (Consola & Dron)</option>
+              <option value="estudiante">Estudiante STEAM (Virtual Labs)</option>
+              <option value="docente">Docente (Exportación & Guías)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="register-password"><i class="fa-solid fa-lock"></i> Contraseña</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="register-password" placeholder="Crear contraseña" required autocomplete="new-password">
+              <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('register-password', this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="register-confirm-password"><i class="fa-solid fa-shield"></i> Confirmar Contraseña</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="register-confirm-password" placeholder="Repite la contraseña" required autocomplete="new-password">
+              <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('register-confirm-password', this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="auth-error-msg hidden" id="register-error-msg">Las contraseñas no coinciden.</div>
+          <button type="submit" class="btn btn-primary btn-block btn-glow" id="btn-submit-register" style="background: var(--accent-green); border-color: var(--accent-green); box-shadow: 0 0 15px var(--accent-green-glow);">
+            <i class="fa-solid fa-user-check"></i> CREAR CUENTA
+          </button>
+        </form>
+        <div class="auth-modal-footer">
+          ¿Ya tienes cuenta? <a href="#" id="link-to-login">Inicia sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code Script imports -->
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
