@@ -2319,6 +2319,31 @@ document.addEventListener('DOMContentLoaded', () => {
       return "✅ <strong>Sistema Seguro:</strong> Todos los sensores indican que no hay situaciones de peligro o incendios activos en el perímetro en este momento.";
     }
 
+    // Conversational replies: OK / Bacan / Affirmations
+    if (clean === 'ok' || clean === 'bacan' || clean === 'perfecto' || clean === 'bien' || clean === 'bueno' || clean === 'dale' || clean === 'chevere' || clean === 'excelente') {
+      return "¡Excelente! Si necesitas auditar algún componente (como el ESP32 o el barómetro), conocer el estado del dron o divertirte en el Arcade, avísame. ¡ARGOS está a tu servicio!";
+    }
+
+    // Conversational replies: No sé / No entiendo
+    if (clean.includes('no se') || clean.includes('no entiendo') || clean.includes('no lo se') || clean.includes('ni idea')) {
+      return "No te preocupes, estoy programado para asistirte paso a paso. Puedes escribirme consultas directas sobre el robot, por ejemplo: <em>'¿Qué es la IA?'</em> o <em>'¿Para qué sirve el barómetro?'</em>. ¡Inténtalo!";
+    }
+
+    // Conversational replies: Por qué
+    if (clean.includes('por que') || clean.includes('porque')) {
+      return "ARGOS fue diseñado para reducir los tiempos de respuesta ante inundaciones o incendios en comunidades. Usamos hardware integrado porque recolecta datos meteorológicos y sísmicos en el acto. ¿Te interesa saber por qué usamos el sensor MPU6050 o el DHT22?";
+    }
+
+    // Conversational replies: Qué sabes / Qué haces
+    if (clean.includes('que sabes') || clean.includes('que conoces') || clean.includes('que haces') || clean.includes('que puedes hacer')) {
+      return "Tengo conocimiento avanzado sobre la plataforma ARGOS. Sé diagnosticar la telemetría en tiempo real, explicarte el uso de microcontroladores (ESP32, puente H, bus I2C, modulación PWM, baterías LiFePO4) y guiarte a través del Aula STEAM.";
+    }
+
+    // Conversational replies: Qué eres / Quién eres
+    if (clean.includes('que eres') || clean.includes('dime que eres') || clean.includes('quien eres') || clean.includes('argos') || clean.includes('robot') || clean.includes('plataforma')) {
+      return "Soy el <strong>asistente de Inteligencia Artificial</strong> de la plataforma ARGOS, un ecosistema multi-agente terrestre y aéreo diseñado para la prevención civil de riesgos ambientales y la educación STEAM.";
+    }
+
     // Hello/Greetings
     if (clean.includes('hola') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes') || clean.includes('hey')) {
       return "¡Hola! Estoy listo para auditar el sistema. Pregúntame por sensores, el estado del clima, el estado del robot, los juegos o las lecciones del aula STEAM.";
