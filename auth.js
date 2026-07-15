@@ -132,6 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const licenseModal = document.getElementById('license-modal-overlay');
   const privacyModal = document.getElementById('privacy-modal-overlay');
   
+  const btnOpenLicense = document.getElementById('btn-open-license');
+  const btnOpenPrivacy = document.getElementById('btn-open-privacy');
+  
   const btnCloseLogin = document.getElementById('btn-close-login');
   const btnCloseRegister = document.getElementById('btn-close-register');
   const btnCloseLicense = document.getElementById('btn-close-license');
