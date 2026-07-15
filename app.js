@@ -2063,62 +2063,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getChatbotResponse(input) {
-    const clean = input.toLowerCase().trim();
+    let clean = input.toLowerCase().trim();
+    // Normalize punctuation
+    clean = clean.replace(/[?¿!¡.,:;()\-+_]/g, " ");
+    // Normalize accents
+    clean = clean.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // Trim and collapse multiple spaces
+    clean = clean.replace(/\s+/g, " ").trim();
+
     const esp32Connected = robotSocket && robotSocket.readyState === WebSocket.OPEN;
+    const words = clean.split(' ');
 
-    // Arduino
-    if (clean.includes('arduino')) {
-      return "<strong>Arduino</strong> es una plataforma de hardware y software libre. En el proyecto ARGOS, usamos microcontroladores avanzados (como el ESP32 Devkit V1) programados bajo el entorno de Arduino para procesar los datos de los sensores y mover los motores de las orugas.";
-    }
-    // IA / Inteligencia Artificial
-    if (clean.includes('ia') || clean.includes('inteligencia artificial') || clean.includes('visión por computadora') || clean.includes('vision por computadora') || clean.includes('computadora')) {
-      return "La <strong>Inteligencia Artificial (IA)</strong> en ARGOS ejecuta modelos de visión artificial en tiempo real. Se utiliza para clasificar la gravedad de grietas en pistas y concreto (Sano, Leve, Grave) y detectar amenazas de fuego mediante las cámaras de exploración.";
-    }
-    // APSTI
-    if (clean.includes('apsti') || clean.includes('carrera') || clean.includes('servicios ti') || clean.includes('arquitectura de plataforma')) {
-      return "<strong>APSTI</strong> es la carrera de <strong>Arquitectura de Plataformas y Servicios de Tecnologías de la Información</strong>. Estudia el diseño, configuración y soporte de redes, servidores, ciberseguridad y sistemas de Internet de las Cosas (IoT) como el robot ARGOS.";
-    }
-    // IESTP Hermanos Carcamo
-    if (clean.includes('instituto') || clean.includes('hermanos') || clean.includes('cárcamo') || clean.includes('carcamo') || clean.includes('paita') || clean.includes('piura')) {
-      return "El <strong>Instituto Superior Tecnológico Público Hermanos Cárcamo</strong> es la institución tecnológica líder de Paita donde el fundador <strong>Misael Pintado</strong> cursa la carrera de APSTI, impulsando proyectos de innovación y resiliencia civil.";
-    }
-    // Diferencia Robot / Dron
-    if (clean.includes('diferencia') || clean.includes('comparacion') || clean.includes('comparación')) {
-      return "La diferencia es su entorno de exploración: el robot <strong>ARGOS</strong> patrulla por tierra usando orugas todoterreno de 12V, mientras que el <strong>Dron</strong> realiza despegue vertical para explorar zonas aéreas o inundadas donde las orugas no pueden ingresar.";
-    }
-    // Qué haces / Para qué sirves / Función del asistente
-    if (clean.includes('que haces') || clean.includes('que hace') || clean.includes('para que sirves') || clean.includes('para que sirve') || clean.includes('que funcion') || clean.includes('que función') || clean.includes('funcion cumple') || clean.includes('función cumple') || clean.includes('propósito') || clean.includes('proposito')) {
-      return "Mi función es actuar como el <strong>asistente táctico de IA</strong> de ARGOS. Puedo auditar la telemetría (humedad, lluvia, fuego, sismos), coordinar el vuelo del dron y guiarte en el Aula STEAM con exámenes, juegos interactivos y reportes.";
-    }
-
-    // 1. TEOLÓGICO Y CREADOR (MISAEL PINTADO)
-    if (clean.includes('creó') || clean.includes('creo') || clean.includes('creador')) {
-      return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quién me fundó o diseñó, fue <strong>Misael Pintado</strong>, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
-    }
-    if (clean.includes('diseño') || clean.includes('diseno') || clean.includes('diseñó') || clean.includes('fundo') || clean.includes('fundó') || clean.includes('fundador') || clean.includes('diseñador') || clean.includes('diseñadora') || clean.includes('misael') || clean.includes('pintado') || clean.includes('cárcamo') || clean.includes('carcamo')) {
-      return "Fui fundado y diseñado por el estudiante <strong>Misael Pintado</strong> del <strong>Instituto Superior Hermanos Cárcamo</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong>. Él estructuró mi hardware, mi electrónica, mi firmware y mi telemetría interactiva.";
-    }
-
-    // 2. JUEGOS Y ARCADE
-    if (clean.includes('juego') || clean.includes('juegos') || clean.includes('arcade') || clean.includes('trivia') || clean.includes('mision') || clean.includes('misiones') || clean.includes('simulador') || clean.includes('kahoot') || clean.includes('jugar')) {
-      return `El Aula STEAM cuenta con un <strong>Terminal Arcade</strong> con dos desafíos interactivos:<br><br>` +
-             `1. <strong>Trivia de Prevención (Estilo Kahoot):</strong> Un test de 5 preguntas sobre hardware y prevención, con un temporizador de 15 segundos y multiplicador de racha (combos).<br>` +
-             `2. <strong>Simulador de Misiones:</strong> Un mapa táctico interactivo donde enrutas al robot a emergencias de sismos, lluvia o fuego, evalúas sensores en vivo desde una consola de comando y tomas decisiones civiles.`;
-    }
-
-    // 3. SENSORES - INFORMACIÓN DE HARDWARE & FUNCIÓN (PREGUNTAS GENERALES)
-    if (clean.includes('que son sensores') || clean.includes('que es un sensor') || clean.includes('funcion cumple los sensores') || clean.includes('que hacen los sensores') || clean.includes('sensores?') || clean.includes('sensores general') || clean.includes('que funcion cumple')) {
-      return "ARGOS está equipado con una red de sensores robustos para auditoría de campo:<br>" +
-             "- <strong>Sensor de Lluvia (Capacitivo):</strong> Detecta precipitaciones e inundaciones.<br>" +
-             "- <strong>Sensor de Flama (Infrarrojo):</strong> Detecta radiación térmica de incendios.<br>" +
-             "- <strong>Acelerómetro (MPU-6050):</strong> Registra vibraciones sísmicas e inclinación.<br>" +
-             "- <strong>Barómetro (BMP280):</strong> Mide la presión atmosférica y predice frentes de tormentas.<br>" +
-             "- <strong>Termohigrómetro (DHT22):</strong> Registra temperatura y humedad ambiental.<br>" +
-             "- <strong>GPS (Neo-6M):</strong> Transmite coordenadas de posicionamiento.";
-    }
-
-    // 4. SENSOR DE LLUVIA
-    if (clean.includes('lluvia') || clean.includes('llueve') || clean.includes('agua') || clean.includes('mojado') || clean.includes('sensor de lluvia')) {
+    // 1. SPECIFIC SENSORS & ACTUATORS (Priority checks)
+    
+    // Rain Sensor
+    if (clean.includes('lluvia') || clean.includes('llueve') || clean.includes('agua') || clean.includes('mojado') || clean.includes('precipitacion')) {
       const stateStr = state.sensors.rain 
         ? "🚨 ¡ATENCIÓN! Indica <strong>precipitación activa (lluvia)</strong> en la zona." 
         : "✅ Está seco. <strong>No hay lluvias detectadas</strong>.";
@@ -2127,8 +2086,8 @@ document.addEventListener('DOMContentLoaded', () => {
              `• <strong>Estado actual:</strong> ${stateStr}`;
     }
 
-    // 5. SENSOR DE FLAMA / FUEGO
-    if (clean.includes('fuego') || clean.includes('flama') || clean.includes('incendio') || clean.includes('sensor de flama') || clean.includes('sensor de fuego') || clean.includes('calor')) {
+    // Flame/Fire Sensor
+    if (clean.includes('fuego') || clean.includes('flama') || clean.includes('incendio') || clean.includes('calor') || clean.includes('termica') || clean.includes('termico')) {
       const stateStr = state.sensors.flame
         ? "🚨 ¡ALERTA ROJA! <strong>¡FOCO DE INCENDIO DETECTADO!</strong> Sirena y alarmas activadas."
         : "✅ Monitoreo Seguro. <strong>No hay amenazas de fuego</strong>.";
@@ -2137,43 +2096,43 @@ document.addEventListener('DOMContentLoaded', () => {
              `• <strong>Estado actual:</strong> ${stateStr}`;
     }
 
-    // 6. ACELERÓMETRO / SISTEMAS SÍSMICOS (MPU-6050)
-    if (clean.includes('sismo') || clean.includes('vibración') || clean.includes('vibracion') || clean.includes('acelerometro') || clean.includes('acelerómetro') || clean.includes('inclinacion') || clean.includes('inclinación') || clean.includes('mpu')) {
-      return `El <strong>Acelerómetro y Giroscopio Triaxial MPU-6050</strong> mide aceleración inercial y velocidad angular en los ejes X, Y y Z.<br>` +
+    // Accelerometer MPU-6050
+    if (clean.includes('sismo') || clean.includes('vibracion') || clean.includes('acelerometro') || clean.includes('mpu') || clean.includes('giroscopio') || clean.includes('inclinacion')) {
+      return `El <strong>Acelerómetro y Giroscopio Triaxial MPU-6050</strong> mide acelaración inercial y velocidad angular en los ejes X, Y y Z.<br>` +
              `• <strong>Función:</strong> Registrar vibraciones sísmicas de la corteza, prever deslizamientos de tierra y auditar la inclinación del chasis.<br>` +
              `• <strong>Estado actual:</strong> Inclinación X: <strong>${state.sensors.accelX}°</strong>, Y: <strong>${state.sensors.accelY}°</strong>.`;
     }
 
-    // 7. BARÓMETRO (BMP280)
-    if (clean.includes('presión') || clean.includes('presion') || clean.includes('barometro') || clean.includes('hpa') || clean.includes('bmp')) {
+    // Barometer BMP280
+    if (clean.includes('presion') || clean.includes('barometro') || clean.includes('hpa') || clean.includes('bmp')) {
       return `El <strong>Barómetro Digital BMP280</strong> es un sensor piezoeléctrico de alta presión.<br>` +
              `• <strong>Función:</strong> Medir la presión atmosférica del entorno para detectar frentes de baja presión que anuncian tormentas severas.<br>` +
              `• <strong>Estado actual:</strong> <strong>${state.sensors.pressure} hPa</strong>.`;
     }
 
-    // 8. TEMPERATURA / HUMEDAD (DHT22)
-    if (clean.includes('temperatura') || clean.includes('humedad') || clean.includes('clima') || clean.includes('ambiente') || clean.includes('frio') || clean.includes('frío') || clean.includes('dht')) {
+    // Termohigrometer DHT22
+    if (clean.includes('temperatura') || clean.includes('humedad') || clean.includes('clima') || clean.includes('ambiente') || clean.includes('dht')) {
       return `El <strong>Sensor Termohigrómetro DHT22</strong> es un módulo digital de temperatura y humedad.<br>` +
              `• <strong>Función:</strong> Medir el microclima en vivo para prever olas de calor, frentes secos y auditar la habitabilidad de las zonas de patrullaje.<br>` +
              `• <strong>Estado actual:</strong> Temperatura: <strong>${state.sensors.temperature.toFixed(1)}°C</strong> | Humedad: <strong>${state.sensors.humidity.toFixed(1)}%</strong>.`;
     }
 
-    // 9. PANEL SOLAR (FOTOVOLTAICO)
-    if (clean.includes('solar') || clean.includes('panel') || clean.includes('celda') || clean.includes('energia') || clean.includes('energía') || clean.includes('generacion') || clean.includes('generación')) {
+    // Panel Solar
+    if (clean.includes('solar') || clean.includes('panel') || clean.includes('celda') || clean.includes('energia') || clean.includes('generacion') || clean.includes('sol')) {
       return `El <strong>Panel Solar Monocristalino de 20W</strong> está integrado en el lomo superior del chasis.<br>` +
              `• <strong>Función:</strong> Absorber radiación solar y recargar la batería de LiFePO4 mediante un circuito regulador MPPT.<br>` +
              `• <strong>Estado actual:</strong> Generación: <strong>${state.solarPower} W</strong> | Nivel de Batería Central: <strong>${state.systemBattery}%</strong>.`;
     }
 
-    // 10. GPS (NEO-6M)
-    if (clean.includes('gps') || clean.includes('coordenadas') || clean.includes('radar') || clean.includes('latitud') || clean.includes('longitud') || clean.includes('ubicacion') || clean.includes('ubicación') || clean.includes('posicion') || clean.includes('posición')) {
+    // GPS Module
+    if (clean.includes('gps') || clean.includes('coordenada') || clean.includes('satelite') || clean.includes('radar') || clean.includes('latitud') || clean.includes('longitud') || clean.includes('posicion') || clean.includes('ubicacion')) {
       return `El <strong>Módulo de Posicionamiento Satelital GPS Neo-6M</strong> calcula la posición del robot mediante satélites.<br>` +
              `• <strong>Función:</strong> Georreferenciar al robot ARGOS, mapear sectores en emergencia y guiar al dron a coordenadas precisas.<br>` +
              `• <strong>Coordenadas actuales:</strong> Latitud: <strong>${state.sensors.gpsLat.toFixed(5)}</strong>, Longitud: <strong>${state.sensors.gpsLon.toFixed(5)}</strong>.`;
     }
 
-    // 11. DRON AÉREO
-    if (clean.includes('dron') || clean.includes('drone') || clean.includes('volar') || clean.includes('vuelo') || clean.includes('hangar') || clean.includes('despegue') || clean.includes('altura') || clean.includes('altitud') || clean.includes('aereo') || clean.includes('aéreo')) {
+    // Aerial Drone
+    if (clean.includes('dron') || clean.includes('drone') || clean.includes('volar') || clean.includes('vuelo') || clean.includes('hangar') || clean.includes('despegue') || clean.includes('altura') || clean.includes('altitud') || clean.includes('aereo')) {
       let statusStr = "";
       if (state.droneStatus === 'hangar') {
         statusStr = `Acoplado en su Hangar (Standby). Batería: <strong>${state.droneBattery}%</strong>.`;
@@ -2189,8 +2148,8 @@ document.addEventListener('DOMContentLoaded', () => {
              `• <strong>Estado actual:</strong> ${statusStr}`;
     }
 
-    // 12. ORUGAS Y LOCOMOCIÓN
-    if (clean.includes('oruga') || clean.includes('orugas') || clean.includes('motores') || clean.includes('motor') || clean.includes('traccion') || clean.includes('tracción') || clean.includes('velocidad') || clean.includes('mover') || clean.includes('movimiento')) {
+    // Wheels / Tracks Locomotion
+    if (clean.includes('oruga') || clean.includes('motores') || clean.includes('motor') || clean.includes('traccion') || clean.includes('velocidad') || clean.includes('mover') || clean.includes('movimiento') || clean.includes('marcha') || clean.includes('direccion')) {
       const stateStr = state.locoMoving
         ? `En movimiento hacia <strong>${state.locoDirection}</strong> (Velocidad: <strong>${state.locoSpeed}x</strong>).`
         : "Detenido. Frenos de orugas bloqueados.";
@@ -2199,8 +2158,80 @@ document.addEventListener('DOMContentLoaded', () => {
              `• <strong>Estado actual:</strong> ${stateStr}`;
     }
 
-    // 13. ESTADO / RESUMEN
-    if (clean.includes('estado') || clean.includes('resumen') || clean.includes('reporte') || clean.includes('status') || clean.includes('sistema') || clean.includes('auditar') || clean.includes('diagnostico') || clean.includes('diagnóstico')) {
+    // 2. GENERAL SENSORS INQUIRY (Falls here if no specific sensor was named but the word "sensor" is present)
+    if (clean.includes('sensor') || clean.includes('sensores')) {
+      return "ARGOS está equipado con una red de sensores robustos para auditoría de campo:<br>" +
+             "- <strong>Sensor de Lluvia (Capacitivo):</strong> Detecta precipitaciones e inundaciones.<br>" +
+             "- <strong>Sensor de Flama (Infrarrojo):</strong> Detecta radiación térmica de incendios.<br>" +
+             "- <strong>Acelerómetro (MPU-6050):</strong> Registra vibraciones sísmicas e inclinación.<br>" +
+             "- <strong>Barómetro (BMP280):</strong> Mide la presión atmosférica y predice frentes de tormentas.<br>" +
+             "- <strong>Termohigrómetro (DHT22):</strong> Registra temperatura y humedad ambiental.<br>" +
+             "- <strong>GPS (Neo-6M):</strong> Transmite coordenadas de posicionamiento.";
+    }
+
+    // 3. GENERAL CONVERSATIONAL TOPICS
+    
+    // Arduino
+    if (clean.includes('arduino')) {
+      return "<strong>Arduino</strong> es una plataforma de hardware y software libre. En el proyecto ARGOS, usamos microcontroladores avanzados (como el ESP32 Devkit V1) programados bajo el entorno de Arduino para procesar los datos de los sensores y mover los motores de las orugas.";
+    }
+
+    // IA / Artificial Intelligence
+    if (words.includes('ia') || clean.includes('inteligencia artificial') || clean.includes('vision por computadora') || clean.includes('computadora')) {
+      return "La <strong>Inteligencia Artificial (IA)</strong> en ARGOS ejecuta modelos de visión artificial en tiempo real. Se utiliza para clasificar la gravedad de grietas en pistas y concreto (Sano, Leve, Grave) y detectar amenazas de fuego mediante las cámaras de exploración.";
+    }
+
+    // APSTI / Career
+    if (clean.includes('apsti') || clean.includes('carrera') || clean.includes('servicios ti') || clean.includes('arquitectura de plataforma')) {
+      return "<strong>APSTI</strong> es la carrera de <strong>Arquitectura de Plataformas y Servicios de Tecnologías de la Información</strong>. Estudia el diseño, configuración y soporte de redes, servidores, ciberseguridad y sistemas de Internet de las Cosas (IoT) como el robot ARGOS.";
+    }
+
+    // IESTP Hermanos Carcamo / Institute
+    if (clean.includes('instituto') || clean.includes('hermanos') || clean.includes('carcamo') || clean.includes('paita') || clean.includes('piura')) {
+      return "El <strong>Instituto Superior Tecnológico Público Hermanos Cárcamo</strong> es la institución tecnológica líder de Paita donde el fundador <strong>Misael Pintado</strong> cursa la carrera de APSTI, impulsando proyectos de innovación y resiliencia civil.";
+    }
+
+    // Difference between Robot and Drone
+    if (clean.includes('diferencia') || clean.includes('comparacion')) {
+      return "La diferencia es su entorno de exploración: el robot <strong>ARGOS</strong> patrulla por tierra usando orugas todoterreno de 12V, mientras que el <strong>Dron</strong> realiza despegue vertical para explorar zonas aéreas o inundadas donde las orugas no pueden ingresar.";
+    }
+
+    // Asistente / Qué haces / Función / Cumple
+    if (clean.includes('que haces') || clean.includes('para que sirves') || clean.includes('funcion') || clean.includes('cumple') || clean.includes('cumples') || clean.includes('proposito') || clean.includes('sirve') || clean.includes('sirves')) {
+      return "Mi función es actuar como el <strong>asistente táctico de IA</strong> de ARGOS. Puedo auditar la telemetría (humedad, lluvia, fuego, sismos), coordinar el vuelo del dron y guiarte en el Aula STEAM con exámenes, juegos interactivos y reportes.";
+    }
+
+    // Theological / Creator
+    if (clean.includes('creo') || clean.includes('creador')) {
+      return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quién me fundó o diseñó, fue <strong>Misael Pintado</strong>, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
+    }
+    if (clean.includes('diseno') || clean.includes('fundo') || clean.includes('fundador') || clean.includes('disenador') || clean.includes('misael') || clean.includes('pintado')) {
+      return "Fui fundado y diseñado por el estudiante <strong>Misael Pintado</strong> del <strong>Instituto Superior Hermanos Cárcamo</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong>. Él estructuró mi hardware, mi electrónica, mi firmware y mi telemetría interactiva.";
+    }
+
+    // Arcade Games
+    if (clean.includes('juego') || clean.includes('arcade') || clean.includes('trivia') || clean.includes('mision') || clean.includes('simulador') || clean.includes('kahoot') || clean.includes('jugar') || clean.includes('divertido')) {
+      return `El Aula STEAM cuenta con un <strong>Terminal Arcade</strong> con dos desafíos interactivos:<br><br>` +
+             `1. <strong>Trivia de Prevención (Estilo Kahoot):</strong> Un test de 5 preguntas sobre hardware y prevención, con un temporizador de 15 segundos y multiplicador de racha (combos).<br>` +
+             `2. <strong>Simulador de Misiones:</strong> Un mapa táctico interactivo donde enrutas al robot a emergencias de sismos, lluvia o fuego, evalúas sensores en vivo desde una consola de comando y tomas decisiones civiles.`;
+    }
+
+    // Virtual Classroom
+    if (clean.includes('aula') || clean.includes('laboratorio') || clean.includes('clase') || clean.includes('certificado') || clean.includes('practica') || clean.includes('examen') || clean.includes('leccion')) {
+      return "El Aula STEAM cuenta con 3 laboratorios interactivos: 1) Análisis climático de presión/lluvias, 2) Simulador de vuelo de sustentación frente al viento, y 3) Detección de grietas por IA. ¡Responde y completa los laboratorios para obtener tu certificado!";
+    }
+
+    // Roles and Profiles
+    if (clean.includes('rol') || clean.includes('perfil') || clean.includes('roles') || clean.includes('permisos') || clean.includes('cambiar')) {
+      return "Los roles disponibles son:<br>" +
+             "- <strong>Público General:</strong> Solo lectura, pero con mandos físicos habilitados en modo DEMO.<br>" +
+             "- <strong>Operador:</strong> Control absoluto de la telemetría, consola y pilotaje del Dron.<br>" +
+             "- <strong>Estudiante:</strong> Acceso a laboratorios virtuales y al panel de exámenes.<br>" +
+             "- <strong>Docente:</strong> Capacidad de exportación de reportes PDF/CSV/JSON de telemetría.";
+    }
+
+    // Telemetry Summary / Status
+    if (clean.includes('estado') || clean.includes('resumen') || clean.includes('reporte') || clean.includes('status') || clean.includes('sistema') || clean.includes('auditar') || clean.includes('diagnostico')) {
       const emergencyStr = state.sensors.flame ? "⚠️ ¡EMERGENCIA ACTIVA POR FUEGO!" : (state.sensors.rain ? "🌧️ precipitación en curso" : "✅ Monitoreo Seguro");
       return `<div style="font-family: monospace; font-size: 10px; background: rgba(0,240,255,0.03); border-left: 2px solid var(--accent-cyan); padding: 8px; line-height: 1.5; color:#00ff66;">` +
              `<strong>[AUDITORÍA DE TELEMETRÍA ARGOS]</strong><br>` +
@@ -2213,7 +2244,7 @@ document.addEventListener('DOMContentLoaded', () => {
              `- Estado Alerta: ${emergencyStr}</div>`;
     }
 
-    // 14. EMERGENCIAS O ALARMAS
+    // Emergencies Alert
     if (clean.includes('alarma') || clean.includes('emergencia') || clean.includes('peligro') || clean.includes('riesgo') || clean.includes('alerta')) {
       if (state.sensors.flame) {
         return "🚨 <strong>¡ALERTA CRÍTICA DE INCENDIO!</strong> El sensor infrarrojo reporta llamas activas. He disparado la sirena auditiva y las alarmas visuales. Se debe enrutar el robot al sector y avisar a bomberos.";
@@ -2224,28 +2255,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return "✅ <strong>Sistema Seguro:</strong> Todos los sensores indican que no hay situaciones de peligro o incendios activos en el perímetro en este momento.";
     }
 
-    // 15. AULA VIRTUAL
-    if (clean.includes('aula') || clean.includes('laboratorio') || clean.includes('clase') || clean.includes('certificado') || clean.includes('practica') || clean.includes('práctica')) {
-      return "El Aula STEAM cuenta con 3 laboratorios interactivos: 1) Análisis climático de presión/lluvias, 2) Simulador de vuelo de sustentación frente al viento, y 3) Detección de grietas por IA. ¡Responde y completa los laboratorios para obtener tu certificado!";
-    }
-    // 16. ROLES
-    if (clean.includes('rol') || clean.includes('perfil') || clean.includes('roles') || clean.includes('permisos') || clean.includes('cambiar')) {
-      return "Los roles disponibles son:<br>" +
-             "- <strong>Público General:</strong> Solo lectura, pero con mandos físicos habilitados en modo DEMO.<br>" +
-             "- <strong>Operador:</strong> Control absoluto de la telemetría, consola y pilotaje del Dron.<br>" +
-             "- <strong>Estudiante:</strong> Acceso a laboratorios virtuales y al panel de exámenes.<br>" +
-             "- <strong>Docente:</strong> Capacidad de exportación de reportes PDF/CSV/JSON de telemetría.";
-    }
-    // 17. QUIÉN ERES
-    if (clean.includes('quién eres') || clean.includes('quien eres') || clean.includes('argos') || clean.includes('robot') || clean.includes('plataforma')) {
-      return "<strong>ARGOS</strong> es una plataforma inteligente multi-agente diseñada para la prevención de desastres naturales y la educación STEAM. Fui diseñado y fundado por el estudiante <strong>Misael Pintado</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong> del <strong>Instituto Superior Hermanos Cárcamo</strong>.";
-    }
-    // 18. HOLA
+    // Hello/Greetings
     if (clean.includes('hola') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes') || clean.includes('hey')) {
       return "¡Hola! Estoy listo para auditar el sistema. Pregúntame por sensores, el estado del clima, el estado del robot, los juegos o las lecciones del aula STEAM.";
     }
-    // 19. AYUDA
-    if (clean.includes('ayuda') || clean.includes('comandos') || clean.includes('que puedo preguntar') || clean.includes('pregunta')) {
+
+    // Help Commands
+    if (clean.includes('ayuda') || clean.includes('comandos') || clean.includes('pregunta')) {
       return "Puedes preguntarme cosas como:<br>" +
              "- *'¿Quién te diseñó?'*<br>" +
              "- *'¿Qué hace el sensor de lluvia?'*<br>" +
