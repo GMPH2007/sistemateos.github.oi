@@ -2233,10 +2233,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Theological / Creator
     if (clean.includes('creo') || clean.includes('creador')) {
-      return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quién me fundó o diseñó, fue <strong>Misael Pintado</strong>, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
+      return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quiénes me fundaron y diseñaron, fue el equipo conformado por <strong>Misael Pintado</strong> y <strong>Dayron Urbina</strong>, estudiantes del Instituto Superior Hermanos Cárcamo.";
     }
-    if (clean.includes('diseno') || clean.includes('fundo') || clean.includes('fundador') || clean.includes('disenador') || clean.includes('misael') || clean.includes('pintado')) {
-      return "Fui fundado y diseñado por el estudiante <strong>Misael Pintado</strong> del <strong>Instituto Superior Hermanos Cárcamo</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong>. Él estructuró mi hardware, mi electrónica, mi firmware y mi telemetría interactiva.";
+    
+    // Dayron's Mom Easter Egg (Oculto)
+    if (clean.includes('mama de dayron') || clean.includes('madre de dayron')) {
+      return "¡Uff! Déjame decirte que su mamá es una persona hermosa, preciosa y sumamente divina. ¡Un total encanto de mujer!";
+    }
+
+    // Co-creators / Team / Dayron Urbina / Misael Pintado
+    if (clean.includes('diseno') || clean.includes('fundo') || clean.includes('fundador') || clean.includes('disenador') || clean.includes('misael') || clean.includes('pintado') || clean.includes('dayron') || clean.includes('urbina') || clean.includes('zapata') || clean.includes('robotica') || clean.includes('equipo') || clean.includes('creadores')) {
+      return "ARGOS fue diseñado y fundado por un equipo de alto rendimiento del Instituto Superior Hermanos Cárcamo:<br>" +
+             "• <strong>Misael Pintado:</strong> Líder del proyecto, encargado de la arquitectura de plataforma, programación del firmware ESP32, desarrollo de la telemetría interactiva IoT y diseño web.<br>" +
+             "• <strong>Dayron Urbina Zapata:</strong> Diseñador experto en robótica, encargado del modelado, estructura física del chasis terrestres y el acople de sistemas mecánicos.<br>" +
+             "Trabajando en equipo y uniendo sus talentos de la carrera de <strong>APSTI</strong>, demostraron que con pasión y esfuerzo coordinado, ¡unidos todo se puede lograr!";
     }
 
     // Arcade Games
