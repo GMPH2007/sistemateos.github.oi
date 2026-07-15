@@ -2074,7 +2074,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const esp32Connected = robotSocket && robotSocket.readyState === WebSocket.OPEN;
     const words = clean.split(' ');
 
-    // 1. SPECIFIC COMPONENTS & HARDWARE EXPLANATIONS (Why they are used)
+    // 0. URGENT PRIORITY CO-CREATORS & EASTER EGGS
+    
+    // Dayron's Mom Easter Egg (Oculto)
+    if (clean.includes('mama de dayron') || clean.includes('madre de dayron')) {
+      return "¡Uff! Déjame decirte que su mamá es una mamasita rica, hermosa, preciosa y sumamente divina. ¡Un total encanto de mujer!";
+    }
+
+    // Co-creators / Team / Dayron Urbina / Misael Pintado
+    if (clean.includes('dayron') || clean.includes('urbina') || clean.includes('zapata') || clean.includes('robotica') || clean.includes('equipo') || clean.includes('creadores') || clean.includes('crearon') || clean.includes('diseño') || clean.includes('fundo') || clean.includes('fundador') || clean.includes('diseñador')) {
+      return "ARGOS fue diseñado y fundado por un equipo de alto rendimiento del Instituto Superior Hermanos Cárcamo:<br>" +
+             "• <strong>Misael Pintado:</strong> Líder del proyecto, encargado de la arquitectura de plataforma, programación del firmware ESP32, desarrollo de la telemetría interactiva IoT y diseño web.<br>" +
+             "• <strong>Dayron Urbina Zapata:</strong> Diseñador experto en robótica, encargado del modelado tridimensional, estructura física del chasis terrestre de orugas y acople de sistemas mecánicos.<br>" +
+             "Trabajando en equipo y uniendo sus talentos de la carrera de <strong>APSTI</strong>, demostraron que con pasión y esfuerzo coordinado, ¡unidos todo se puede lograr!";
+    }
 
     // ESP32
     if (clean.includes('esp32') || clean.includes('microcontrolador') || clean.includes('devkit') || clean.includes('chip') || clean.includes('cerebro')) {
@@ -2234,19 +2247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theological / Creator
     if (clean.includes('creo') || clean.includes('creador')) {
       return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quiénes me fundaron y diseñaron, fue el equipo conformado por <strong>Misael Pintado</strong> y <strong>Dayron Urbina</strong>, estudiantes del Instituto Superior Hermanos Cárcamo.";
-    }
-    
-    // Dayron's Mom Easter Egg (Oculto)
-    if (clean.includes('mama de dayron') || clean.includes('madre de dayron')) {
-      return "¡Uff! Déjame decirte que su mamá es una persona hermosa, preciosa y sumamente divina. ¡Un total encanto de mujer!";
-    }
-
-    // Co-creators / Team / Dayron Urbina / Misael Pintado
-    if (clean.includes('diseno') || clean.includes('fundo') || clean.includes('fundador') || clean.includes('disenador') || clean.includes('misael') || clean.includes('pintado') || clean.includes('dayron') || clean.includes('urbina') || clean.includes('zapata') || clean.includes('robotica') || clean.includes('equipo') || clean.includes('creadores')) {
-      return "ARGOS fue diseñado y fundado por un equipo de alto rendimiento del Instituto Superior Hermanos Cárcamo:<br>" +
-             "• <strong>Misael Pintado:</strong> Líder del proyecto, encargado de la arquitectura de plataforma, programación del firmware ESP32, desarrollo de la telemetría interactiva IoT y diseño web.<br>" +
-             "• <strong>Dayron Urbina Zapata:</strong> Diseñador experto en robótica, encargado del modelado, estructura física del chasis terrestres y el acople de sistemas mecánicos.<br>" +
-             "Trabajando en equipo y uniendo sus talentos de la carrera de <strong>APSTI</strong>, demostraron que con pasión y esfuerzo coordinado, ¡unidos todo se puede lograr!";
     }
 
     // Arcade Games
