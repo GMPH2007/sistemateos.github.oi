@@ -2081,6 +2081,36 @@ document.addEventListener('DOMContentLoaded', () => {
       return "¡Uff! Déjame decirte que su mamá es una mamasita rica, hermosa, preciosa y sumamente divina. ¡Un total encanto de mujer!";
     }
 
+    // Redes Neuronales / CNN
+    if (clean.includes('red neuronal') || clean.includes('redes neuronales') || clean.includes('cnn') || clean.includes('convolucional')) {
+      return "ARGOS utiliza <strong>Redes Neuronales Convolucionales (CNN)</strong> para el procesamiento visual.<br>" +
+             "• <strong>¿Por qué se usan?</strong> Las CNN imitan la corteza visual humana, procesando imágenes por capas (bordes, formas y texturas) en tiempo real. Esto permite al robot clasificar el daño en pavimentos y concreto de forma automática.";
+    }
+
+    // YOLO / Detección de Objetos
+    if (clean.includes('yolo') || clean.includes('reconocimiento') || clean.includes('deteccion') || clean.includes('objeto') || clean.includes('objetos')) {
+      return "El sistema visual de ARGOS y su dron aéreo integran el modelo <strong>YOLO (You Only Look Once)</strong>.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Es un algoritmo de detección de objetos en tiempo real extremadamente veloz que procesa el feed de video completo de una sola pasada. Permite identificar focos de fuego, personas atrapadas o grietas en estructuras de forma instantánea.";
+    }
+
+    // Deep Learning / Aprendizaje Profundo
+    if (clean.includes('deep learning') || clean.includes('aprendizaje profundo') || clean.includes('entrenamiento') || clean.includes('tensorflow') || clean.includes('keras')) {
+      return "El cerebro artificial de ARGOS fue entrenado bajo <strong>Deep Learning (Aprendizaje Profundo)</strong> usando frameworks como TensorFlow y Keras.<br>" +
+             "• <strong>¿Cómo funciona?</strong> Alimentamos el modelo con miles de fotos etiquetadas de grietas, incendios y carreteras sanas. Mediante retropropagación (backpropagation), la IA aprende a identificar patrones complejos sin intervención humana.";
+    }
+
+    // Conexión con IA / IA Integrada
+    if (clean.includes('conexion con ia') || clean.includes('ia integrada') || clean.includes('conexion ia') || clean.includes('procesamiento')) {
+      return "La <strong>conexión con Inteligencia Artificial</strong> de ARGOS se realiza de dos formas:<br>" +
+             "1. <strong>Procesamiento de Borde (Edge AI):</strong> Filtra y clasifica firmas sísmicas (MPU6050) y variaciones barométricas directamente en hardware local.<br>" +
+             "2. <strong>Servicio en la Nube / API Visual:</strong> Envía la telemetría y video al nodo de visión para inferencia de redes neuronales, retornando alertas de habitabilidad a esta interfaz web en milisegundos.";
+    }
+
+    // Resiliencia Civil
+    if (clean.includes('resiliencia') || clean.includes('civil') || clean.includes('desastre') || clean.includes('prevencion')) {
+      return "La <strong>resiliencia civil</strong> es la capacidad de una comunidad para resistir, adaptarse y recuperarse rápidamente ante desastres (como desbordes de ríos o sismos). ARGOS entrena a los estudiantes en esta disciplina mediante simulaciones interactivas de riesgo en el Aula STEAM.";
+    }
+
     // Co-creators / Team / Dayron Urbina / Misael Pintado
     if (clean.includes('dayron') || clean.includes('urbina') || clean.includes('zapata') || clean.includes('robotica') || clean.includes('equipo') || clean.includes('creadores') || clean.includes('crearon') || clean.includes('diseño') || clean.includes('fundo') || clean.includes('fundador') || clean.includes('diseñador')) {
       return "ARGOS fue diseñado y fundado por un equipo de alto rendimiento del Instituto Superior Hermanos Cárcamo:<br>" +
@@ -2372,14 +2402,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     synth.beep(550, 'sine', 0.05);
 
+    // Append a typing placeholder
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'chat-msg ai typing-indicator-bubble';
+    msgDiv.style.padding = '8px 12px';
+    msgDiv.style.display = 'inline-flex';
+    msgDiv.style.alignItems = 'center';
+    msgDiv.style.gap = '4px';
+    msgDiv.innerHTML = `
+      <span class="typing-dot" style="width:5px; height:5px; background:var(--accent-cyan); border-radius:50%; animation: pulseFlashing 0.6s infinite alternate;"></span>
+      <span class="typing-dot" style="width:5px; height:5px; background:var(--accent-cyan); border-radius:50%; animation: pulseFlashing 0.6s infinite alternate; animation-delay: 0.2s;"></span>
+      <span class="typing-dot" style="width:5px; height:5px; background:var(--accent-cyan); border-radius:50%; animation: pulseFlashing 0.6s infinite alternate; animation-delay: 0.4s;"></span>
+    `;
+    chatbotMessages.appendChild(msgDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
     setTimeout(() => {
+      // Remove typing bubble
+      msgDiv.remove();
+
       const response = getChatbotResponse(text);
       appendChatMessage('ai', response);
       
       // Speak the answer text (strip HTML tags first for clean TTS)
       const cleanTextForSpeech = response.replace(/<\/?[^>]+(>|$)/g, "");
       synth.speak(cleanTextForSpeech);
-    }, 450);
+    }, 1000);
   }
 
   if (chatbotSendBtn) {
