@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Ecosistema tecnológico ARGOS: Robótica autónoma terrestre y aérea para prevención de desastres, monitoreo climático IoT y educación STEAM en Paita y Piura.">
   <title>ARGOS - Plataforma de Prevención, Monitoreo y Educación STEAM</title>
+  <!-- Cache Conflict Interceptor Script -->
+  <script>
+    window.addEventListener('error', function(e) {
+      if (e.message && (e.message.indexOf('SyntaxError') !== -1 || e.message.indexOf('Uncaught') !== -1)) {
+        console.warn("⚠️ [CONFLIT DE CACHE DETECTADO]:", e.message);
+      }
+    });
+  </script>
   <!-- Google Fonts: Orbitron (for tech metrics) and Inter (for body text) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +22,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=6.2">
+  <link rel="stylesheet" href="style.css?v=6.3">
 </head>
 <body class="theme-dark">
   <!-- Top Scroll Progress Indicator -->
@@ -1270,7 +1278,7 @@
   </div>
 
   <!-- Code Script imports -->
-  <script src="auth.js?v=6.2"></script>
-  <script src="app.js?v=6.2"></script>
+  <script src="auth.js?v=6.3"></script>
+  <script src="app.js?v=6.3"></script>
 </body>
 </html>
