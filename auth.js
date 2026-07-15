@@ -546,7 +546,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateSessionUI(null);
   }
-  // --- ANTI-HACKER SOURCE PROTECTION SHIELD ---
+  // --- ENCRYPTED CYBER-SHIELD & ANTI-INTRUSION LAYER (AGPLv3 Compliant) ---
+  (function(_0xabc, _0xdef) {
+    const _0xdec = function(_0xstr) { return atob(_0xstr); };
+    
+    // Obfuscated Base64 messages to hide source checks
+    const _0xkey1 = _0xdec("Y29udGV4dG1lbnU="); // contextmenu
+    const _0xkey2 = _0xdec("a2V5ZG93bg==");     // keydown
+    
+    // 1. Right Click Block
+    document.addEventListener(_0xkey1, (e) => {
+      e.preventDefault();
+      authSynth.beep(180, 'sawtooth', 0.4);
+      console.warn('%c[🛡️ SHIELD] ' + _0xdec("Q2xpYyBkZXJlY2hvIGJsb3F1ZWFkby4="), 'color: #ff3e3e; font-weight: bold;');
+    });
+
+    // 2. Hotkey Block (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S)
+    document.addEventListener(_0xkey2, (e) => {
+      const isCtrlShift = e.ctrlKey && e.shiftKey;
+      const isCtrl = e.ctrlKey;
+      if (
+        e.keyCode === 123 || 
+        (isCtrlShift && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) ||
+        (isCtrl && (e.keyCode === 85 || e.keyCode === 83))
+      ) {
+        e.preventDefault();
+        authSynth.beep(180, 'sawtooth', 0.4);
+        console.warn('%c[🛡️ SHIELD] ' + _0xdec("QXRham8gZGUgaW5zcGVjY2nDs24gYmxvcXVlYWRvLg=="), 'color: #ff3e3e; font-weight: bold;');
+      }
+    });
+
+    // 3. Self-Defending Debugger Trap Loop
+    setInterval(() => {
+      const startTime = Date.now();
+      debugger; // When DevTools is open, debugger pauses, causing a huge delay in execution
+      const endTime = Date.now();
+      
+      // If elapsed time is greater than 100ms, debugger was paused -> DevTools is open!
+      if (endTime - startTime > 100) {
+        authSynth.beep(100, 'sawtooth', 0.5);
+        
+        // Lock screen with a beautiful cyber warning
+        document.body.innerHTML = `
+          <div style="background: radial-gradient(circle, #0c0000 0%, #030000 100%); color: #ff3e3e; height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: monospace; text-align: center; border: 4px solid #ff3e3e; box-shadow: inset 0 0 100px rgba(255,0,0,0.4);">
+            <div style="font-size: 5rem; text-shadow: 0 0 25px #ff3e3e; margin-bottom: 20px; animation: pulseFlashing 0.6s infinite alternate;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 0 10px #ff3e3e;">INTRUSIÓN DETECTADA</h1>
+            <p style="font-size: 14px; max-width: 500px; line-height: 1.6; color: #ff8888;">El sistema anti-depuración de ARGOS ha bloqueado el acceso. Cierra las herramientas de desarrollador para reanudar el control.</p>
+            <p style="font-size: 10px; color: #550000; margin-top: 30px; letter-spacing: 1px;">PROPIEDAD DE MISAEL PINTADO & DAYRON URBINA ZAPATA | CODIGO FUENTE PROTEGIDO</p>
+          </div>
+        `;
+        setTimeout(() => { location.reload(); }, 2500);
+      }
+    }, 500);
+  })();
+
+  // ASCII Warn Console Banner
   console.log(`%c
    █████╗ ██████╗  ██████╗  ██████╗ ███████╗
   ██╔══██╗██╔══██╗██╔════╝ ██╔═══██╗██╔════╝
@@ -564,27 +618,5 @@ document.addEventListener('DOMContentLoaded', () => {
   Cualquier copia, intrusión o ingeniería inversa no autorizada
   está estrictamente denegada por la arquitectura de red local.
   `, "color: #00f0ff; font-weight: bold; font-size: 13px;", "color: #ff3e3e; font-weight: bold; font-size: 12px;");
-
-  document.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    authSynth.beep(180, 'sawtooth', 0.4);
-    console.warn('%c[SEGURIDAD] Intento de clic derecho bloqueado. Propiedad Intelectual Protegida.', 'color: #ff3e3e; font-weight: bold;');
-  });
-
-  document.addEventListener('keydown', (e) => {
-    const isCtrlShift = e.ctrlKey && e.shiftKey;
-    const isCtrl = e.ctrlKey;
-    
-    // 123 is F12. 73 is I, 74 is J, 67 is C. 85 is U (View source). 83 is S (Save).
-    if (
-      e.keyCode === 123 || 
-      (isCtrlShift && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) ||
-      (isCtrl && (e.keyCode === 85 || e.keyCode === 83))
-    ) {
-      e.preventDefault();
-      authSynth.beep(180, 'sawtooth', 0.4);
-      console.warn('%c[SEGURIDAD] Atajo de inspección de código bloqueado.', 'color: #ff3e3e; font-weight: bold;');
-    }
-  });
 
 });
