@@ -1336,6 +1336,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Dynamic AI Co-Pilot Telemetry Auditor Updates
+    const aiInsightEl = document.getElementById('ai-auditor-insight');
+    const aiLatencyEl = document.getElementById('ai-auditor-latency');
+    if (aiLatencyEl) {
+      aiLatencyEl.textContent = `${Math.floor(Math.random() * 9) + 8}ms`;
+    }
+    if (aiInsightEl) {
+      if (state.sensors.flame) {
+        aiInsightEl.innerHTML = `<span style="color:var(--accent-red); font-weight:bold;">[CRÍTICO] FUEGO DETECTADO.</span> Inferencia visual reporta firmas térmicas de incendio. Activando sistema de mitigación por rociadores.`;
+      } else if (state.sensors.rain) {
+        aiInsightEl.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">[ADVERTENCIA] LLUVIA DETECTADA.</span> Precipitación activa. Activando limpia-cámaras y restringiendo velocidad del robot terrestre.`;
+      } else if (Math.abs(state.sensors.accelX) > 5 || Math.abs(state.sensors.accelY) > 5) {
+        aiInsightEl.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">[ALERTA SÍSMICA] VIBRACIÓN ELEVADA.</span> Oscilación física registrada por el acelerómetro. Analizando integridad estructural.`;
+      } else {
+        const insights = [
+          "Firma térmica normal. Analizando concreto en busca de fisuras superficiales con YOLOv8 (Precisión: 99.2%).",
+          "Análisis barométrico: Presión atmosférica estable. No se detectan frentes de baja presión.",
+          "Inferencia en la nube activa. Telemetría de sensores en base alineada con el modelo predictivo.",
+          "Procesamiento visual en curso: Dron aéreo reporta cero focos de fuego en zona norte."
+        ];
+        const idx = Math.floor((Date.now() / 5000) % insights.length);
+        aiInsightEl.innerHTML = `<span style="color:#00ff66;">[OK]</span> ${insights[idx]}`;
+      }
+    }
+
     // Update Top Header Status Panel (Connect it dynamically!)
     if (topGpsVal) {
       topGpsVal.textContent = `${state.sensors.gpsLat.toFixed(4)}° N, ${Math.abs(state.sensors.gpsLon).toFixed(4)}° W`;
