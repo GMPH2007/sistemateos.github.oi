@@ -3234,11 +3234,12 @@ input:checked + .slider-toggle:before {
   max-width: 580px;
   height: 280px;
   margin: 15px auto;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.05) 0%, #030408 100%);
-  border: 1.5px dashed rgba(0, 240, 255, 0.25);
+  background: url('map.png') no-repeat center center;
+  background-size: cover;
+  border: 1.5px dashed rgba(245, 158, 11, 0.4);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.05);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(245, 158, 11, 0.1);
 }
 
 .map-grid-overlay {
