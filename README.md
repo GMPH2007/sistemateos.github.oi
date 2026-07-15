@@ -1,7 +1,21 @@
-# 🚀 Ecosistema Tecnológico ARGOS
+<div align="center">
 
-> **Plataforma Inteligente de Prevención Civil, Monitoreo Climático y Formación STEAM**  
-> Desarrollado bajo la licencia libre **GNU AGPLv3** y diseñado bajo la filosofía **Local-First / Privacidad Total**.
+# 🚀 ECOSISTEMA TECNOLÓGICO ARGOS
+
+[![Licencia: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Plataforma: ESP32](https://img.shields.io/badge/Platform-ESP32-red.svg)](https://www.espressif.com/en/products/socs/esp32)
+[![Lenguaje: JavaScript](https://img.shields.io/badge/Language-JavaScript-yellow.svg)](https://developer.mozilla.org/es/docs/Web/JavaScript)
+[![Tecnología: WebSockets](https://img.shields.io/badge/Tech-WebSockets-orange.svg)](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API)
+[![Diseño: Glow Futurista](https://img.shields.io/badge/Design-Futuristic_Glow-green.svg)](#)
+
+**Plataforma Autónoma de Monitoreo Ambiental, Prevención de Desastres y Educación STEAM**  
+*Un proyecto de código abierto, local-first y enfocado en la resiliencia civil de comunidades.*
+
+---
+
+[🌐 Ver Aplicación en Producción](https://gmph2007.github.io/sistemateos.github.oi/) • [⚖️ Términos Legales](#-política-de-privacidad-y-legalidad) • [👥 Nuestro Equipo](#-equipo-de-desarrollo-e-innovación)
+
+</div>
 
 ---
 
@@ -18,32 +32,77 @@ El proyecto ha sido fundado, diseñado y programado por estudiantes de la carrer
 *   **Misael Pintado** (Co-Fundador y Programador de Mando): Arquitectura de la plataforma web, programación del firmware ESP32, desarrollo de la telemetría interactiva IoT, base de datos simulada local y desarrollo del sistema de ciberseguridad.
 *   **Dayron Urbina Zapata** (Co-Fundador e Ingeniero de Robótica): Modelado tridimensional del chasis del rover, ensamblaje de la tracción mecánica por orugas, diseño físico del hangar y acople de sistemas electromecánicos.
 
-> *"Trabajando unidos en equipo, demostramos que la pasión tecnológica y el esfuerzo coordinado lo logran todo."*
+> 💡 *"Trabajando unidos en equipo, demostramos que la pasión tecnológica y el esfuerzo coordinado lo logran todo."*
 
 ---
 
-## 🛠️ Arquitectura de Hardware y Componentes
+## 📊 Arquitectura del Sistema
 
-El cerebro y los sentidos del robot ARGOS están integrados por componentes electrónicos seleccionados estratégicamente:
+El siguiente diagrama de flujo esquematiza las interconexiones físicas y los canales de comunicación lógicos de ARGOS:
 
-1.  **ESP32 Devkit V1 (Cerebro Central):** Microcontrolador de doble núcleo a 240 MHz con WiFi y Bluetooth integrados. Permite mantener un enlace bidireccional constante con la interfaz del operador web.
-2.  **DHT22 (Sensor de Temperatura y Humedad):** Módulo digital de alta precisión para auditar olas de calor y microclimas de riesgo.
-3.  **MPU-6050 (Acelerómetro y Giroscopio de 6 ejes):** Detecta ondas sísmicas de tierra y previene volcaduras del robot monitoreando la inclinación del chasis.
-4.  **BMP280 (Barómetro de Presión Atmosférica):** Mide la presión del aire para anticipar frentes de tormentas severas.
-5.  **Sensor de Flama Infrarrojo:** Fotodiodo de reacción ultrarrápida (en milisegundos) para localizar focos de incendios forestales.
-6.  **Sensor de Lluvia Conductivo:** Placa capacitiva para reportar caídas de agua activas y mitigar desbordes de ríos.
-7.  **Puente H L298N (Driver de Potencia):** Canaliza la energía de la batería de 12V para mover los servomotores CC del chasis todoterreno.
-8.  **Baterías LiFePO4 de 12V:** Alimentación segura, estable contra sobrecalentamientos y con una vida útil superior a 3000 ciclos.
+```mermaid
+graph TD
+    %% Nodes definition
+    Operator[("💻 Interfaz del Operador<br>(Dashboard HTML5/CSS3/JS)")]
+    ESP32["🧠 Microcontrolador ESP32 Devkit V1<br>(Servidor WebSocket Arduino)"]
+    L298N["🔌 Driver Puente H L298N"]
+    Motors["⚙️ Orugas Todo Terreno (Motores 12V CC)"]
+    Dron["🚁 Dron de Exploración Aérea<br>(Cámara IA Centrada)"]
+    
+    %% Sensors
+    DHT22["🌡️ Sensor DHT22<br>(Temperatura/Humedad)"]
+    MPU6050["📐 IMU MPU6050<br>(Sismos/Inclinación)"]
+    BMP280["☁️ Barómetro BMP280<br>(Presión Atmosférica)"]
+    Rain["🌧️ Sensor de Lluvia"]
+    Flame["🔥 Sensor de Flama IR"]
+    
+    %% Connections
+    Operator <-->|"WebSockets (Baja Latencia)"| ESP32
+    ESP32 -->|"Señales PWM"| L298N
+    L298N -->|"Corriente de 12V"| Motors
+    ESP32 -->|"Rampa Mecánica"| Dron
+    
+    %% I2C & Analog/Digital inputs
+    DHT22 -.->|"GPIO Digital"| ESP32
+    MPU6050 -.->|"Bus I2C"| ESP32
+    BMP280 -.->|"Bus I2C"| ESP32
+    Rain -.->|"ADC Analógico"| ESP32
+    Flame -.->|"GPIO Digital"| ESP32
+    
+    %% Styling
+    classDef main fill:#00f0ff,stroke:#005577,stroke-width:2px,color:#000;
+    classDef hardware fill:#181a24,stroke:#3b3f54,stroke-width:1px,color:#fff;
+    classDef actor fill:#ff8c00,stroke:#886a00,stroke-width:2px,color:#fff;
+    
+    class Operator,Dron actor;
+    class ESP32 main;
+    class L298N,Motors,DHT22,MPU6050,BMP280,Rain,Flame hardware;
+```
+
+---
+
+## 🛠️ Especificaciones de Hardware y Sensores
+
+| Componente | Tipo de Sensor / Acción | ¿Por qué se utiliza? |
+| :--- | :--- | :--- |
+| **ESP32 Devkit V1** | Microcontrolador central | CPU doble núcleo con conectividad WiFi/Bluetooth nativa para enlaces de baja latencia. |
+| **MPU-6050** | Giroscopio e Inclinómetro | Audita en tiempo real las ondas sísmicas de tierra y previene volcaduras en pendientes empinadas. |
+| **DHT22** | Termohigrómetro de alta precisión | Monitorea la humedad y temperatura ambiente para auditar frentes cálidos o secos. |
+| **BMP280** | Barómetro Bosch | Registra la presión atmosférica en hPa para la predicción temprana de tormentas severas. |
+| **Sensor de Lluvia** | Placa capacitiva conductiva | Alerta ante la caída de agua para activar protocolos preventivos de inundaciones. |
+| **Sensor de Lluvia** | Placa capacitiva conductiva | Alerta ante la caída de agua para activar protocolos preventivos de inundaciones. |
+| **Sensor de Flama** | Receptor infrarrojo de llama | Reacciona en milisegundos ante la radiación térmica emitida por fuegos accidentales. |
+| **L298N H-Bridge** | Controlador del motor | Regula la potencia de 12V hacia las orugas motrices mediante señales analógicas PWM del ESP32. |
 
 ---
 
 ## 🎮 Terminal Arcade STEAM (Juegos Educativos)
 
-La plataforma cuenta con un aula virtual que integra tres juegos diseñados para la formación interactiva:
+Para incentivar el aprendizaje interactivo y la toma de decisiones críticas en emergencias, la plataforma integra tres simuladores gamificados:
 
-*   **🏆 Trivia de Prevención (Estilo Kahoot):** Desafío cognitivo de 8 preguntas sobre hardware e IoT. Cuenta con temporizador de 15 segundos y racha de multiplicadores. Alcanzar **800+ puntos** otorga el rango de *Operador Experto*.
-*   **🗺️ Simulador de Misiones Tácticas:** Mapa vintage interactivo con overlays holográficos. Los operadores despliegan el robot a incidentes de sismos, fuego e inundaciones. Al mover el robot, se dibuja un **trazado vectorial SVG de trayectoria naranja neón en tiempo real**.
-*   **🚁 Estabilizador de Dron Aéreo:** Simulador físico de vuelo estacionario. Controla la sustentación del dron aéreo frente a ráfagas de viento aleatorias (alertadas en pantalla) usando el teclado (barra espaciadora) o botones de impulso.
+1.  **🏆 Trivia de Prevención (Kahoot Style):** Desafío cognitivo de 8 preguntas sobre hardware y prevención, con temporizador de 15 segundos y racha de multiplicadores. Alcanzar **800+ puntos** otorga el rango de *Operador Experto*.
+2.  **🗺️ Simulador de Misiones Tácticas:** Mapa vintage interactivo con overlays holográficos. Al enrutar el robot ARGOS hacia incidentes de sismo, fuego o inundación, la interfaz genera un **trazado vectorial SVG de trayectoria naranja neón animado**.
+3.  **🚁 Estabilizador de Dron Aéreo:** Simulador físico en tiempo real de vuelo estacionario. Controla la sustentación del dron frente a ráfagas de viento variables (con alertas e indicadores en pantalla) usando botones de impulso o la barra espaciadora.
 
 ---
 
@@ -65,25 +124,19 @@ El código y el diseño visual de ARGOS están protegidos con un escudo digital 
 
 ---
 
-## 🔒 Política de Privacidad (Local-First)
+## 🔒 Política de Privacidad y Legalidad
 
-*   **100% Local:** Toda la información (credenciales de usuarios simuladas, puntuaciones, logs y roles desbloqueados) se guarda localmente en el navegador a través de `localStorage`.
-*   **Sin Rastreo:** No enviamos cookies, analíticas ni datos a servidores de terceros.
-*   **Transparencia de Código:** Conforme a la licencia de software libre, el código fuente es abierto, verificable y seguro para el usuario.
-
----
-
-## ⚖️ Licencia
-
-Este proyecto está liberado bajo la licencia de software libre **GNU Affero General Public License v3 (AGPL-3.0)**. Si modificas el software y lo ejecutas en un servidor en red, estás obligado a poner a disposición de la comunidad el código fuente correspondiente bajo estos mismos términos.
+*   **Local-First / Privacidad Absoluta:** Toda tu información, contraseñas simuladas, sesiones y puntuaciones de arcade se guardan única y exclusivamente de forma local en tu navegador utilizando `localStorage`.
+*   **Sin Rastreo:** No recopilamos, rastreamos ni enviamos datos a servidores externos. Tu privacidad es nuestra absoluta prioridad.
+*   **Licencia GNU AGPLv3:** El software está liberado bajo la licencia de software libre **GNU Affero General Public License v3 (AGPL-3.0)**, garantizando que el código permanezca abierto y auditable para toda la comunidad.
 
 ---
 
-## 🚀 Despliegue Local
+## 🚀 Guía de Despliegue Local
 
-1.  Clona el repositorio:
+1.  Clona el repositorio en tu ordenador:
     ```bash
     git clone https://github.com/GMPH2007/sistemateos.github.oi.git
     ```
-2.  Abre el archivo `index.html` en cualquier navegador moderno.
-3.  *(Opcional)* Si cuentas con el robot físico, ejecuta el servidor WebSocket local en tu microcontrolador ESP32 para emparejar la telemetría.
+2.  Abre el archivo `index.html` en tu navegador web moderno.
+3.  *(Opcional)* Empareja el microcontrolador ESP32 ejecutando el servidor WebSocket provisto en los esquemáticos para sincronizar la telemetría física.
