@@ -2124,6 +2124,30 @@ document.addEventListener('DOMContentLoaded', () => {
              "<em>Prueba a presionar las flechas de dirección en la consola para ver las orugas avanzar.</em>";
     }
 
+    // WebSockets / WiFi / Communication
+    if (clean.includes('websocket') || clean.includes('conexion') || clean.includes('wifi') || clean.includes('comunicacion') || clean.includes('red') || clean.includes('servidor')) {
+      return "La comunicación entre la interfaz web y el robot terrestre se realiza mediante el protocolo <strong>WebSockets</strong> de comunicación bidireccional en tiempo real.<br>" +
+             "• <strong>¿Por qué se usa?</strong> A diferencia de HTTP normal, WebSockets mantiene un canal abierto constante que permite enviar mandos físicos de pilotaje y recibir datos de sensores con una latencia de apenas milisegundos, garantizando que el robot responda al instante.";
+    }
+
+    // PWM / Speed Control
+    if (clean.includes('pwm') || clean.includes('modulacion') || clean.includes('ancho de pulso')) {
+      return "El control de velocidad de las orugas del robot terrestre utiliza <strong>PWM (Modulación por Ancho de Pulso)</strong>.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Permite variar el ciclo de trabajo de la señal eléctrica entregada a los motores para regular su velocidad de manera analógica simulada (valores de 0 a 255) desde la consola web, optimizando la maniobrabilidad.";
+    }
+
+    // I2C Bus Protocol
+    if (clean.includes('i2c') || clean.includes('bus') || clean.includes('sda') || clean.includes('scl')) {
+      return "El bus de comunicación <strong>I2C (Inter-Integrated Circuit)</strong> es utilizado por el ESP32 para comunicarse con el acelerómetro MPU-6050 y el barómetro BMP280.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Requiere únicamente dos cables: SDA (Datos) y SCL (Reloj). Esto permite conectar múltiples sensores compartiendo las mismas líneas de comunicación física, simplificando drásticamente el circuito electrónico.";
+    }
+
+    // LiFePO4 Batteries
+    if (clean.includes('bateria') || clean.includes('alimentacion') || clean.includes('lifepo4') || clean.includes('litio') || clean.includes('autonomia') || clean.includes('corriente')) {
+      return "La alimentación central de ARGOS corre por cuenta de un banco de baterías de tecnología <strong>LiFePO4 (Fosfato de Hierro y Litio)</strong> de 12V.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Ofrecen una excelente vida útil de más de 3000 ciclos de carga, no tienen efecto memoria y brindan una alta estabilidad térmica y química frente a sobrecalentamientos, lo cual las hace ideales para misiones de prevención civil.";
+    }
+
     // Rain Sensor (placa conductiva)
     if (clean.includes('lluvia') || clean.includes('llueve') || clean.includes('agua') || clean.includes('mojado') || clean.includes('precipitacion')) {
       const stateStr = state.sensors.rain 
