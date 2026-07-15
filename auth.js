@@ -818,6 +818,9 @@ document.addEventListener('DOMContentLoaded', () => {
   - Misael Pintado (Co-Fundador y Programación de Mando)
   
   Cualquier copia, intrusión o ingeniería inversa no autorizada
+  está estrictamente denegada por la arquitectura de red local.
+  `, "color: #00f0ff; font-weight: bold; font-size: 13px;", "color: #ff3e3e; font-weight: bold; font-size: 12px;");
+
   // Anti-Bot scan event listener
   const loginHumanCheck = document.getElementById('login-human-check');
   const loginCaptchaStatus = document.getElementById('login-captcha-status');
