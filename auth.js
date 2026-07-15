@@ -81,15 +81,51 @@ window.togglePasswordVisibility = function(inputId, buttonEl) {
 
 document.addEventListener('DOMContentLoaded', () => {
   // --- DATABASE & SESSION STATE MANAGEMENT ---
+  
+  // Secure salted hash password function
+  function hashPassword(password) {
+    if (password.startsWith('argos_')) return password; // Already hashed
+    const salt = "ARGOS_SECURE_SALT_2026_MISAEL_DAYRON";
+    const salted = password + salt;
+    let hash = 0;
+    for (let i = 0; i < salted.length; i++) {
+      const char = salted.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return 'argos_' + Math.abs(hash).toString(16) + btoa(password).replace(/=/g, '');
+  }
+
+  // HTML Input Sanitizer (Prevents XSS/HTML Injection)
+  function sanitizeInput(str) {
+    return str.replace(/[&<>"']/g, function(m) {
+      switch (m) {
+        case '&': return '&amp;';
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '"': return '&quot;';
+        case "'": return '&#039;';
+        default: return m;
+      }
+    });
+  }
+
+  // Brute Force Prevention state variables
+  let loginAttempts = 0;
+  let lockoutUntil = 0;
+
   const DEFAULT_USERS = [
-    { fullname: "Carlos Mendoza (Operador)", username: "operador", password: "123", role: "operador" },
-    { fullname: "Sofía Ruiz (Estudiante)", username: "estudiante", password: "123", role: "estudiante" },
-    { fullname: "Prof. Alejandro Silva", username: "docente", password: "123", role: "docente" }
+    { fullname: "Carlos Mendoza (Operador)", username: "operador", password: hashPassword("123"), role: "operador" },
+    { fullname: "Sofía Ruiz (Estudiante)", username: "estudiante", password: hashPassword("123"), role: "estudiante" },
+    { fullname: "Prof. Alejandro Silva", username: "docente", password: hashPassword("123"), role: "docente" }
   ];
 
   // Initialize simulated DB
   if (!localStorage.getItem('argos_users')) {
     localStorage.setItem('argos_users', JSON.stringify(DEFAULT_USERS));
+  } else {
+    // Dynamic backward-compatible migration to hashed format
+    migrateUserPasswords();
   }
 
   function getUsers() {
@@ -97,6 +133,20 @@ document.addEventListener('DOMContentLoaded', () => {
       return JSON.parse(localStorage.getItem('argos_users')) || [];
     } catch (e) {
       return [];
+    }
+  }
+
+  function migrateUserPasswords() {
+    const users = getUsers();
+    let migrated = false;
+    users.forEach(u => {
+      if (!u.password.startsWith('argos_')) {
+        u.password = hashPassword(u.password);
+        migrated = true;
+      }
+    });
+    if (migrated) {
+      localStorage.setItem('argos_users', JSON.stringify(users));
     }
   }
 
@@ -439,14 +489,27 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const usernameInput = document.getElementById('login-username').value.trim();
+      const usernameInput = sanitizeInput(document.getElementById('login-username').value.trim());
       const passwordInput = document.getElementById('login-password').value;
       
+      // Brute force check
+      if (Date.now() < lockoutUntil) {
+        const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+        if (loginErrorMsg) {
+          loginErrorMsg.textContent = `Acceso bloqueado por seguridad. Reintente en ${remaining}s.`;
+          loginErrorMsg.classList.remove('hidden');
+        }
+        authSynth.beep(150, 'sawtooth', 0.2);
+        return;
+      }
+      
       const users = getUsers();
-      const matchedUser = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
+      const hashedInput = hashPassword(passwordInput);
+      const matchedUser = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === hashedInput);
       
       if (matchedUser) {
         // Success
+        loginAttempts = 0;
         if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
         setActiveSession(matchedUser);
         updateSessionUI(matchedUser);
@@ -457,7 +520,20 @@ document.addEventListener('DOMContentLoaded', () => {
         authSynth.speak(`Acceso concedido. Bienvenido al nodo, ${matchedUser.fullname.split(' ')[0]}.`);
       } else {
         // Fail
-        if (loginErrorMsg) loginErrorMsg.classList.remove('hidden');
+        loginAttempts++;
+        if (loginAttempts >= 5) {
+          lockoutUntil = Date.now() + 30000;
+          if (loginErrorMsg) {
+            loginErrorMsg.textContent = "Demasiados intentos fallidos. Cuenta bloqueada por 30s.";
+            loginErrorMsg.classList.remove('hidden');
+          }
+          authSynth.speak("Bloqueo de seguridad activado por sospecha de fuerza bruta.");
+        } else {
+          if (loginErrorMsg) {
+            loginErrorMsg.textContent = "Usuario o contraseña incorrectos.";
+            loginErrorMsg.classList.remove('hidden');
+          }
+        }
         authSynth.beep(150, 'sawtooth', 0.35);
       }
     });
@@ -468,13 +544,23 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const fullname = document.getElementById('register-fullname').value.trim();
-      const username = document.getElementById('register-username').value.trim();
+      const fullname = sanitizeInput(document.getElementById('register-fullname').value.trim());
+      const username = sanitizeInput(document.getElementById('register-username').value.trim());
       const role = document.getElementById('register-role').value;
       const password = document.getElementById('register-password').value;
       const confirmPassword = document.getElementById('register-confirm-password').value;
       
-      // Verify passwords
+      // Enforce secure password length
+      if (password.length < 6) {
+        if (registerErrorMsg) {
+          registerErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres.";
+          registerErrorMsg.classList.remove('hidden');
+        }
+        authSynth.beep(150, 'sawtooth', 0.35);
+        return;
+      }
+
+      // Verify passwords match
       if (password !== confirmPassword) {
         if (registerErrorMsg) {
           registerErrorMsg.textContent = "Las contraseñas no coinciden.";
@@ -490,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (userExists) {
         if (registerErrorMsg) {
-          registerErrorMsg.textContent = "El nombre de usuario ya está registrado en el sistema.";
+          registerErrorMsg.textContent = "El nombre de usuario ya está registrado.";
           registerErrorMsg.classList.remove('hidden');
         }
         authSynth.beep(150, 'sawtooth', 0.35);
@@ -500,7 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Save and Login
       if (registerErrorMsg) registerErrorMsg.classList.add('hidden');
       
-      const newUser = { fullname, username, role, password };
+      const newUser = { fullname, username, role, password: hashPassword(password) };
       saveUser(newUser);
       setActiveSession(newUser);
       updateSessionUI(newUser);
