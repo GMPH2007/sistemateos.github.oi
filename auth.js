@@ -579,28 +579,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 3. Self-Defending Debugger Trap Loop
-    setInterval(() => {
-      const startTime = Date.now();
-      debugger; // When DevTools is open, debugger pauses, causing a huge delay in execution
-      const endTime = Date.now();
-      
-      // If elapsed time is greater than 100ms, debugger was paused -> DevTools is open!
-      if (endTime - startTime > 100) {
-        authSynth.beep(100, 'sawtooth', 0.5);
-        
-        // Lock screen with a beautiful cyber warning
-        document.body.innerHTML = `
-          <div style="background: radial-gradient(circle, #0c0000 0%, #030000 100%); color: #ff3e3e; height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: monospace; text-align: center; border: 4px solid #ff3e3e; box-shadow: inset 0 0 100px rgba(255,0,0,0.4);">
-            <div style="font-size: 5rem; text-shadow: 0 0 25px #ff3e3e; margin-bottom: 20px; animation: pulseFlashing 0.6s infinite alternate;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-            <h1 style="font-size: 2.2rem; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 0 10px #ff3e3e;">INTRUSIÓN DETECTADA</h1>
-            <p style="font-size: 14px; max-width: 500px; line-height: 1.6; color: #ff8888;">El sistema anti-depuración de ARGOS ha bloqueado el acceso. Cierra las herramientas de desarrollador para reanudar el control.</p>
-            <p style="font-size: 10px; color: #550000; margin-top: 30px; letter-spacing: 1px;">PROPIEDAD DE MISAEL PINTADO & DAYRON URBINA ZAPATA | CODIGO FUENTE PROTEGIDO</p>
-          </div>
-        `;
-        setTimeout(() => { location.reload(); }, 2500);
-      }
-    }, 500);
   })();
 
   // ASCII Warn Console Banner
