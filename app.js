@@ -2058,26 +2058,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getChatbotResponse(input) {
     const clean = input.toLowerCase().trim();
+    const esp32Connected = robotSocket && robotSocket.readyState === WebSocket.OPEN;
 
-    if (clean.includes('temperatura') || clean.includes('humedad') || clean.includes('clima') || clean.includes('calor') || clean.includes('ambiente')) {
+    // teológico y creador
+    if (clean.includes('creó') || clean.includes('creo') || clean.includes('creador')) {
+      return "El único que crea las cosas es **Dios**. Pero si quieres saber quién me fundó o diseñó, fue **Misael Pintado**, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
+    }
+    // diseñador / fundador
+    if (clean.includes('diseño') || clean.includes('diseno') || clean.includes('diseñó') || clean.includes('fundo') || clean.includes('fundó') || clean.includes('fundador') || clean.includes('diseñador') || clean.includes('diseñadora') || clean.includes('misael') || clean.includes('pintado') || clean.includes('cárcamo') || clean.includes('carcamo')) {
+      return "Fui fundado y diseñado por **Misael Pintado**, estudiante destacado del **Instituto Superior Hermanos Cárcamo** de la carrera de **Arquitectura de Plataforma y Servicios TI (APSTI)**. Él estructuró mi hardware, mi electrónica y mi telemetría interactiva.";
+    }
+
+    // juegos y arcade
+    if (clean.includes('juego') || clean.includes('juegos') || clean.includes('arcade') || clean.includes('trivia') || clean.includes('mision') || clean.includes('misiones') || clean.includes('simulador') || clean.includes('kahoot') || clean.includes('jugar')) {
+      return `El Aula STEAM cuenta con un **Terminal Arcade** con dos desafíos interactivos:<br><br>` +
+             `1. **Trivia de Prevención (Estilo Kahoot):** Un test de 5 preguntas sobre hardware y prevención, con un temporizador de 15 segundos y multiplicador de racha (combos).<br>` +
+             `2. **Simulador de Misiones:** Un mapa táctico interactivo donde enrutas al robot a emergencias de sismos, lluvia o fuego, evalúas sensores en vivo desde una consola de comando y tomas decisiones civiles.`;
+    }
+
+    // estado / resumen
+    if (clean.includes('estado') || clean.includes('resumen') || clean.includes('reporte') || clean.includes('status') || clean.includes('sistema') || clean.includes('auditar') || clean.includes('diagnostico') || clean.includes('diagnóstico')) {
+      const emergencyStr = state.sensors.flame ? "⚠️ ¡EMERGENCIA ACTIVA POR FUEGO!" : (state.sensors.rain ? "🌧️ precipitación en curso" : "✅ Monitoreo Seguro");
+      return `<div style="font-family: monospace; font-size: 10px; background: rgba(0,240,255,0.03); border-left: 2px solid var(--accent-cyan); padding: 8px; line-height: 1.5; color:#00ff66;">` +
+             `<strong>[AUDITORÍA DE TELEMETRÍA ARGOS]</strong><br>` +
+             `- Conexión Física: ${esp32Connected ? 'ESP32 ONLINE' : 'MODO SIMULADOR'}<br>` +
+             `- Batería General: ${state.systemBattery}% (Aporte Solar: ${state.solarPower} W)<br>` +
+             `- Sensores Clima: Temp ${state.sensors.temperature.toFixed(1)}°C | Hum ${state.sensors.humidity.toFixed(1)}%<br>` +
+             `- Sensor Lluvia: ${state.sensors.rain ? 'MOJADO (Precipitación)' : 'SECO (Normal)'}<br>` +
+             `- Sensor Flama: ${state.sensors.flame ? '¡ALERTA ROJA!' : 'SEGURO (Sin flama)'}<br>` +
+             `- Dron Aéreo: ${state.droneStatus.toUpperCase()} (Altitud: ${state.droneAlt.toFixed(1)}m | Batería: ${state.droneBattery}%)<br>` +
+             `- Estado Alerta: ${emergencyStr}</div>`;
+    }
+
+    // emergencias o peligro
+    if (clean.includes('alarma') || clean.includes('emergencia') || clean.includes('peligro') || clean.includes('riesgo') || clean.includes('alerta') || clean.includes('fuego') || clean.includes('incendio') || clean.includes('flama')) {
+      if (state.sensors.flame) {
+        return "🚨 **¡ALERTA CRÍTICA DE INCENDIO!** El sensor infrarrojo reporta llamas activas. He disparado la sirena auditiva y las alarmas visuales. Se debe enrutar el robot al sector y avisar a bomberos.";
+      }
+      if (state.sensors.rain) {
+        return "🌧️ **Alerta de Lluvia:** Se reporta caída de agua constante en el chasis. Posible riesgo de inundaciones o desborde en las zonas bajas del río.";
+      }
+      return "✅ **Sistema Seguro:** Todos los sensores indican que no hay situaciones de peligro o incendios activos en el perímetro en este momento.";
+    }
+
+    // temperatura / clima
+    if (clean.includes('temperatura') || clean.includes('humedad') || clean.includes('clima') || clean.includes('calor') || clean.includes('ambiente') || clean.includes('frio') || clean.includes('frío')) {
       return `El sensor ambiental reporta una temperatura en vivo de <strong>${state.sensors.temperature.toFixed(1)}°C</strong> y una humedad relativa del <strong>${state.sensors.humidity.toFixed(1)}%</strong>.`;
     }
+    // presion
     if (clean.includes('presión') || clean.includes('presion') || clean.includes('barometro') || clean.includes('hpa')) {
-      return `La presión atmosférica registrada en tiempo real es de <strong>${state.sensors.pressure} hPa</strong>.`;
+      return `La presión atmosférica registrada por el barómetro es de <strong>${state.sensors.pressure} hPa</strong>.`;
     }
+    // lluvia
     if (clean.includes('lluvia') || clean.includes('llueve') || clean.includes('agua') || clean.includes('mojado')) {
       return state.sensors.rain 
         ? "¡ATENCIÓN! El sensor capacitivo indica <strong>precipitación activa (lluvia)</strong> en la zona." 
         : "El sensor de lluvia está seco. <strong>No hay precipitación detectada</strong> en este momento.";
     }
-    if (clean.includes('fuego') || clean.includes('flama') || clean.includes('incendio') || clean.includes('alarma') || clean.includes('calor')) {
-      return state.sensors.flame
-        ? "¡ALERTA ROJA! El sensor infrarrojo reporta <strong>¡FOCO DE INCENDIO DETECTADO!</strong> El chasis ha activado la sirena de advertencia."
-        : "El sensor de llamas está bajo monitoreo constante. <strong>No hay amenazas de incendio</strong> detectadas.";
-    }
+    // bateria dron
     if (clean.includes('batería dron') || clean.includes('batería drone') || clean.includes('carga dron') || clean.includes('bateria dron') || clean.includes('bateria drone')) {
       return `La celda de energía del dron de reconocimiento aéreo se encuentra al <strong>${state.droneBattery}%</strong> de su capacidad.`;
     }
+    // dron
     if (clean.includes('dron') || clean.includes('drone') || clean.includes('volar') || clean.includes('vuelo') || clean.includes('hangar') || clean.includes('despegue') || clean.includes('altura') || clean.includes('altitud')) {
       if (state.droneStatus === 'hangar') {
         return `El dron está <strong>acoplado y seguro en su hangar</strong> trasero, recargando batería por inducción.`;
@@ -2089,43 +2131,55 @@ document.addEventListener('DOMContentLoaded', () => {
         return `El dron está en vuelo activo a una altitud de <strong>${state.droneAlt.toFixed(1)} metros</strong>. Batería al <strong>${state.droneBattery}%</strong>.`;
       }
     }
+    // velocidad / orugas
     if (clean.includes('velocidad') || clean.includes('mover') || clean.includes('marcha') || clean.includes('oruga') || clean.includes('orugas') || clean.includes('direccion') || clean.includes('dirección')) {
       return state.locoMoving
         ? `El chasis terrestre se desplaza hacia <strong>${state.locoDirection}</strong> con una velocidad configurada en <strong>${state.locoSpeed}x</strong>.`
         : "Las orugas terrestres están <strong>detenidas</strong>. Frenos mecánicos activos.";
     }
+    // solar
     if (clean.includes('solar') || clean.includes('panel') || clean.includes('celda') || clean.includes('energía') || clean.includes('energia') || clean.includes('bateria') || clean.includes('batería')) {
       return `Batería del robot: <strong>${state.systemBattery}%</strong>. Aporte solar actual: <strong>${state.solarPower} W</strong> de generación limpia en el panel monocristalino.`;
     }
+    // gps
     if (clean.includes('gps') || clean.includes('donde') || clean.includes('coordenadas') || clean.includes('radar') || clean.includes('latitud') || clean.includes('longitud') || clean.includes('ubicacion') || clean.includes('ubicación')) {
       return `Ubicación actual del robot: Latitud: <strong>${state.sensors.gpsLat.toFixed(5)}</strong>, Longitud: <strong>${state.sensors.gpsLon.toFixed(5)}</strong>. Puedes ver su posición en el radar circular.`;
     }
+    // sismo
     if (clean.includes('sismo') || clean.includes('vibración') || clean.includes('vibracion') || clean.includes('acelerometro') || clean.includes('acelerómetro') || clean.includes('inclinacion') || clean.includes('inclinación')) {
       return `Acelerometría triaxial: Inclinación X: <strong>${state.sensors.accelX}°</strong>, Y: <strong>${state.sensors.accelY}°</strong>. El osciloscopio sísmico grafica la estabilidad estructural en tiempo real.`;
     }
-    if (clean.includes('aula') || clean.includes('steam') || clean.includes('laboratorio') || clean.includes('clase') || clean.includes('estudiante') || clean.includes('certificado') || clean.includes('practica') || clean.includes('práctica')) {
-      return "El Aula STEAM cuenta con 3 laboratorios interactivos: 1) Análisis climático de presión/lluvias, 2) Simulador de vuelo de sustentación frente al viento, y 3) Entrenamiento de IA para detección de grietas en concreto. ¡Responde y entrena los modelos para ganar tu certificado!";
+    // aula
+    if (clean.includes('aula') || clean.includes('laboratorio') || clean.includes('clase') || clean.includes('certificado') || clean.includes('practica') || clean.includes('práctica')) {
+      return "El Aula STEAM cuenta con 3 laboratorios interactivos: 1) Análisis climático de presión/lluvias, 2) Simulador de vuelo de sustentación frente al viento, y 3) Detección de grietas por IA. ¡Responde y completa los laboratorios para obtener tu certificado!";
     }
-    if (clean.includes('rol') || clean.includes('perfil') || clean.includes('docente') || clean.includes('operador') || clean.includes('público') || clean.includes('publico')) {
-      return `Tu perfil actual en la plataforma es <strong>${state.currentProfile.toUpperCase()}</strong>. Cambiándolo en la barra superior puedes habilitar o bloquear mandos físicos y consolas avanzadas.`;
+    // rol / roles
+    if (clean.includes('rol') || clean.includes('perfil') || clean.includes('roles') || clean.includes('permisos') || clean.includes('cambiar')) {
+      return "Los roles disponibles son:<br>" +
+             "- **Público General:** Solo lectura, pero con mandos físicos habilitados en modo DEMO.<br>" +
+             "- **Operador:** Control absoluto de la telemetría, consola y pilotaje del Dron.<br>" +
+             "- **Estudiante:** Acceso a laboratorios virtuales y al panel de exámenes.<br>" +
+             "- **Docente:** Capacidad de exportación de reportes PDF/CSV/JSON de telemetría.";
     }
-    if (clean.includes('creó') || clean.includes('creo') || clean.includes('creador')) {
-      return "El único que crea las cosas es **Dios**. Pero si quieres saber quién me fundó o diseñó, fue **Misael Pintado**, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
-    }
-    if (clean.includes('diseño') || clean.includes('diseno') || clean.includes('diseñó') || clean.includes('fundo') || clean.includes('fundó') || clean.includes('fundador') || clean.includes('diseñador') || clean.includes('diseñadora') || clean.includes('misael') || clean.includes('pintado') || clean.includes('cárcamo') || clean.includes('carcamo')) {
-      return "Fui fundado y diseñado por **Misael Pintado**, estudiante destacado del **Instituto Superior Hermanos Cárcamo** de la carrera de **Arquitectura de Plataforma y Servicios TI (APSTI)**. Él estructuró mi hardware y telemetría interactiva.";
-    }
+    // quién eres
     if (clean.includes('quién eres') || clean.includes('quien eres') || clean.includes('argos') || clean.includes('robot') || clean.includes('plataforma')) {
       return "<strong>ARGOS</strong> es una plataforma inteligente multi-agente diseñada para la prevención de desastres naturales y la educación STEAM. Fui diseñado y fundado por el estudiante **Misael Pintado** de la carrera de **Arquitectura de Plataforma y Servicios TI (APSTI)** del **Instituto Superior Hermanos Cárcamo**.";
     }
+    // hola
     if (clean.includes('hola') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes') || clean.includes('hey')) {
-      return "¡Hola! Estoy listo para auditar el sistema. Pregúntame por sensores, clima, orugas, el dron, o las lecciones del aula STEAM.";
+      return "¡Hola! Estoy listo para auditar el sistema. Pregúntame por sensores, el estado del clima, el estado del robot, los juegos o las lecciones del aula STEAM.";
     }
+    // ayuda
     if (clean.includes('ayuda') || clean.includes('comandos') || clean.includes('que puedo preguntar') || clean.includes('pregunta')) {
-      return "Pregúntame sobre la telemetría en tiempo real: '¿Qué temperatura hace?', '¿Está lloviendo?', '¿A qué velocidad va el robot?', '¿Dónde está el dron?' o '¿Qué laboratorios hay en el aula STEAM?'";
+      return "Puedes preguntarme cosas como:<br>" +
+             "- *'¿Quién te diseñó?'*<br>" +
+             "- *'¿Cuáles son los juegos interactivos?'*<br>" +
+             "- *'Dame un reporte del estado del sistema'*<br>" +
+             "- *'¿Hay alguna emergencia activa?'*<br>" +
+             "- *'¿Cuál es la temperatura y clima actual?'*";
     }
 
-    return "Entendido. He auditado la telemetría de ARGOS y todo corre estable. Si tienes alguna duda sobre algún sensor específico (lluvia, temperatura, fuego, panel solar) o sobre cómo volar el dron, dímelo y te daré los datos en tiempo real.";
+    return "Entendido. He auditado la telemetría en tiempo real y todos los nodos de ARGOS corren estables. Puedes preguntarme sobre sensores específicos (lluvia, sismos, fuego, panel solar), mandos de dirección, el vuelo del dron o los juegos interactivos del aula.";
   }
 
   function handleSendChatMessage() {
