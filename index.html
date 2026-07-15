@@ -7,9 +7,21 @@
   <title>ARGOS - Plataforma de Prevención, Monitoreo y Educación STEAM</title>
   <!-- Cache Conflict Interceptor Script -->
   <script>
+    // Forcefully unregister any caching Service Workers to clear old JS/CSS files
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+          console.log("[🛡️ SHIELD] Service Worker desregistrado para forzar limpieza de caché.");
+        }
+      }).catch(function(err) {
+        console.warn("Failed to unregister service worker:", err);
+      });
+    }
+
     window.addEventListener('error', function(e) {
       if (e.message && (e.message.indexOf('SyntaxError') !== -1 || e.message.indexOf('Uncaught') !== -1)) {
-        console.warn("⚠️ [CONFLIT DE CACHE DETECTADO]:", e.message);
+        console.warn("⚠️ [CONFLICTO DE CACHÉ DETECTADO]:", e.message);
       }
     });
   </script>
