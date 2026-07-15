@@ -230,6 +230,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // Execute after small delays to ensure elements render
   setTimeout(attachAuthSounds, 300);
 
+  // --- CHECK AND INJECT EXPERT ROLE ---
+  window.checkAndInjectExpertRole = function() {
+    const isExpertUnlocked = localStorage.getItem('argos_expert_unlocked') === 'true';
+    if (isExpertUnlocked) {
+      if (nativeProfileSelect && !nativeProfileSelect.querySelector('option[value="expert"]')) {
+        const opt = document.createElement('option');
+        opt.value = 'expert';
+        opt.textContent = 'Controlador Experto 🏆';
+        nativeProfileSelect.appendChild(opt);
+      }
+      const regSelect = document.getElementById('register-role');
+      if (regSelect && !regSelect.querySelector('option[value="expert"]')) {
+        const opt = document.createElement('option');
+        opt.value = 'expert';
+        opt.textContent = 'Controlador Experto (Acceso Total) 🏆';
+        regSelect.appendChild(opt);
+      }
+    }
+  };
+
   // --- PANEL LOCK CONTROL ---
   function updatePanelLocks(role) {
     const flightCard = document.getElementById('flight-control-card');
@@ -247,9 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
       studentModule.classList.remove('panel-locked');
     }
     
-    // Teacher Console is unlocked only for 'docente' and 'operador' (for demo purposes)
+    // Teacher Console is unlocked for 'docente', 'operador' and 'expert'
     if (teacherModule) {
-      if (currentRole === 'docente' || currentRole === 'operador') {
+      if (currentRole === 'docente' || currentRole === 'operador' || currentRole === 'expert') {
         teacherModule.classList.remove('panel-locked');
       } else {
         teacherModule.classList.add('panel-locked');
@@ -325,6 +345,11 @@ document.addEventListener('DOMContentLoaded', () => {
           roleLabel = 'Docente';
           iconClass = 'fa-solid fa-chalkboard-user';
           roleColorClass = 'role-docente';
+          break;
+        case 'expert':
+          roleLabel = 'Controlador Experto 🏆';
+          iconClass = 'fa-solid fa-crown';
+          roleColorClass = 'role-expert';
           break;
       }
       
@@ -485,6 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- INIT BOOTSTRAP ---
   // Run on startup
+  checkAndInjectExpertRole();
   const initialSession = getActiveSession();
   
   if (initialSession) {
