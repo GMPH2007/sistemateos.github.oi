@@ -120,13 +120,71 @@ document.addEventListener('DOMContentLoaded', () => {
     { fullname: "Prof. Alejandro Silva", username: "docente", password: hashPassword("123"), role: "docente" }
   ];
 
-  // Initialize simulated DB
+  const CLOUD_DB_URL = "https://extendsclass.com/api/json-storage/bin/dadaefb";
+  const SECURITY_KEY = "ARGOS_SECURITY_TOKEN_2026";
+
+  // Fetch and sync users from the cloud
+  async function syncUsersFromCloud() {
+    try {
+      const response = await fetch(CLOUD_DB_URL);
+      if (response.ok) {
+        const cloudUsers = await response.json();
+        if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
+          const localUsers = getUsers();
+          
+          // Merge local and cloud, matching by username (case-insensitive)
+          let merged = [...localUsers];
+          cloudUsers.forEach(cu => {
+            const index = merged.findIndex(lu => lu.username.toLowerCase() === cu.username.toLowerCase());
+            if (index === -1) {
+              merged.push(cu);
+            } else {
+              // Update local with cloud details
+              merged[index] = cu;
+            }
+          });
+          
+          localStorage.setItem('argos_users', JSON.stringify(merged));
+          console.log("[☁️ CLOUD SYNC] Sincronización de base de datos de usuarios completada con la nube.");
+          return merged;
+        }
+      }
+    } catch (e) {
+      console.warn("[☁️ CLOUD SYNC] Error al sincronizar desde la nube. Usando base de datos local offline.", e);
+    }
+    return getUsers();
+  }
+
+  // Save and upload users to the cloud
+  async function syncUsersToCloud(usersList) {
+    try {
+      const response = await fetch(CLOUD_DB_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Security-key': SECURITY_KEY
+        },
+        body: JSON.stringify(usersList)
+      });
+      if (response.ok) {
+        console.log("[☁️ CLOUD SYNC] Base de datos respaldada en la nube con éxito.");
+      } else {
+        console.warn("[☁️ CLOUD SYNC] Error del servidor al guardar en la nube.");
+      }
+    } catch (e) {
+      console.warn("[☁️ CLOUD SYNC] Error de red al guardar en la nube.", e);
+    }
+  }
+
+  // Initialize simulated DB & Sync
   if (!localStorage.getItem('argos_users')) {
     localStorage.setItem('argos_users', JSON.stringify(DEFAULT_USERS));
   } else {
-    // Dynamic backward-compatible migration to hashed format
     migrateUserPasswords();
   }
+  
+  // Trigger cloud sync asynchronously at startup
+  syncUsersFromCloud();
 
   function getUsers() {
     try {
@@ -154,6 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const users = getUsers();
     users.push(user);
     localStorage.setItem('argos_users', JSON.stringify(users));
+    
+    // Backup database to the cloud
+    syncUsersToCloud(users);
   }
 
   function getActiveSession() {
