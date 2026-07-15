@@ -2066,6 +2066,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const clean = input.toLowerCase().trim();
     const esp32Connected = robotSocket && robotSocket.readyState === WebSocket.OPEN;
 
+    // Arduino
+    if (clean.includes('arduino')) {
+      return "<strong>Arduino</strong> es una plataforma de hardware y software libre. En el proyecto ARGOS, usamos microcontroladores avanzados (como el ESP32 Devkit V1) programados bajo el entorno de Arduino para procesar los datos de los sensores y mover los motores de las orugas.";
+    }
+    // IA / Inteligencia Artificial
+    if (clean.includes('ia') || clean.includes('inteligencia artificial') || clean.includes('visión por computadora') || clean.includes('vision por computadora') || clean.includes('computadora')) {
+      return "La <strong>Inteligencia Artificial (IA)</strong> en ARGOS ejecuta modelos de visión artificial en tiempo real. Se utiliza para clasificar la gravedad de grietas en pistas y concreto (Sano, Leve, Grave) y detectar amenazas de fuego mediante las cámaras de exploración.";
+    }
+    // APSTI
+    if (clean.includes('apsti') || clean.includes('carrera') || clean.includes('servicios ti') || clean.includes('arquitectura de plataforma')) {
+      return "<strong>APSTI</strong> es la carrera de <strong>Arquitectura de Plataformas y Servicios de Tecnologías de la Información</strong>. Estudia el diseño, configuración y soporte de redes, servidores, ciberseguridad y sistemas de Internet de las Cosas (IoT) como el robot ARGOS.";
+    }
+    // IESTP Hermanos Carcamo
+    if (clean.includes('instituto') || clean.includes('hermanos') || clean.includes('cárcamo') || clean.includes('carcamo') || clean.includes('paita') || clean.includes('piura')) {
+      return "El <strong>Instituto Superior Tecnológico Público Hermanos Cárcamo</strong> es la institución tecnológica líder de Paita donde el fundador <strong>Misael Pintado</strong> cursa la carrera de APSTI, impulsando proyectos de innovación y resiliencia civil.";
+    }
+    // Diferencia Robot / Dron
+    if (clean.includes('diferencia') || clean.includes('comparacion') || clean.includes('comparación')) {
+      return "La diferencia es su entorno de exploración: el robot <strong>ARGOS</strong> patrulla por tierra usando orugas todoterreno de 12V, mientras que el <strong>Dron</strong> realiza despegue vertical para explorar zonas aéreas o inundadas donde las orugas no pueden ingresar.";
+    }
+    // Qué haces / Para qué sirves / Función del asistente
+    if (clean.includes('que haces') || clean.includes('que hace') || clean.includes('para que sirves') || clean.includes('para que sirve') || clean.includes('que funcion') || clean.includes('que función') || clean.includes('funcion cumple') || clean.includes('función cumple') || clean.includes('propósito') || clean.includes('proposito')) {
+      return "Mi función es actuar como el <strong>asistente táctico de IA</strong> de ARGOS. Puedo auditar la telemetría (humedad, lluvia, fuego, sismos), coordinar el vuelo del dron y guiarte en el Aula STEAM con exámenes, juegos interactivos y reportes.";
+    }
+
     // 1. TEOLÓGICO Y CREADOR (MISAEL PINTADO)
     if (clean.includes('creó') || clean.includes('creo') || clean.includes('creador')) {
       return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quién me fundó o diseñó, fue <strong>Misael Pintado</strong>, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
