@@ -4110,3 +4110,104 @@ input:checked + .slider-toggle:before {
   margin-bottom: 8px;
 }
 
+/* DRONE GAME LAYOUT & INTERFACE */
+.drone-game-container {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  height: 280px;
+  margin: 15px auto;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, #030408 100%);
+  border: 1.5px dashed rgba(168, 85, 247, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(168, 85, 247, 0.1);
+}
+
+.drone-safety-zone {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: rgba(34, 197, 94, 0.12);
+  border-top: 1.5px dashed rgba(34, 197, 94, 0.6);
+  border-bottom: 1.5px dashed rgba(34, 197, 94, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: rgba(34, 197, 94, 0.8);
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+  transition: top 0.5s ease-in-out, height 0.5s ease-in-out;
+}
+
+.drone-icon-fly {
+  position: absolute;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: #a855f7;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+  transition: top 0.05s linear;
+}
+
+.drone-status-indicator {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-family: monospace;
+  font-size: 10px;
+  color: #fff;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.7);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.drone-wind-gust-indicator {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: #ef4444;
+  animation: pulseFlashing 0.5s infinite alternate;
+  display: none;
+}
+
+@keyframes pulseFlashing {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* SVG PATH OVERLAY */
+.svg-path-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.svg-path-line {
+  stroke: var(--accent-orange);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
+  animation: dashAnimation 1s linear infinite;
+  fill: none;
+}
+
+@keyframes dashAnimation {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+
