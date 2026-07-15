@@ -203,9 +203,72 @@ document.addEventListener('DOMContentLoaded', () => {
   const nativeProfileSelect = document.getElementById('profile-select');
 
   // --- MODAL CONTROLS ---
+  
+  // Booting Log Console Terminal Simulator
+  function runTerminalBoot(terminalElId, logsArray) {
+    const el = document.getElementById(terminalElId);
+    if (!el) return;
+    el.innerHTML = '';
+    let lineIdx = 0;
+    
+    // Add header
+    const header = document.createElement('div');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+    header.style.paddingBottom = '4px';
+    header.style.marginBottom = '6px';
+    header.innerHTML = `<span><i class="fa-solid fa-terminal"></i> CONEXIÓN SEGURA</span><span style="color:#00ff66; animation: pulseFlashing 0.8s infinite alternate;"><i class="fa-solid fa-circle"></i> PROTEGIDO</span>`;
+    el.appendChild(header);
+    
+    function printLine() {
+      if (lineIdx >= logsArray.length) return;
+      const line = document.createElement('div');
+      line.style.color = '#888';
+      line.textContent = logsArray[lineIdx];
+      el.appendChild(line);
+      lineIdx++;
+      setTimeout(printLine, 120);
+    }
+    printLine();
+  }
+
   function showModal(modalEl) {
     modalEl.classList.remove('hidden');
     authSynth.beep(500, 'sine', 0.1);
+    
+    // Trigger terminal animation if applicable
+    if (modalEl.id === 'login-modal-overlay') {
+      runTerminalBoot('login-terminal-logs', [
+        "> INICIANDO PROTOCOLO SHIELD v5.20...",
+        "> ENLACE DE DATOS ENCRIPTADO... [OK]",
+        "> FIREWALL ACTIVO (DETECCION DDoS)... [OK]",
+        "> VERIFICANDO INTEGRIDAD LOCAL... [COMPLETO]"
+      ]);
+      // Reset Captcha status
+      const check = document.getElementById('login-human-check');
+      if (check) check.checked = false;
+      const status = document.getElementById('login-captcha-status');
+      if (status) {
+        status.textContent = '[ESPERANDO...]';
+        status.style.color = '#ff8c00';
+      }
+    } else if (modalEl.id === 'register-modal-overlay') {
+      runTerminalBoot('register-terminal-logs', [
+        "> GENERANDO LLAVE PÚBLICA / PRIVADA...",
+        "> CANAL CREADOR DE CUENTAS: SEGURO",
+        "> AUDITANDO PARÁMETROS XSS... [INICIADO]",
+        "> SISTEMA LISTO PARA ASIGNACIÓN DE ROL"
+      ]);
+      // Reset strength bar
+      const strengthBar = document.getElementById('strength-bar-fill');
+      if (strengthBar) strengthBar.style.width = '0%';
+      const strengthLabel = document.getElementById('strength-label');
+      if (strengthLabel) {
+        strengthLabel.textContent = 'Ninguna';
+        strengthLabel.style.color = '#888';
+      }
+    }
     
     // Add visual glow reaction on form inputs
     const firstInput = modalEl.querySelector('input');
@@ -492,6 +555,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const usernameInput = sanitizeInput(document.getElementById('login-username').value.trim());
       const passwordInput = document.getElementById('login-password').value;
       
+      // Captcha Human Check
+      const loginHumanCheck = document.getElementById('login-human-check');
+      if (loginHumanCheck && !loginHumanCheck.checked) {
+        if (loginErrorMsg) {
+          loginErrorMsg.textContent = "Por seguridad, confirma la autenticación humana (Anti-Bot).";
+          loginErrorMsg.classList.remove('hidden');
+        }
+        authSynth.beep(150, 'sawtooth', 0.2);
+        return;
+      }
+
       // Brute force check
       if (Date.now() < lockoutUntil) {
         const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
@@ -683,7 +757,87 @@ document.addEventListener('DOMContentLoaded', () => {
   - Misael Pintado (Co-Fundador y Programación de Mando)
   
   Cualquier copia, intrusión o ingeniería inversa no autorizada
-  está estrictamente denegada por la arquitectura de red local.
-  `, "color: #00f0ff; font-weight: bold; font-size: 13px;", "color: #ff3e3e; font-weight: bold; font-size: 12px;");
+  // Anti-Bot scan event listener
+  const loginHumanCheck = document.getElementById('login-human-check');
+  const loginCaptchaStatus = document.getElementById('login-captcha-status');
+  if (loginHumanCheck) {
+    loginHumanCheck.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        authSynth.beep(400, 'sine', 0.1);
+        if (loginCaptchaStatus) {
+          loginCaptchaStatus.textContent = '[ESCANEO DE SISTEMA...]';
+          loginCaptchaStatus.style.color = '#ff8c00';
+        }
+        setTimeout(() => {
+          if (loginHumanCheck.checked) {
+            authSynth.beep(800, 'sine', 0.15);
+            if (loginCaptchaStatus) {
+              loginCaptchaStatus.textContent = '[HUMANO CONFIRMADO]';
+              loginCaptchaStatus.style.color = '#00ff66';
+            }
+          }
+        }, 1000);
+      } else {
+        if (loginCaptchaStatus) {
+          loginCaptchaStatus.textContent = '[ESPERANDO...]';
+          loginCaptchaStatus.style.color = '#ff8c00';
+        }
+      }
+    });
+  }
+
+  // Password strength checker event listener
+  const registerPwdInput = document.getElementById('register-password');
+  const strengthBarFill = document.getElementById('strength-bar-fill');
+  const strengthLabel = document.getElementById('strength-label');
+  if (registerPwdInput) {
+    registerPwdInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      if (!val) {
+        if (strengthBarFill) strengthBarFill.style.width = '0%';
+        if (strengthLabel) {
+          strengthLabel.textContent = 'Ninguna';
+          strengthLabel.style.color = '#888';
+        }
+        return;
+      }
+      
+      let score = 0;
+      if (val.length >= 6) score += 1;
+      if (val.length >= 10) score += 1;
+      if (/[0-9]/.test(val)) score += 1;
+      if (/[A-Z]/.test(val)) score += 1;
+      if (/[^A-Za-z0-9]/.test(val)) score += 1;
+      
+      if (score <= 1) {
+        if (strengthBarFill) {
+          strengthBarFill.style.width = '25%';
+          strengthBarFill.style.background = '#ff3e3e';
+        }
+        if (strengthLabel) {
+          strengthLabel.textContent = 'Insegura ⚠️';
+          strengthLabel.style.color = '#ff3e3e';
+        }
+      } else if (score <= 3) {
+        if (strengthBarFill) {
+          strengthBarFill.style.width = '60%';
+          strengthBarFill.style.background = '#ff8c00';
+        }
+        if (strengthLabel) {
+          strengthLabel.textContent = 'Moderada ⚡';
+          strengthLabel.style.color = '#ff8c00';
+        }
+      } else {
+        if (strengthBarFill) {
+          strengthBarFill.style.width = '100%';
+          strengthBarFill.style.background = '#00ff66';
+        }
+        if (strengthLabel) {
+          strengthLabel.textContent = 'Impenetrable 🔒';
+          strengthLabel.style.color = '#00ff66';
+        }
+      }
+    });
+  }
 
 });
