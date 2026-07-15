@@ -129,9 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const loginModal = document.getElementById('login-modal-overlay');
   const registerModal = document.getElementById('register-modal-overlay');
+  const licenseModal = document.getElementById('license-modal-overlay');
+  const privacyModal = document.getElementById('privacy-modal-overlay');
   
   const btnCloseLogin = document.getElementById('btn-close-login');
   const btnCloseRegister = document.getElementById('btn-close-register');
+  const btnCloseLicense = document.getElementById('btn-close-license');
+  const btnClosePrivacy = document.getElementById('btn-close-privacy');
   
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
@@ -178,10 +182,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Bind Openers
   if (btnOpenLogin) btnOpenLogin.addEventListener('click', () => showModal(loginModal));
   if (btnOpenRegister) btnOpenRegister.addEventListener('click', () => showModal(registerModal));
+  if (btnOpenLicense) {
+    btnOpenLicense.addEventListener('click', (e) => {
+      e.preventDefault();
+      showModal(licenseModal);
+    });
+  }
+  if (btnOpenPrivacy) {
+    btnOpenPrivacy.addEventListener('click', (e) => {
+      e.preventDefault();
+      showModal(privacyModal);
+    });
+  }
   
   // Bind Closers
   if (btnCloseLogin) btnCloseLogin.addEventListener('click', () => hideModal(loginModal));
   if (btnCloseRegister) btnCloseRegister.addEventListener('click', () => hideModal(registerModal));
+  if (btnCloseLicense) btnCloseLicense.addEventListener('click', () => hideModal(licenseModal));
+  if (btnClosePrivacy) btnClosePrivacy.addEventListener('click', () => hideModal(privacyModal));
 
   // Switch between modals
   if (linkToRegister) {
@@ -200,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Close modals when clicking overlay background
-  [loginModal, registerModal].forEach(modal => {
+  [loginModal, registerModal, licenseModal, privacyModal].forEach(modal => {
     if (modal) {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -215,6 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') {
       if (loginModal && !loginModal.classList.contains('hidden')) hideModal(loginModal);
       if (registerModal && !registerModal.classList.contains('hidden')) hideModal(registerModal);
+      if (licenseModal && !licenseModal.classList.contains('hidden')) hideModal(licenseModal);
+      if (privacyModal && !privacyModal.classList.contains('hidden')) hideModal(privacyModal);
     }
   });
 
@@ -526,5 +546,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateSessionUI(null);
   }
+  // --- ANTI-HACKER SOURCE PROTECTION SHIELD ---
+  console.log(`%c
+   █████╗ ██████╗  ██████╗  ██████╗ ███████╗
+  ██╔══██╗██╔══██╗██╔════╝ ██╔═══██╗██╔════╝
+  ███████║██████╔╝██║  ███╗██║   ██║███████╗
+  ██╔══██║██╔══██╗██║   ██║██║   ██║╚════██║
+  ██║  ██║██║  ██║╚██████╔╝╚██████╔╝███████║
+  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚══════╝
+  %c¡ACCESO DE CÓDIGO RESTRINGIDO!
+  -------------------------------------------------------------
+  Software de Resiliencia Civil Protegido bajo Licencia GNU AGPLv3.
+  Propiedad Intelectual y Diseño de Interfaz Exclusivo de:
+  - Dayron Urbina Zapata (Diseño de Hardware y Robótica)
+  - Misael Pintado (Co-Fundador y Programación de Mando)
+  
+  Cualquier copia, intrusión o ingeniería inversa no autorizada
+  está estrictamente denegada por la arquitectura de red local.
+  `, "color: #00f0ff; font-weight: bold; font-size: 13px;", "color: #ff3e3e; font-weight: bold; font-size: 12px;");
+
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    authSynth.beep(180, 'sawtooth', 0.4);
+    console.warn('%c[SEGURIDAD] Intento de clic derecho bloqueado. Propiedad Intelectual Protegida.', 'color: #ff3e3e; font-weight: bold;');
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const isCtrlShift = e.ctrlKey && e.shiftKey;
+    const isCtrl = e.ctrlKey;
+    
+    // 123 is F12. 73 is I, 74 is J, 67 is C. 85 is U (View source). 83 is S (Save).
+    if (
+      e.keyCode === 123 || 
+      (isCtrlShift && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) ||
+      (isCtrl && (e.keyCode === 85 || e.keyCode === 83))
+    ) {
+      e.preventDefault();
+      authSynth.beep(180, 'sawtooth', 0.4);
+      console.warn('%c[SEGURIDAD] Atajo de inspección de código bloqueado.', 'color: #ff3e3e; font-weight: bold;');
+    }
+  });
 
 });
