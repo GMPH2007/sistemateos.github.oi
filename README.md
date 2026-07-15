@@ -72,8 +72,8 @@ El siguiente diagrama de flujo esquematiza las interconexiones físicas y los ca
 ```mermaid
 graph TD
     %% Nodes definition
-    Operator[("💻 Interfaz del Operador<br>(Dashboard HTML5/CSS3/JS)")]
-    AICopilot["🧠 AI Co-Pilot Auditor<br>(Modelos YOLOv8 & CNN)")]
+    Operator["💻 Interfaz del Operador<br>(Dashboard HTML5/CSS3/JS)"]
+    AICopilot["🧠 AI Co-Pilot Auditor<br>(Modelos YOLOv8 & CNN)"]
     ESP32["🧠 Microcontrolador ESP32 Devkit V1<br>(Servidor WebSocket Arduino)"]
     L298N["🔌 Driver Puente H L298N"]
     Motors["⚙️ Orugas Todo Terreno (Motores 12V CC)"]
