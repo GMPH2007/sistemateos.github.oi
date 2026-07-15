@@ -2539,6 +2539,21 @@ document.addEventListener('DOMContentLoaded', () => {
       q: "Si la batería del robot desciende críticamente en patrullaje diurno, ¿cuál es su método de continuidad?",
       options: ["Apagarse en la calle", "Regresar a la toma eléctrica", "Carga fotovoltaica mediante panel monocristalino superior y regulador MPPT", "Cambio manual de celdas por los vecinos"],
       correct: 2
+    },
+    {
+      q: "¿Quiénes son los fundadores y diseñadores del proyecto robótico ARGOS?",
+      options: ["El director del instituto Hermanos Cárcamo", "Misael Pintado y Dayron Urbina (carrera APSTI)", "Los profesores de la especialidad de Computación", "Un equipo internacional de ingenieros de IoT"],
+      correct: 1
+    },
+    {
+      q: "¿Qué protocolo de red utiliza ARGOS para recibir mandos físicos de pilotaje e intercambiar telemetría con baja latencia (<50ms)?",
+      options: ["HTTP/POST tradicional", "WebSockets bidireccionales", "Transferencia FTP por lotes", "Mensajería SMS"],
+      correct: 1
+    },
+    {
+      q: "¿Cuál es la función del driver Puente H L298N en la locomoción terrestre por orugas?",
+      options: ["Medir la inclinación angular del chasis", "Alimentar el módulo GPS con energía solar", "Canalizar la corriente de la batería de 12V a los motores según las señales de control de 3.3V del ESP32", "Regular la velocidad del ventilador de la CPU"],
+      correct: 2
     }
   ];
 
@@ -2712,18 +2727,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTriviaResults() {
     if (!arcadeWorkspace) return;
     const maxScore = triviaQuestions.length * 100;
-    const pct = (triviaScore / 600) * 100; // max score with bonuses is around 600-800
+    const pct = (triviaScore / 1000) * 100; // max score with bonuses is around 1000-1300
     
     let title = "";
     let color = "";
     let desc = "";
 
-    if (triviaScore >= 500) {
+    if (triviaScore >= 800) {
       title = "¡Operador de Nivel Experto!";
       color = "var(--accent-green)";
-      desc = `Excelente. Lograste un puntaje de ${triviaScore} puntos. ¡Estás listo para operar el ecosistema ARGOS en situaciones reales de desastre!`;
+      desc = `Excelente. Lograste un puntaje extraordinario de ${triviaScore} puntos. ¡Estás listo para operar el ecosistema ARGOS en situaciones reales de desastre!`;
       synth.victory();
-    } else if (triviaScore >= 300) {
+    } else if (triviaScore >= 500) {
       title = "Buen Trabajo";
       color = "var(--accent-cyan)";
       desc = `Obtuviste ${triviaScore} puntos. Tienes conocimientos sólidos sobre el hardware y funciones cívicas.`;
@@ -2794,6 +2809,21 @@ document.addEventListener('DOMContentLoaded', () => {
         { text: "Detenerse a recargar la batería solar bajo la tormenta.", correct: false },
         { text: "Desplegar el Dron Explorador para monitorear el cauce del río desde el aire y enviar alertas sonoras con traducción de texto a las zonas bajas del río.", correct: true },
         { text: "Entrar en modo apagón lumínico y desconectar los sensores de lluvia.", correct: false }
+      ],
+      points: 150,
+      completed: false
+    },
+    {
+      id: "m-dron",
+      name: "Zonas Anegadas (Exploración Aérea)",
+      icon: "fa-solid fa-helicopter",
+      x: 40,
+      y: 15,
+      question: "El dron de exploración aérea de ARGOS detecta una grieta profunda de tipo 'GRAVE' en la rampa de evacuación. ¿Cuál es la acción inmediata del operador?",
+      options: [
+        { text: "Reportar la severidad de la grieta en la base de datos de IA, georreferenciar la anomalía con el módulo GPS y sugerir el cierre temporal preventivo del tramo.", correct: true },
+        { text: "Ignorar la grieta aérea ya que el robot terrestre no transita por el aire.", correct: false },
+        { text: "Apagar el streaming de video del dron para que el operador no registre alarmas adicionales.", correct: false }
       ],
       points: 150,
       completed: false
@@ -2902,6 +2932,15 @@ document.addEventListener('DOMContentLoaded', () => {
             - PRESIÓN ATMOSFÉRICA: 980 hPa (TORMENTA EXTREMA)<br>
             - DETECTOR DE LLUVIA: ACTIVADO (MOJADO CONTINUO)<br>
             - RÍO TEOS: ALERTA DE RIESGO DE DESBORDE DE CUENCA
+          </div>
+        `;
+      } else if (selectedMission.id === 'm-dron') {
+        diagnosticsHtml = `
+          <div class="terminal-diagnostics">
+            <div class="terminal-diagnostics-header"><i class="fa-solid fa-terminal"></i> TELEMETRÍA AÉREA (VISIÓN IA DE DRON)</div>
+            - SISTEMA EN VUELO: COORDENADAS GPS ESTABLES<br>
+            - ANÁLISIS DE IMAGEN: DETECTANDO FISURA EN CONCRETO<br>
+            - GRAVEDAD RECONOCIDA POR IA: GRAVE (RIESGO CIVIL DE EVACUACIÓN)
           </div>
         `;
       }
