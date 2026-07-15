@@ -2074,16 +2074,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const esp32Connected = robotSocket && robotSocket.readyState === WebSocket.OPEN;
     const words = clean.split(' ');
 
-    // 1. SPECIFIC SENSORS & ACTUATORS (Priority checks)
-    
-    // Rain Sensor
+    // 1. SPECIFIC COMPONENTS & HARDWARE EXPLANATIONS (Why they are used)
+
+    // ESP32
+    if (clean.includes('esp32') || clean.includes('microcontrolador') || clean.includes('devkit') || clean.includes('chip') || clean.includes('cerebro')) {
+      return "El <strong>ESP32 Devkit V1</strong> es el cerebro electrónico central de ARGOS.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Porque ofrece un procesador de doble núcleo de 240 MHz con <strong>WiFi y Bluetooth integrados</strong>. Esto permite recibir tus mandos en tiempo real desde esta interfaz web, procesar las lecturas de los sensores y accionar los motores.<br>" +
+             "<em>¿Quieres saber qué sensor procesa primero? Pregúntame por el DHT22 o el MPU6050.</em>";
+    }
+
+    // DHT22
+    if (clean.includes('dht22') || clean.includes('dht11') || clean.includes('higrometro')) {
+      return "El <strong>DHT22 (AM2302)</strong> es el sensor digital termohigrómetro.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Se prefiere sobre el DHT11 porque tiene **mayor precisión** (±2% de humedad y ±0.5°C de temperatura) y un rango de lectura de 0 a 100% de humedad. Es clave para medir la habitabilidad y el microclima de zonas críticas.<br>" +
+             "<em>¿Sabías que puedes ver su gráfica de temperatura en tiempo real en la consola? ¡Pruébalo!</em>";
+    }
+
+    // BMP280
+    if (clean.includes('bmp280') || clean.includes('bmp180') || clean.includes('bmp')) {
+      return "El <strong>BMP280</strong> es el barómetro digital de presión atmosférica desarrollado por Bosch.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Mide la <strong>presión atmosférica (hPa)</strong>. Las caídas bruscas de presión atmosférica son el indicador físico principal de tormentas severas. ARGOS lo usa para predecir frentes de lluvia antes de que inicien.<br>" +
+             "<em>¿Quieres ver su lectura actual? Pregúntame 'presión atmosférica'.</em>";
+    }
+
+    // MPU6050
+    if (clean.includes('mpu6050') || clean.includes('giroscopio') || clean.includes('inclinometro') || clean.includes('acelerometro')) {
+      return "El <strong>MPU-6050</strong> es una unidad de medición inercial (IMU) de 6 ejes.<br>" +
+             "• <strong>¿Por qué se usa?</strong> Combina un acelerómetro triaxial y un giroscopio. Permite **monitorear ondas sísmicas** (movimiento de tierra) en el osciloscopio y auditar el ángulo de inclinación de las orugas para evitar volcaduras en pendientes accidentadas de hasta 35°.<br>" +
+             "<em>¡Mueve el robot o activa el simulador para ver cómo oscila el gráfico de vibraciones sísmicas!</em>";
+    }
+
+    // L298N / Driver
+    if (clean.includes('l298n') || clean.includes('puente h') || clean.includes('driver') || clean.includes('motores') || clean.includes('motor')) {
+      return "El <strong>Puente H L298N</strong> es el driver o etapa de potencia de los motores terrestres.<br>" +
+             "• <strong>¿Por qué se usa?</strong> El chip ESP32 trabaja a 3.3V y no tiene la potencia para mover las orugas. El L298N toma las señales lógicas de control del ESP32 y canaliza la corriente directa de la batería de 12V hacia los motores del chasis todoterreno.<br>" +
+             "<em>Prueba a presionar las flechas de dirección en la consola para ver las orugas avanzar.</em>";
+    }
+
+    // Rain Sensor (placa conductiva)
     if (clean.includes('lluvia') || clean.includes('llueve') || clean.includes('agua') || clean.includes('mojado') || clean.includes('precipitacion')) {
       const stateStr = state.sensors.rain 
         ? "🚨 ¡ATENCIÓN! Indica <strong>precipitación activa (lluvia)</strong> en la zona." 
         : "✅ Está seco. <strong>No hay lluvias detectadas</strong>.";
-      return `El <strong>Sensor de Lluvia</strong> es una placa capacitiva de conductividad de agua.<br>` +
-             `• <strong>Función:</strong> Detectar frentes de tormenta y humedad en el chasis para predecir posibles inundaciones.<br>` +
-             `• <strong>Estado actual:</strong> ${stateStr}`;
+      return `El <strong>Sensor de Lluvia (placa conductiva)</strong> detecta el contacto del agua.<br>` +
+             `• <strong>¿Por qué se usa?</strong> Permite alertar al instante sobre caída de lluvia constante, lo que en zonas de alto riesgo ayuda a anticipar desbordes de ríos y activar protocolos de evacuación.<br>` +
+             `• <strong>Estado actual:</strong> ${stateStr}<br>` +
+             `<em>¿Quieres simular lluvia? En la consola de mandos manuales puedes activar el interruptor de lluvia.</em>`;
     }
 
     // Flame/Fire Sensor
@@ -2091,19 +2127,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const stateStr = state.sensors.flame
         ? "🚨 ¡ALERTA ROJA! <strong>¡FOCO DE INCENDIO DETECTADO!</strong> Sirena y alarmas activadas."
         : "✅ Monitoreo Seguro. <strong>No hay amenazas de fuego</strong>.";
-      return `El <strong>Sensor de Flama</strong> es un fotodiodo receptor de radiación infrarroja de alta sensibilidad (760nm-1100nm).<br>` +
-             `• <strong>Función:</strong> Detectar incendios a distancia en áreas residenciales o forestales.<br>` +
-             `• <strong>Estado actual:</strong> ${stateStr}`;
+      return `El <strong>Sensor de Flama Infrarrojo</strong> detecta la radiación electromagnética de las llamas (760nm-1100nm).<br>` +
+             `• <strong>¿Por qué se usa?</strong> A diferencia de sensores de humo tradicionales que tardan minutos en activarse, el fotodiodo infrarrojo reacciona en **milisegundos** ante la presencia visual de fuego, reportando incendios forestales u hogareños inmediatamente.<br>` +
+             `• <strong>Estado actual:</strong> ${stateStr}<br>` +
+             `<em>¿Sabías que puedes activar el fuego simulado en la consola para disparar la sirena y ver la alarma roja?</em>`;
     }
 
-    // Accelerometer MPU-6050
-    if (clean.includes('sismo') || clean.includes('vibracion') || clean.includes('acelerometro') || clean.includes('mpu') || clean.includes('giroscopio') || clean.includes('inclinacion')) {
-      return `El <strong>Acelerómetro y Giroscopio Triaxial MPU-6050</strong> mide acelaración inercial y velocidad angular en los ejes X, Y y Z.<br>` +
-             `• <strong>Función:</strong> Registrar vibraciones sísmicas de la corteza, prever deslizamientos de tierra y auditar la inclinación del chasis.<br>` +
-             `• <strong>Estado actual:</strong> Inclinación X: <strong>${state.sensors.accelX}°</strong>, Y: <strong>${state.sensors.accelY}°</strong>.`;
-    }
-
-    // Barometer BMP280
+    // Barometer hPa
     if (clean.includes('presion') || clean.includes('barometro') || clean.includes('hpa') || clean.includes('bmp')) {
       return `El <strong>Barómetro Digital BMP280</strong> es un sensor piezoeléctrico de alta presión.<br>` +
              `• <strong>Función:</strong> Medir la presión atmosférica del entorno para detectar frentes de baja presión que anuncian tormentas severas.<br>` +
