@@ -2980,6 +2980,11 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="mission-map-container">
             <div class="map-grid-overlay"></div>
             
+            <!-- Trajectory Path drawing overlay -->
+            <svg class="svg-path-overlay">
+              <line x1="10%" y1="50%" x2="${activeRobotX}%" y2="${activeRobotY}%" class="svg-path-line" />
+            </svg>
+            
             <div class="map-base-hangar">
               <i class="fa-solid fa-warehouse"></i>
               <span>HANGAR</span>
@@ -3092,11 +3097,265 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // ==========================================================================
+  // INTERACTIVE DRONE FLIGHT SIMULATOR GAME STATE
+  // ==========================================================================
+  let droneHeight = 50; // percentage
+  let droneTargetHeightMin = 40;
+  let droneTargetHeightMax = 70;
+  let droneInstabilityBar = 0;
+  let droneTimerLeft = 20;
+  let droneGameInterval = null;
+  let droneTimeInterval = null;
+  let droneWindForce = 0;
+  let windWarningActive = false;
+
+  window.startVueloGame = function() {
+    if (droneGameInterval) clearInterval(droneGameInterval);
+    if (droneTimeInterval) clearInterval(droneTimeInterval);
+    
+    droneHeight = 55;
+    droneTargetHeightMin = 35;
+    droneTargetHeightMax = 65;
+    droneInstabilityBar = 0;
+    droneTimerLeft = 20;
+    droneWindForce = 0;
+    windWarningActive = false;
+
+    renderDroneGameLayout();
+    
+    // Game Physics loop (50ms)
+    droneGameInterval = setInterval(() => {
+      // Gravity pulls it down
+      droneHeight -= 0.75;
+      
+      // Wind force drift
+      droneHeight += droneWindForce;
+
+      // Keep inside bounds [0, 100]
+      if (droneHeight < 0) droneHeight = 0;
+      if (droneHeight > 100) droneHeight = 100;
+
+      // Check if drone is in safety zone
+      const inZone = (droneHeight >= droneTargetHeightMin && droneHeight <= droneTargetHeightMax);
+      if (inZone) {
+        droneInstabilityBar = Math.max(0, droneInstabilityBar - 1.5);
+      } else {
+        droneInstabilityBar = Math.min(100, droneInstabilityBar + 2.5);
+      }
+
+      // Update positions & UI bar values
+      const droneIcon = document.getElementById('drone-game-icon');
+      const instabilityIndicator = document.getElementById('drone-instability-fill');
+      const altitudeIndicator = document.getElementById('drone-alt-val');
+      const instValIndicator = document.getElementById('drone-inst-val');
+
+      if (droneIcon) {
+        // Map 0-100% height to bottom value
+        droneIcon.style.bottom = `${droneHeight}%`;
+      }
+      if (instabilityIndicator) {
+        instabilityIndicator.style.width = `${droneInstabilityBar}%`;
+        if (droneInstabilityBar > 60) {
+          instabilityIndicator.style.backgroundColor = 'var(--accent-red)';
+        } else {
+          instabilityIndicator.style.backgroundColor = 'var(--accent-purple)';
+        }
+      }
+      if (altitudeIndicator) {
+        altitudeIndicator.textContent = `${Math.round(droneHeight)}m`;
+      }
+      if (instValIndicator) {
+        instValIndicator.textContent = `${Math.round(droneInstabilityBar)}%`;
+      }
+
+      // If Instability hits 100%, CRASH!
+      if (droneInstabilityBar >= 100) {
+        endDroneGame(false);
+      }
+    }, 50);
+
+    // Game Timer and Wind Gust generator loop (1000ms)
+    droneTimeInterval = setInterval(() => {
+      droneTimerLeft--;
+      const timeVal = document.getElementById('drone-time-val');
+      if (timeVal) {
+        timeVal.textContent = `${droneTimerLeft}s`;
+      }
+
+      // If time runs out, VICTORY!
+      if (droneTimerLeft <= 0) {
+        endDroneGame(true);
+      }
+
+      // Wind gust logic: 40% chance of a wind gust
+      const rand = Math.random();
+      const windIndicator = document.getElementById('drone-wind-warning');
+      
+      if (rand < 0.4 && droneWindForce === 0) {
+        // Start wind gust
+        const direction = Math.random() > 0.5 ? 1 : -1;
+        droneWindForce = direction * 2.2;
+        windWarningActive = true;
+        if (windIndicator) {
+          windIndicator.style.display = 'block';
+          windIndicator.innerHTML = `<i class="fa-solid fa-wind"></i> RÁFAGA DE VIENTO: ${direction > 0 ? 'ASCENDENTE' : 'DESCENDENTE'} (${Math.abs(droneWindForce * 10)} km/h)`;
+        }
+        synth.beep(400, 'sawtooth', 0.15);
+      } else {
+        // Calm wind
+        droneWindForce = 0;
+        windWarningActive = false;
+        if (windIndicator) {
+          windIndicator.style.display = 'none';
+        }
+      }
+
+      // Slowly shift target safety zone heights randomly to increase challenge
+      if (droneTimerLeft % 5 === 0) {
+        const offset = Math.floor(Math.random() * 20) - 10; // -10 to +10
+        let newMin = 35 + offset;
+        let newMax = 65 + offset;
+        if (newMin < 10) { newMin = 10; newMax = 40; }
+        if (newMax > 90) { newMax = 90; newMin = 60; }
+        droneTargetHeightMin = newMin;
+        droneTargetHeightMax = newMax;
+        
+        const safetyZone = document.getElementById('drone-safety-area');
+        if (safetyZone) {
+          safetyZone.style.bottom = `${droneTargetHeightMin}%`;
+          safetyZone.style.height = `${droneTargetHeightMax - droneTargetHeightMin}%`;
+        }
+      }
+    }, 1000);
+  };
+
+  window.boostDrone = function() {
+    droneHeight = Math.min(100, droneHeight + 11);
+    synth.beep(600, 'sine', 0.04);
+  };
+
+  function renderDroneGameLayout() {
+    if (!arcadeWorkspace) return;
+    arcadeWorkspace.innerHTML = `
+      <div style="animation: tabFadeIn 0.3s ease;">
+        <p style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-bottom: 10px;">
+          Mantén el dron de exploración en la zona verde usando la barra espaciadora o el botón de impulso.
+        </p>
+
+        <div class="drone-game-container" id="drone-game-container-div">
+          <div class="map-grid-overlay"></div>
+          
+          <!-- Flashing Wind Gust Indicator -->
+          <div class="drone-wind-gust-indicator" id="drone-wind-warning"></div>
+          
+          <!-- Green safety zone -->
+          <div class="drone-safety-zone" id="drone-safety-area" style="bottom: ${droneTargetHeightMin}%; height: ${droneTargetHeightMax - droneTargetHeightMin}%;">
+            ZONA DE ALTURA SEGURA
+          </div>
+          
+          <!-- Animated Drone Element -->
+          <div class="drone-icon-fly" id="drone-game-icon" style="bottom: ${droneHeight}%; left: 50%;">
+            <i class="fa-solid fa-helicopter"></i>
+          </div>
+
+          <!-- Realtime status values -->
+          <div class="drone-status-indicator">
+            TIEMPO: <strong style="color:var(--accent-cyan);" id="drone-time-val">${droneTimerLeft}s</strong><br>
+            ALTURA: <strong style="color:#a855f7;" id="drone-alt-val">${Math.round(droneHeight)}m</strong><br>
+            INESTABILIDAD: <strong style="color:var(--accent-red);" id="drone-inst-val">${Math.round(droneInstabilityBar)}%</strong>
+          </div>
+        </div>
+
+        <!-- Custom health indicator bar -->
+        <div style="width: 100%; max-width: 580px; height: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; margin: 10px auto; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
+          <div id="drone-instability-fill" style="width: 0%; height: 100%; background: var(--accent-purple); transition: width 0.1s linear, background-color 0.2s;"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+          <button class="btn btn-primary btn-block" style="background: var(--accent-purple); border-color: #a855f7;" onclick="boostDrone()" id="drone-boost-btn">
+            <i class="fa-solid fa-angles-up"></i> IMPULSO MOTOR (+)
+          </button>
+          <button class="btn btn-outline" onclick="exitDroneGame()"><i class="fa-solid fa-arrow-left"></i> Salir</button>
+        </div>
+      </div>
+    `;
+
+    // Spacebar listener setup
+    const boostBtn = document.getElementById('drone-boost-btn');
+    if (boostBtn) {
+      boostBtn.focus();
+    }
+  }
+
+  window.exitDroneGame = function() {
+    if (droneGameInterval) clearInterval(droneGameInterval);
+    if (droneTimeInterval) clearInterval(droneTimeInterval);
+    resetArcadeHome();
+  };
+
+  function endDroneGame(victory) {
+    if (droneGameInterval) clearInterval(droneGameInterval);
+    if (droneTimeInterval) clearInterval(droneTimeInterval);
+
+    let html = "";
+    if (victory) {
+      misionesScore += 300;
+      synth.victory();
+      html = `
+        <div class="mission-details-card" style="text-align: center; border-color: var(--accent-green); max-width: 400px; margin: 20px auto;">
+          <h4 style="color: var(--accent-green); justify-content: center;">
+            <i class="fa-solid fa-circle-check"></i> ¡VUELO ESTABLE COMPLETADO!
+          </h4>
+          <p style="font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 15px;">
+            ¡Excelente pilotaje! Lograste estabilizar las hélices de sustentación del Dron frente a ráfagas severas y completaste el mapeo del sector.<br>
+            <strong>Recompensa: +300 Puntos de Vuelo STEAM</strong>
+          </p>
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn btn-primary btn-micro" onclick="startVueloGame()"><i class="fa-solid fa-rotate-right"></i> Volar de Nuevo</button>
+            <button class="btn btn-outline btn-micro" onclick="resetArcadeHome()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+          </div>
+        </div>
+      `;
+    } else {
+      synth.beep(150, 'sawtooth', 0.5);
+      html = `
+        <div class="mission-details-card" style="text-align: center; border-color: var(--accent-red); max-width: 400px; margin: 20px auto;">
+          <h4 style="color: var(--accent-red); justify-content: center;">
+            <i class="fa-solid fa-triangle-exclamation"></i> ¡DRON ESTRELLADO!
+          </h4>
+          <p style="font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 15px;">
+            La inestabilidad alcanzó el 100% debido a las ráfagas de viento y falta de impulso. El giroscopio MPU6050 detectó un impacto crítico de caída libre.<br>
+            <strong>Inténtalo de nuevo para salvar el equipo de exploración.</strong>
+          </p>
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn btn-primary btn-micro" onclick="startVueloGame()"><i class="fa-solid fa-rotate-right"></i> Reintentar Vuelo</button>
+            <button class="btn btn-outline btn-micro" onclick="resetArcadeHome()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+          </div>
+        </div>
+      `;
+    }
+    if (arcadeWorkspace) {
+      arcadeWorkspace.innerHTML = html;
+    }
+  }
+
+  // Hook global keyboard press spacebar to boost drone
+  document.addEventListener('keydown', (e) => {
+    const boostBtn = document.getElementById('drone-boost-btn');
+    if (boostBtn && e.code === 'Space') {
+      e.preventDefault();
+      boostDrone();
+    }
+  });
+
   window.startArcadeGame = function(gameName) {
     if (gameName === 'trivia') {
       startTriviaGame();
     } else if (gameName === 'misiones') {
       startMisionesGame();
+    } else if (gameName === 'vuelo') {
+      startVueloGame();
     }
   };
 
@@ -3105,7 +3364,7 @@ document.addEventListener('DOMContentLoaded', () => {
       arcadeWorkspace.innerHTML = `
         <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 15px 0;">
           <!-- Trivia Card Selector -->
-          <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(0, 240, 255, 0.15); cursor: pointer; transition: all 0.3s;" id="play-trivia-btn" onclick="startArcadeGame('trivia')">
+          <div class="cockpit-card" style="flex: 1; min-width: 250px; padding: 25px; text-align: center; border-color: rgba(0, 240, 255, 0.15); cursor: pointer; transition: all 0.3s;" id="play-trivia-btn" onclick="startArcadeGame('trivia')">
             <i class="fa-solid fa-bolt" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-cyan-glow);"></i>
             <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Trivia de Prevención</h3>
             <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Pon a prueba tus reflejos cognitivos y tus conocimientos sobre el hardware y protocolos ante riesgos.</p>
@@ -3113,11 +3372,19 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <!-- Simulador de Misiones Card Selector -->
-          <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(245, 158, 11, 0.15); cursor: pointer; transition: all 0.3s;" id="play-sopa-btn" onclick="startArcadeGame('misiones')">
+          <div class="cockpit-card" style="flex: 1; min-width: 250px; padding: 25px; text-align: center; border-color: rgba(245, 158, 11, 0.15); cursor: pointer; transition: all 0.3s;" id="play-sopa-btn" onclick="startArcadeGame('misiones')">
             <i class="fa-solid fa-map-location-dot" style="font-size: 3rem; color: var(--accent-orange); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-orange);"></i>
             <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Simulador de Misiones</h3>
             <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Despliega al robot ARGOS en un mapa táctico interactivo. Resuelve emergencias de sismos, inundaciones e incendios en tiempo real.</p>
             <button class="btn btn-secondary btn-micro btn-block" style="border-color: var(--accent-orange); color: var(--accent-orange);">Iniciar Misiones</button>
+          </div>
+
+          <!-- Estabilizador de Dron Card Selector -->
+          <div class="cockpit-card" style="flex: 1; min-width: 250px; padding: 25px; text-align: center; border-color: rgba(168, 85, 247, 0.15); cursor: pointer; transition: all 0.3s;" id="play-vuelo-btn" onclick="startArcadeGame('vuelo')">
+            <i class="fa-solid fa-helicopter" style="font-size: 3rem; color: #a855f7; margin-bottom: 15px; text-shadow: 0 0 15px rgba(168, 85, 247, 0.55);"></i>
+            <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Estabilizador de Dron</h3>
+            <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Controla la sustentación del dron aéreo frente a ráfagas de viento. Mantén el equilibrio en la zona de altura segura.</p>
+            <button class="btn btn-secondary btn-micro btn-block" style="border-color: #a855f7; color: #a855f7;">Iniciar Vuelo</button>
           </div>
         </div>
       `;
