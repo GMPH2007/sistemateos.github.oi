@@ -13,7 +13,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=4.0">
+  <link rel="stylesheet" href="style.css?v=4.1">
 </head>
 <body class="theme-dark">
 
@@ -987,7 +987,7 @@
           <div id="arcade-workspace">
             <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 15px 0;">
               <!-- Trivia Card Selector -->
-              <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(0, 240, 255, 0.15); cursor: pointer; transition: all 0.3s;" id="play-trivia-btn" onclick="startArcadeGame('trivia')">
+              <div class="cockpit-card" style="flex: 1; min-width: 250px; padding: 25px; text-align: center; border-color: rgba(0, 240, 255, 0.15); cursor: pointer; transition: all 0.3s;" id="play-trivia-btn" onclick="startArcadeGame('trivia')">
                 <i class="fa-solid fa-bolt" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-cyan-glow);"></i>
                 <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Trivia de Prevención</h3>
                 <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Pon a prueba tus reflejos cognitivos y tus conocimientos sobre el hardware y protocolos ante riesgos.</p>
@@ -995,11 +995,19 @@
               </div>
 
               <!-- Simulador de Misiones Card Selector -->
-              <div class="cockpit-card" style="flex: 1; min-width: 280px; padding: 25px; text-align: center; border-color: rgba(245, 158, 11, 0.15); cursor: pointer; transition: all 0.3s;" id="play-sopa-btn" onclick="startArcadeGame('misiones')">
+              <div class="cockpit-card" style="flex: 1; min-width: 250px; padding: 25px; text-align: center; border-color: rgba(245, 158, 11, 0.15); cursor: pointer; transition: all 0.3s;" id="play-sopa-btn" onclick="startArcadeGame('misiones')">
                 <i class="fa-solid fa-map-location-dot" style="font-size: 3rem; color: var(--accent-orange); margin-bottom: 15px; text-shadow: 0 0 15px var(--accent-orange);"></i>
                 <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Simulador de Misiones</h3>
                 <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Despliega al robot ARGOS en un mapa táctico interactivo. Resuelve emergencias de sismos, inundaciones e incendios en tiempo real.</p>
                 <button class="btn btn-secondary btn-micro btn-block" style="border-color: var(--accent-orange); color: var(--accent-orange);">Iniciar Misiones</button>
+              </div>
+
+              <!-- Estabilizador de Dron Card Selector -->
+              <div class="cockpit-card" style="flex: 1; min-width: 250px; padding: 25px; text-align: center; border-color: rgba(168, 85, 247, 0.15); cursor: pointer; transition: all 0.3s;" id="play-vuelo-btn" onclick="startArcadeGame('vuelo')">
+                <i class="fa-solid fa-helicopter" style="font-size: 3rem; color: #a855f7; margin-bottom: 15px; text-shadow: 0 0 15px rgba(168, 85, 247, 0.55);"></i>
+                <h3 style="font-family: var(--font-display); color: #fff; margin-bottom: 8px;">Estabilizador de Dron</h3>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">Controla la sustentación del dron aéreo frente a ráfagas de viento. Mantén el equilibrio en la zona de altura segura.</p>
+                <button class="btn btn-secondary btn-micro btn-block" style="border-color: #a855f7; color: #a855f7;">Iniciar Vuelo</button>
               </div>
             </div>
           </div>
@@ -1140,7 +1148,7 @@
   </div>
 
   <!-- Code Script imports -->
-  <script src="auth.js?v=4.0"></script>
-  <script src="app.js?v=4.0"></script>
+  <script src="auth.js?v=4.1"></script>
+  <script src="app.js?v=4.1"></script>
 </body>
 </html>
