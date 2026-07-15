@@ -6,14 +6,15 @@
 [![Plataforma: ESP32](https://img.shields.io/badge/Platform-ESP32-red.svg)](https://www.espressif.com/en/products/socs/esp32)
 [![Lenguaje: JavaScript](https://img.shields.io/badge/Language-JavaScript-yellow.svg)](https://developer.mozilla.org/es/docs/Web/JavaScript)
 [![Tecnología: WebSockets](https://img.shields.io/badge/Tech-WebSockets-orange.svg)](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API)
-[![Diseño: Glow Futurista](https://img.shields.io/badge/Design-Futuristic_Glow-green.svg)](#)
+[![Diseño: Glow](https://img.shields.io/badge/Design-Futuristic_Glow-green.svg)](#)
+[![Seguridad: Shield](https://img.shields.io/badge/Security-Extreme_Shield-red.svg)](SECURITY.md)
 
 **Plataforma Autónoma de Monitoreo Ambiental, Prevención de Desastres y Educación STEAM**  
 *Un proyecto de código abierto, local-first y enfocado en la resiliencia civil de comunidades.*
 
 ---
 
-[🌐 Ver Aplicación en Producción](https://gmph2007.github.io/sistemateos.github.oi/) • [⚖️ Términos Legales](#-política-de-privacidad-y-legalidad) • [👥 Nuestro Equipo](#-equipo-de-desarrollo-e-innovación)
+[🌐 Ver Aplicación en Producción](https://gmph2007.github.io/sistemateos.github.oi/) • [⚖️ Términos Legales](#-política-de-privacidad-y-legalidad) • [👥 Nuestro Equipo](#-equipo-de-desarrollo-e-innovación) • [🛡️ Política de Seguridad](SECURITY.md)
 
 </div>
 
