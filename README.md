@@ -70,7 +70,7 @@ La plataforma web implementa seguridad informática extrema y control de accesos
 El siguiente diagrama de flujo esquematiza las interconexiones físicas y los canales de comunicación lógicos de ARGOS:
 
 ```mermaid
-graph TD
+flowchart TD
     %% Nodes definition
     Operator["💻 Interfaz del Operador<br>(Dashboard HTML5/CSS3/JS)"]
     AICopilot["🧠 AI Co-Pilot Auditor<br>(Modelos YOLOv8 & CNN)"]
