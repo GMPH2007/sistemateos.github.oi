@@ -987,7 +987,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    if (state.droneStatus === 'flying' && canvasDrone && ctxDrone) {
+    if (canvasDrone && ctxDrone) {
       const wD = canvasDrone.width;
       const hD = canvasDrone.height;
       if (wD > 0 && hD > 0) {
@@ -1028,8 +1028,14 @@ document.addEventListener('DOMContentLoaded', () => {
           ctxDrone.stroke();
         }
 
+        // Draw Drone Status Indicator on Canvas
+        ctxDrone.fillStyle = (state.droneStatus === 'flying') ? 'var(--accent-green)' : 'rgba(0, 240, 255, 0.6)';
+        ctxDrone.font = '6px Orbitron';
+        const droneStatusText = (state.droneStatus === 'flying') ? 'DRON: EN VUELO (ACTIVO)' : 'DRON: STANDBY (HANGAR)';
+        ctxDrone.fillText(droneStatusText, 8, 12);
+
         if (aiBoxDrone) {
-          if (state.sensors.flame) {
+          if (state.sensors.flame && state.droneStatus === 'flying') {
             const fireX = wD * 0.45 + Math.sin(frameCount * 0.05) * 8;
             const fireY = hD * 0.48 + Math.cos(frameCount * 0.05) * 8;
 
@@ -2062,18 +2068,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // teológico y creador
     if (clean.includes('creó') || clean.includes('creo') || clean.includes('creador')) {
-      return "El único que crea las cosas es **Dios**. Pero si quieres saber quién me fundó o diseñó, fue **Misael Pintado**, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
+      return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quién me fundó o diseñó, fue <strong>Misael Pintado</strong>, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
     }
     // diseñador / fundador
     if (clean.includes('diseño') || clean.includes('diseno') || clean.includes('diseñó') || clean.includes('fundo') || clean.includes('fundó') || clean.includes('fundador') || clean.includes('diseñador') || clean.includes('diseñadora') || clean.includes('misael') || clean.includes('pintado') || clean.includes('cárcamo') || clean.includes('carcamo')) {
-      return "Fui fundado y diseñado por **Misael Pintado**, estudiante destacado del **Instituto Superior Hermanos Cárcamo** de la carrera de **Arquitectura de Plataforma y Servicios TI (APSTI)**. Él estructuró mi hardware, mi electrónica y mi telemetría interactiva.";
+      return "Fui fundado y diseñado por <strong>Misael Pintado</strong>, estudiante destacado del <strong>Instituto Superior Hermanos Cárcamo</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong>. Él estructuró mi hardware, mi electrónica y mi telemetría interactiva.";
     }
 
     // juegos y arcade
     if (clean.includes('juego') || clean.includes('juegos') || clean.includes('arcade') || clean.includes('trivia') || clean.includes('mision') || clean.includes('misiones') || clean.includes('simulador') || clean.includes('kahoot') || clean.includes('jugar')) {
-      return `El Aula STEAM cuenta con un **Terminal Arcade** con dos desafíos interactivos:<br><br>` +
-             `1. **Trivia de Prevención (Estilo Kahoot):** Un test de 5 preguntas sobre hardware y prevención, con un temporizador de 15 segundos y multiplicador de racha (combos).<br>` +
-             `2. **Simulador de Misiones:** Un mapa táctico interactivo donde enrutas al robot a emergencias de sismos, lluvia o fuego, evalúas sensores en vivo desde una consola de comando y tomas decisiones civiles.`;
+      return `El Aula STEAM cuenta con un <strong>Terminal Arcade</strong> con dos desafíos interactivos:<br><br>` +
+             `1. <strong>Trivia de Prevención (Estilo Kahoot):</strong> Un test de 5 preguntas sobre hardware y prevención, con un temporizador de 15 segundos y multiplicador de racha (combos).<br>` +
+             `2. <strong>Simulador de Misiones:</strong> Un mapa táctico interactivo donde enrutas al robot a emergencias de sismos, lluvia o fuego, evalúas sensores en vivo desde una consola de comando y tomas decisiones civiles.`;
     }
 
     // estado / resumen
@@ -2093,12 +2099,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // emergencias o peligro
     if (clean.includes('alarma') || clean.includes('emergencia') || clean.includes('peligro') || clean.includes('riesgo') || clean.includes('alerta') || clean.includes('fuego') || clean.includes('incendio') || clean.includes('flama')) {
       if (state.sensors.flame) {
-        return "🚨 **¡ALERTA CRÍTICA DE INCENDIO!** El sensor infrarrojo reporta llamas activas. He disparado la sirena auditiva y las alarmas visuales. Se debe enrutar el robot al sector y avisar a bomberos.";
+        return "🚨 <strong>¡ALERTA CRÍTICA DE INCENDIO!</strong> El sensor infrarrojo reporta llamas activas. He disparado la sirena auditiva y las alarmas visuales. Se debe enrutar el robot al sector y avisar a bomberos.";
       }
       if (state.sensors.rain) {
-        return "🌧️ **Alerta de Lluvia:** Se reporta caída de agua constante en el chasis. Posible riesgo de inundaciones o desborde en las zonas bajas del río.";
+        return "🌧️ <strong>Alerta de Lluvia:</strong> Se reporta caída de agua constante en el chasis. Posible riesgo de inundaciones o desborde en las zonas bajas del río.";
       }
-      return "✅ **Sistema Seguro:** Todos los sensores indican que no hay situaciones de peligro o incendios activos en el perímetro en este momento.";
+      return "✅ <strong>Sistema Seguro:</strong> Todos los sensores indican que no hay situaciones de peligro o incendios activos en el perímetro en este momento.";
     }
 
     // temperatura / clima
@@ -2156,14 +2162,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // rol / roles
     if (clean.includes('rol') || clean.includes('perfil') || clean.includes('roles') || clean.includes('permisos') || clean.includes('cambiar')) {
       return "Los roles disponibles son:<br>" +
-             "- **Público General:** Solo lectura, pero con mandos físicos habilitados en modo DEMO.<br>" +
-             "- **Operador:** Control absoluto de la telemetría, consola y pilotaje del Dron.<br>" +
-             "- **Estudiante:** Acceso a laboratorios virtuales y al panel de exámenes.<br>" +
-             "- **Docente:** Capacidad de exportación de reportes PDF/CSV/JSON de telemetría.";
+             "- <strong>Público General:</strong> Solo lectura, pero con mandos físicos habilitados en modo DEMO.<br>" +
+             "- <strong>Operador:</strong> Control absoluto de la telemetría, consola y pilotaje del Dron.<br>" +
+             "- <strong>Estudiante:</strong> Acceso a laboratorios virtuales y al panel de exámenes.<br>" +
+             "- <strong>Docente:</strong> Capacidad de exportación de reportes PDF/CSV/JSON de telemetría.";
     }
     // quién eres
     if (clean.includes('quién eres') || clean.includes('quien eres') || clean.includes('argos') || clean.includes('robot') || clean.includes('plataforma')) {
-      return "<strong>ARGOS</strong> es una plataforma inteligente multi-agente diseñada para la prevención de desastres naturales y la educación STEAM. Fui diseñado y fundado por el estudiante **Misael Pintado** de la carrera de **Arquitectura de Plataforma y Servicios TI (APSTI)** del **Instituto Superior Hermanos Cárcamo**.";
+      return "<strong>ARGOS</strong> es una plataforma inteligente multi-agente diseñada para la prevención de desastres naturales y la educación STEAM. Fui diseñado y fundado por el estudiante <strong>Misael Pintado</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong> del <strong>Instituto Superior Hermanos Cárcamo</strong>.";
     }
     // hola
     if (clean.includes('hola') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes') || clean.includes('hey')) {
