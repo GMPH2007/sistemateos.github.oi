@@ -2736,7 +2736,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (triviaScore >= 800) {
       title = "¡Operador de Nivel Experto!";
       color = "var(--accent-green)";
-      desc = `Excelente. Lograste un puntaje extraordinario de ${triviaScore} puntos. ¡Estás listo para operar el ecosistema ARGOS en situaciones reales de desastre!`;
+      desc = `Excelente. Lograste un puntaje extraordinario de ${triviaScore} puntos. ¡Estás listo para operar el ecosistema ARGOS en situaciones reales de desastre!<br><br><span style="color: #ffd700; font-weight: bold; font-size: 11px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);"><i class="fa-solid fa-trophy"></i> ¡NUEVO ROL DESBLOQUEADO: CONTROLADOR EXPERTO! Ahora puedes registrarte o iniciar sesión con el Rol de Controlador Experto para acceso total.</span>`;
+      localStorage.setItem('argos_expert_unlocked', 'true');
+      if (typeof window.checkAndInjectExpertRole === 'function') {
+        window.checkAndInjectExpertRole();
+      }
       synth.victory();
     } else if (triviaScore >= 500) {
       title = "Buen Trabajo";
@@ -2870,6 +2874,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let detailsHtml = "";
 
     if (allCompleted) {
+      localStorage.setItem('argos_expert_unlocked', 'true');
+      if (typeof window.checkAndInjectExpertRole === 'function') {
+        window.checkAndInjectExpertRole();
+      }
       detailsHtml = `
         <div class="mission-details-card" style="text-align: center; border-color: var(--accent-green);">
           <h4 style="color: var(--accent-green); justify-content: center;">
@@ -2877,7 +2885,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </h4>
           <p style="font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 15px;">
             Felicidades Comandante. Has resuelto todas las crisis en el mapa, protegiendo a la comunidad y coordinando las defensas civiles de manera exitosa.<br>
-            <strong>Puntaje Total: ${misionesScore} Puntos STEAM (+300 Bonus de Excelencia)</strong>
+            <strong>Puntaje Total: ${misionesScore} Puntos STEAM (+300 Bonus de Excelencia)</strong><br><br>
+            <span style="color: #ffd700; font-weight: bold; font-size: 11px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);"><i class="fa-solid fa-trophy"></i> ¡NUEVO ROL DESBLOQUEADO: CONTROLADOR EXPERTO! Ahora puedes registrarte o iniciar sesión con el Rol de Controlador Experto para acceso total.</span>
           </p>
           <div style="display: flex; gap: 10px; justify-content: center;">
             <button class="btn btn-primary btn-micro" onclick="startMisionesGame()"><i class="fa-solid fa-rotate-right"></i> Jugar de Nuevo</button>
