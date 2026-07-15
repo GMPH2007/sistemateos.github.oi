@@ -3400,4 +3400,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Top Scroll Progress Listener
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (height > 0) {
+      const scrolled = (winScroll / height) * 100;
+      const progressFill = document.getElementById('scroll-progress');
+      if (progressFill) {
+        progressFill.style.width = scrolled + '%';
+      }
+    }
+  });
+
 });
