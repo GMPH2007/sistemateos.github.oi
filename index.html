@@ -14,7 +14,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=5.0">
+  <link rel="stylesheet" href="style.css?v=5.1">
 </head>
 <body class="theme-dark">
   <!-- Top Scroll Progress Indicator -->
@@ -1083,13 +1083,23 @@
               </button>
             </div>
           </div>
+          
+          <!-- Verificación Anti-Bot Hacker CAPTCHA -->
+          <div class="captcha-hacker-wrapper" style="margin: 15px 0; background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 11px; color: var(--text-muted); margin: 0; user-select: none;">
+              <input type="checkbox" id="login-human-check" style="accent-color: var(--accent-cyan); width: 14px; height: 14px; cursor: pointer;">
+              <span>Confirmar Firma Humana (Anti-Bot)</span>
+            </label>
+            <div id="login-captcha-status" style="font-size: 9px; font-family: monospace; color: #ff8c00; font-weight: bold; letter-spacing: 0.5px;">[ESPERANDO...]</div>
+          </div>
+
           <div class="auth-error-msg hidden" id="login-error-msg">Usuario o contraseña incorrectos.</div>
           <button type="submit" class="btn btn-primary btn-block btn-glow" id="btn-submit-login">
             <i class="fa-solid fa-right-to-bracket"></i> INGRESAR AL NODO
           </button>
           
           <!-- Terminal de Seguridad Hacker -->
-          <div class="hacker-terminal" style="font-family: monospace; font-size: 10px; background: #050000; border: 1px solid #1a0000; color: #ff3e3e; padding: 10px; margin-top: 15px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(255,0,0,0.25);">
+          <div class="hacker-terminal" id="login-terminal-logs" style="font-family: monospace; font-size: 10px; background: #050000; border: 1px solid #1a0000; color: #ff3e3e; padding: 10px; margin-top: 15px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(255,0,0,0.25);">
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #2b0000; padding-bottom: 4px; margin-bottom: 6px;">
               <span><i class="fa-solid fa-terminal"></i> ARGOS_SECURE_SHIELD_v5.20</span>
               <span style="color: #00ff66; animation: pulseFlashing 0.8s infinite alternate;"><i class="fa-solid fa-circle"></i> PROTEGIDO</span>
@@ -1144,6 +1154,17 @@
                 <i class="fa-solid fa-eye"></i>
               </button>
             </div>
+            
+            <!-- Indicador de Fuerza de Contraseña -->
+            <div class="strength-meter-wrapper" style="margin-top: 6px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-muted); margin-bottom: 3px;">
+                <span>Fortaleza de Clave:</span>
+                <span id="strength-label" style="color: #888; font-weight: bold; font-family: monospace;">Ninguna</span>
+              </div>
+              <div class="strength-bar-bg" style="width: 100%; height: 3px; background: rgba(255,255,255,0.08); border-radius: 1.5px; overflow: hidden;">
+                <div id="strength-bar-fill" style="width: 0%; height: 100%; background: #ff3e3e; transition: all 0.3s ease;"></div>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label for="register-confirm-password"><i class="fa-solid fa-shield"></i> Confirmar Contraseña</label>
@@ -1160,7 +1181,7 @@
           </button>
           
           <!-- Terminal de Seguridad Hacker -->
-          <div class="hacker-terminal" style="font-family: monospace; font-size: 10px; background: #050000; border: 1px solid #1a0000; color: #00ff66; padding: 10px; margin-top: 15px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,255,100,0.15);">
+          <div class="hacker-terminal" id="register-terminal-logs" style="font-family: monospace; font-size: 10px; background: #050000; border: 1px solid #1a0000; color: #00ff66; padding: 10px; margin-top: 15px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,255,100,0.15);">
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #002200; padding-bottom: 4px; margin-bottom: 6px;">
               <span><i class="fa-solid fa-terminal"></i> ARGOS_SECURE_REGISTRATION</span>
               <span style="color: #00ff66; animation: pulseFlashing 0.8s infinite alternate;"><i class="fa-solid fa-circle"></i> CANAL SEGURO</span>
@@ -1228,7 +1249,7 @@
   </div>
 
   <!-- Code Script imports -->
-  <script src="auth.js?v=5.0"></script>
-  <script src="app.js?v=5.0"></script>
+  <script src="auth.js?v=5.1"></script>
+  <script src="app.js?v=5.1"></script>
 </body>
 </html>
