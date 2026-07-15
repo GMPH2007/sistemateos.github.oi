@@ -3722,6 +3722,11 @@ input:checked + .slider-toggle:before {
   text-shadow: 0 0 8px var(--accent-orange-glow);
 }
 
+.role-expert {
+  color: #ffd700 !important;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.65), 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
 /* Responsive adjustment */
 @media (max-width: 768px) {
   .header-actions {
@@ -4018,6 +4023,26 @@ input:checked + .slider-toggle:before {
   border-color: var(--accent-orange) !important;
   box-shadow: 0 0 15px var(--accent-orange-glow) !important;
   color: #fff !important;
+}
+
+/* Card Role Expert Theme */
+.auth-modal-card.card-role-expert::before {
+  background: linear-gradient(90deg, #ffd700, #ff8c00);
+}
+.auth-modal-card.card-role-expert {
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.25), var(--shadow-card);
+  border-color: #ffd700;
+}
+.auth-modal-card.card-role-expert .auth-modal-logo {
+  border-color: #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+.auth-modal-card.card-role-expert #btn-submit-register {
+  background: #ffd700 !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+  color: #000 !important;
+  font-weight: bold;
 }
 
 /* ==========================================================================
