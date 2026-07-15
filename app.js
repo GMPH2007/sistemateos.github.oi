@@ -2066,23 +2066,115 @@ document.addEventListener('DOMContentLoaded', () => {
     const clean = input.toLowerCase().trim();
     const esp32Connected = robotSocket && robotSocket.readyState === WebSocket.OPEN;
 
-    // teológico y creador
+    // 1. TEOLÓGICO Y CREADOR (MISAEL PINTADO)
     if (clean.includes('creó') || clean.includes('creo') || clean.includes('creador')) {
       return "El único que crea las cosas es <strong>Dios</strong>. Pero si quieres saber quién me fundó o diseñó, fue <strong>Misael Pintado</strong>, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
     }
-    // diseñador / fundador
     if (clean.includes('diseño') || clean.includes('diseno') || clean.includes('diseñó') || clean.includes('fundo') || clean.includes('fundó') || clean.includes('fundador') || clean.includes('diseñador') || clean.includes('diseñadora') || clean.includes('misael') || clean.includes('pintado') || clean.includes('cárcamo') || clean.includes('carcamo')) {
-      return "Fui fundado y diseñado por <strong>Misael Pintado</strong>, estudiante destacado del <strong>Instituto Superior Hermanos Cárcamo</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong>. Él estructuró mi hardware, mi electrónica y mi telemetría interactiva.";
+      return "Fui fundado y diseñado por el estudiante <strong>Misael Pintado</strong> del <strong>Instituto Superior Hermanos Cárcamo</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong>. Él estructuró mi hardware, mi electrónica, mi firmware y mi telemetría interactiva.";
     }
 
-    // juegos y arcade
+    // 2. JUEGOS Y ARCADE
     if (clean.includes('juego') || clean.includes('juegos') || clean.includes('arcade') || clean.includes('trivia') || clean.includes('mision') || clean.includes('misiones') || clean.includes('simulador') || clean.includes('kahoot') || clean.includes('jugar')) {
       return `El Aula STEAM cuenta con un <strong>Terminal Arcade</strong> con dos desafíos interactivos:<br><br>` +
              `1. <strong>Trivia de Prevención (Estilo Kahoot):</strong> Un test de 5 preguntas sobre hardware y prevención, con un temporizador de 15 segundos y multiplicador de racha (combos).<br>` +
              `2. <strong>Simulador de Misiones:</strong> Un mapa táctico interactivo donde enrutas al robot a emergencias de sismos, lluvia o fuego, evalúas sensores en vivo desde una consola de comando y tomas decisiones civiles.`;
     }
 
-    // estado / resumen
+    // 3. SENSORES - INFORMACIÓN DE HARDWARE & FUNCIÓN (PREGUNTAS GENERALES)
+    if (clean.includes('que son sensores') || clean.includes('que es un sensor') || clean.includes('funcion cumple los sensores') || clean.includes('que hacen los sensores') || clean.includes('sensores?') || clean.includes('sensores general') || clean.includes('que funcion cumple')) {
+      return "ARGOS está equipado con una red de sensores robustos para auditoría de campo:<br>" +
+             "- <strong>Sensor de Lluvia (Capacitivo):</strong> Detecta precipitaciones e inundaciones.<br>" +
+             "- <strong>Sensor de Flama (Infrarrojo):</strong> Detecta radiación térmica de incendios.<br>" +
+             "- <strong>Acelerómetro (MPU-6050):</strong> Registra vibraciones sísmicas e inclinación.<br>" +
+             "- <strong>Barómetro (BMP280):</strong> Mide la presión atmosférica y predice frentes de tormentas.<br>" +
+             "- <strong>Termohigrómetro (DHT22):</strong> Registra temperatura y humedad ambiental.<br>" +
+             "- <strong>GPS (Neo-6M):</strong> Transmite coordenadas de posicionamiento.";
+    }
+
+    // 4. SENSOR DE LLUVIA
+    if (clean.includes('lluvia') || clean.includes('llueve') || clean.includes('agua') || clean.includes('mojado') || clean.includes('sensor de lluvia')) {
+      const stateStr = state.sensors.rain 
+        ? "🚨 ¡ATENCIÓN! Indica <strong>precipitación activa (lluvia)</strong> en la zona." 
+        : "✅ Está seco. <strong>No hay lluvias detectadas</strong>.";
+      return `El <strong>Sensor de Lluvia</strong> es una placa capacitiva de conductividad de agua.<br>` +
+             `• <strong>Función:</strong> Detectar frentes de tormenta y humedad en el chasis para predecir posibles inundaciones.<br>` +
+             `• <strong>Estado actual:</strong> ${stateStr}`;
+    }
+
+    // 5. SENSOR DE FLAMA / FUEGO
+    if (clean.includes('fuego') || clean.includes('flama') || clean.includes('incendio') || clean.includes('sensor de flama') || clean.includes('sensor de fuego') || clean.includes('calor')) {
+      const stateStr = state.sensors.flame
+        ? "🚨 ¡ALERTA ROJA! <strong>¡FOCO DE INCENDIO DETECTADO!</strong> Sirena y alarmas activadas."
+        : "✅ Monitoreo Seguro. <strong>No hay amenazas de fuego</strong>.";
+      return `El <strong>Sensor de Flama</strong> es un fotodiodo receptor de radiación infrarroja de alta sensibilidad (760nm-1100nm).<br>` +
+             `• <strong>Función:</strong> Detectar incendios a distancia en áreas residenciales o forestales.<br>` +
+             `• <strong>Estado actual:</strong> ${stateStr}`;
+    }
+
+    // 6. ACELERÓMETRO / SISTEMAS SÍSMICOS (MPU-6050)
+    if (clean.includes('sismo') || clean.includes('vibración') || clean.includes('vibracion') || clean.includes('acelerometro') || clean.includes('acelerómetro') || clean.includes('inclinacion') || clean.includes('inclinación') || clean.includes('mpu')) {
+      return `El <strong>Acelerómetro y Giroscopio Triaxial MPU-6050</strong> mide aceleración inercial y velocidad angular en los ejes X, Y y Z.<br>` +
+             `• <strong>Función:</strong> Registrar vibraciones sísmicas de la corteza, prever deslizamientos de tierra y auditar la inclinación del chasis.<br>` +
+             `• <strong>Estado actual:</strong> Inclinación X: <strong>${state.sensors.accelX}°</strong>, Y: <strong>${state.sensors.accelY}°</strong>.`;
+    }
+
+    // 7. BARÓMETRO (BMP280)
+    if (clean.includes('presión') || clean.includes('presion') || clean.includes('barometro') || clean.includes('hpa') || clean.includes('bmp')) {
+      return `El <strong>Barómetro Digital BMP280</strong> es un sensor piezoeléctrico de alta presión.<br>` +
+             `• <strong>Función:</strong> Medir la presión atmosférica del entorno para detectar frentes de baja presión que anuncian tormentas severas.<br>` +
+             `• <strong>Estado actual:</strong> <strong>${state.sensors.pressure} hPa</strong>.`;
+    }
+
+    // 8. TEMPERATURA / HUMEDAD (DHT22)
+    if (clean.includes('temperatura') || clean.includes('humedad') || clean.includes('clima') || clean.includes('ambiente') || clean.includes('frio') || clean.includes('frío') || clean.includes('dht')) {
+      return `El <strong>Sensor Termohigrómetro DHT22</strong> es un módulo digital de temperatura y humedad.<br>` +
+             `• <strong>Función:</strong> Medir el microclima en vivo para prever olas de calor, frentes secos y auditar la habitabilidad de las zonas de patrullaje.<br>` +
+             `• <strong>Estado actual:</strong> Temperatura: <strong>${state.sensors.temperature.toFixed(1)}°C</strong> | Humedad: <strong>${state.sensors.humidity.toFixed(1)}%</strong>.`;
+    }
+
+    // 9. PANEL SOLAR (FOTOVOLTAICO)
+    if (clean.includes('solar') || clean.includes('panel') || clean.includes('celda') || clean.includes('energia') || clean.includes('energía') || clean.includes('generacion') || clean.includes('generación')) {
+      return `El <strong>Panel Solar Monocristalino de 20W</strong> está integrado en el lomo superior del chasis.<br>` +
+             `• <strong>Función:</strong> Absorber radiación solar y recargar la batería de LiFePO4 mediante un circuito regulador MPPT.<br>` +
+             `• <strong>Estado actual:</strong> Generación: <strong>${state.solarPower} W</strong> | Nivel de Batería Central: <strong>${state.systemBattery}%</strong>.`;
+    }
+
+    // 10. GPS (NEO-6M)
+    if (clean.includes('gps') || clean.includes('coordenadas') || clean.includes('radar') || clean.includes('latitud') || clean.includes('longitud') || clean.includes('ubicacion') || clean.includes('ubicación') || clean.includes('posicion') || clean.includes('posición')) {
+      return `El <strong>Módulo de Posicionamiento Satelital GPS Neo-6M</strong> calcula la posición del robot mediante satélites.<br>` +
+             `• <strong>Función:</strong> Georreferenciar al robot ARGOS, mapear sectores en emergencia y guiar al dron a coordenadas precisas.<br>` +
+             `• <strong>Coordenadas actuales:</strong> Latitud: <strong>${state.sensors.gpsLat.toFixed(5)}</strong>, Longitud: <strong>${state.sensors.gpsLon.toFixed(5)}</strong>.`;
+    }
+
+    // 11. DRON AÉREO
+    if (clean.includes('dron') || clean.includes('drone') || clean.includes('volar') || clean.includes('vuelo') || clean.includes('hangar') || clean.includes('despegue') || clean.includes('altura') || clean.includes('altitud') || clean.includes('aereo') || clean.includes('aéreo')) {
+      let statusStr = "";
+      if (state.droneStatus === 'hangar') {
+        statusStr = `Acoplado en su Hangar (Standby). Batería: <strong>${state.droneBattery}%</strong>.`;
+      } else if (state.droneStatus === 'launching') {
+        statusStr = `Ejecutando secuencia de pre-vuelo y elevación.`;
+      } else if (state.droneStatus === 'landing') {
+        statusStr = `Fase de aproximación y retorno.`;
+      } else if (state.droneStatus === 'flying') {
+        statusStr = `En vuelo activo a una altitud de <strong>${state.droneAlt.toFixed(1)} metros</strong>.`;
+      }
+      return `El <strong>Dron de Exploración Aérea</strong> es un micro-cuadricóptero integrado en la rampa mecánica de ARGOS.<br>` +
+             `• <strong>Función:</strong> Despegar en zonas anegadas para transmitir video cenital, buscar sobrevivientes y registrar fallas en el terreno.<br>` +
+             `• <strong>Estado actual:</strong> ${statusStr}`;
+    }
+
+    // 12. ORUGAS Y LOCOMOCIÓN
+    if (clean.includes('oruga') || clean.includes('orugas') || clean.includes('motores') || clean.includes('motor') || clean.includes('traccion') || clean.includes('tracción') || clean.includes('velocidad') || clean.includes('mover') || clean.includes('movimiento')) {
+      const stateStr = state.locoMoving
+        ? `En movimiento hacia <strong>${state.locoDirection}</strong> (Velocidad: <strong>${state.locoSpeed}x</strong>).`
+        : "Detenido. Frenos de orugas bloqueados.";
+      return `El <strong>Sistema de Tracción Terrestre por Orugas</strong> cuenta con motores de CC de 12V y reductores metálicos.<br>` +
+             `• <strong>Función:</strong> Proporcionar tracción de alto torque para superar pendientes de hasta 35°, lodo, rocas y asfalto roto.<br>` +
+             `• <strong>Estado actual:</strong> ${stateStr}`;
+    }
+
+    // 13. ESTADO / RESUMEN
     if (clean.includes('estado') || clean.includes('resumen') || clean.includes('reporte') || clean.includes('status') || clean.includes('sistema') || clean.includes('auditar') || clean.includes('diagnostico') || clean.includes('diagnóstico')) {
       const emergencyStr = state.sensors.flame ? "⚠️ ¡EMERGENCIA ACTIVA POR FUEGO!" : (state.sensors.rain ? "🌧️ precipitación en curso" : "✅ Monitoreo Seguro");
       return `<div style="font-family: monospace; font-size: 10px; background: rgba(0,240,255,0.03); border-left: 2px solid var(--accent-cyan); padding: 8px; line-height: 1.5; color:#00ff66;">` +
@@ -2096,8 +2188,8 @@ document.addEventListener('DOMContentLoaded', () => {
              `- Estado Alerta: ${emergencyStr}</div>`;
     }
 
-    // emergencias o peligro
-    if (clean.includes('alarma') || clean.includes('emergencia') || clean.includes('peligro') || clean.includes('riesgo') || clean.includes('alerta') || clean.includes('fuego') || clean.includes('incendio') || clean.includes('flama')) {
+    // 14. EMERGENCIAS O ALARMAS
+    if (clean.includes('alarma') || clean.includes('emergencia') || clean.includes('peligro') || clean.includes('riesgo') || clean.includes('alerta')) {
       if (state.sensors.flame) {
         return "🚨 <strong>¡ALERTA CRÍTICA DE INCENDIO!</strong> El sensor infrarrojo reporta llamas activas. He disparado la sirena auditiva y las alarmas visuales. Se debe enrutar el robot al sector y avisar a bomberos.";
       }
@@ -2107,59 +2199,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return "✅ <strong>Sistema Seguro:</strong> Todos los sensores indican que no hay situaciones de peligro o incendios activos en el perímetro en este momento.";
     }
 
-    // temperatura / clima
-    if (clean.includes('temperatura') || clean.includes('humedad') || clean.includes('clima') || clean.includes('calor') || clean.includes('ambiente') || clean.includes('frio') || clean.includes('frío')) {
-      return `El sensor ambiental reporta una temperatura en vivo de <strong>${state.sensors.temperature.toFixed(1)}°C</strong> y una humedad relativa del <strong>${state.sensors.humidity.toFixed(1)}%</strong>.`;
-    }
-    // presion
-    if (clean.includes('presión') || clean.includes('presion') || clean.includes('barometro') || clean.includes('hpa')) {
-      return `La presión atmosférica registrada por el barómetro es de <strong>${state.sensors.pressure} hPa</strong>.`;
-    }
-    // lluvia
-    if (clean.includes('lluvia') || clean.includes('llueve') || clean.includes('agua') || clean.includes('mojado')) {
-      return state.sensors.rain 
-        ? "¡ATENCIÓN! El sensor capacitivo indica <strong>precipitación activa (lluvia)</strong> en la zona." 
-        : "El sensor de lluvia está seco. <strong>No hay precipitación detectada</strong> en este momento.";
-    }
-    // bateria dron
-    if (clean.includes('batería dron') || clean.includes('batería drone') || clean.includes('carga dron') || clean.includes('bateria dron') || clean.includes('bateria drone')) {
-      return `La celda de energía del dron de reconocimiento aéreo se encuentra al <strong>${state.droneBattery}%</strong> de su capacidad.`;
-    }
-    // dron
-    if (clean.includes('dron') || clean.includes('drone') || clean.includes('volar') || clean.includes('vuelo') || clean.includes('hangar') || clean.includes('despegue') || clean.includes('altura') || clean.includes('altitud')) {
-      if (state.droneStatus === 'hangar') {
-        return `El dron está <strong>acoplado y seguro en su hangar</strong> trasero, recargando batería por inducción.`;
-      } else if (state.droneStatus === 'launching') {
-        return `El dron está ejecutando la <strong>secuencia automática de despegue</strong> e inspección de motores.`;
-      } else if (state.droneStatus === 'landing') {
-        return `El dron se encuentra en <strong>fase de aproximación y aterrizaje</strong> de retorno a la base.`;
-      } else if (state.droneStatus === 'flying') {
-        return `El dron está en vuelo activo a una altitud de <strong>${state.droneAlt.toFixed(1)} metros</strong>. Batería al <strong>${state.droneBattery}%</strong>.`;
-      }
-    }
-    // velocidad / orugas
-    if (clean.includes('velocidad') || clean.includes('mover') || clean.includes('marcha') || clean.includes('oruga') || clean.includes('orugas') || clean.includes('direccion') || clean.includes('dirección')) {
-      return state.locoMoving
-        ? `El chasis terrestre se desplaza hacia <strong>${state.locoDirection}</strong> con una velocidad configurada en <strong>${state.locoSpeed}x</strong>.`
-        : "Las orugas terrestres están <strong>detenidas</strong>. Frenos mecánicos activos.";
-    }
-    // solar
-    if (clean.includes('solar') || clean.includes('panel') || clean.includes('celda') || clean.includes('energía') || clean.includes('energia') || clean.includes('bateria') || clean.includes('batería')) {
-      return `Batería del robot: <strong>${state.systemBattery}%</strong>. Aporte solar actual: <strong>${state.solarPower} W</strong> de generación limpia en el panel monocristalino.`;
-    }
-    // gps
-    if (clean.includes('gps') || clean.includes('donde') || clean.includes('coordenadas') || clean.includes('radar') || clean.includes('latitud') || clean.includes('longitud') || clean.includes('ubicacion') || clean.includes('ubicación')) {
-      return `Ubicación actual del robot: Latitud: <strong>${state.sensors.gpsLat.toFixed(5)}</strong>, Longitud: <strong>${state.sensors.gpsLon.toFixed(5)}</strong>. Puedes ver su posición en el radar circular.`;
-    }
-    // sismo
-    if (clean.includes('sismo') || clean.includes('vibración') || clean.includes('vibracion') || clean.includes('acelerometro') || clean.includes('acelerómetro') || clean.includes('inclinacion') || clean.includes('inclinación')) {
-      return `Acelerometría triaxial: Inclinación X: <strong>${state.sensors.accelX}°</strong>, Y: <strong>${state.sensors.accelY}°</strong>. El osciloscopio sísmico grafica la estabilidad estructural en tiempo real.`;
-    }
-    // aula
+    // 15. AULA VIRTUAL
     if (clean.includes('aula') || clean.includes('laboratorio') || clean.includes('clase') || clean.includes('certificado') || clean.includes('practica') || clean.includes('práctica')) {
       return "El Aula STEAM cuenta con 3 laboratorios interactivos: 1) Análisis climático de presión/lluvias, 2) Simulador de vuelo de sustentación frente al viento, y 3) Detección de grietas por IA. ¡Responde y completa los laboratorios para obtener tu certificado!";
     }
-    // rol / roles
+    // 16. ROLES
     if (clean.includes('rol') || clean.includes('perfil') || clean.includes('roles') || clean.includes('permisos') || clean.includes('cambiar')) {
       return "Los roles disponibles son:<br>" +
              "- <strong>Público General:</strong> Solo lectura, pero con mandos físicos habilitados en modo DEMO.<br>" +
@@ -2167,22 +2211,22 @@ document.addEventListener('DOMContentLoaded', () => {
              "- <strong>Estudiante:</strong> Acceso a laboratorios virtuales y al panel de exámenes.<br>" +
              "- <strong>Docente:</strong> Capacidad de exportación de reportes PDF/CSV/JSON de telemetría.";
     }
-    // quién eres
+    // 17. QUIÉN ERES
     if (clean.includes('quién eres') || clean.includes('quien eres') || clean.includes('argos') || clean.includes('robot') || clean.includes('plataforma')) {
       return "<strong>ARGOS</strong> es una plataforma inteligente multi-agente diseñada para la prevención de desastres naturales y la educación STEAM. Fui diseñado y fundado por el estudiante <strong>Misael Pintado</strong> de la carrera de <strong>Arquitectura de Plataforma y Servicios TI (APSTI)</strong> del <strong>Instituto Superior Hermanos Cárcamo</strong>.";
     }
-    // hola
+    // 18. HOLA
     if (clean.includes('hola') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes') || clean.includes('hey')) {
       return "¡Hola! Estoy listo para auditar el sistema. Pregúntame por sensores, el estado del clima, el estado del robot, los juegos o las lecciones del aula STEAM.";
     }
-    // ayuda
+    // 19. AYUDA
     if (clean.includes('ayuda') || clean.includes('comandos') || clean.includes('que puedo preguntar') || clean.includes('pregunta')) {
       return "Puedes preguntarme cosas como:<br>" +
              "- *'¿Quién te diseñó?'*<br>" +
-             "- *'¿Cuáles son los juegos interactivos?'*<br>" +
-             "- *'Dame un reporte del estado del sistema'*<br>" +
-             "- *'¿Hay alguna emergencia activa?'*<br>" +
-             "- *'¿Cuál es la temperatura y clima actual?'*";
+             "- *'¿Qué hace el sensor de lluvia?'*<br>" +
+             "- *'¿Cuál es la función del acelerómetro?'*<br>" +
+             "- *'¿Qué juegos interactivos tienes?'*<br>" +
+             "- *'Dame un reporte del estado del sistema'*";
     }
 
     return "Entendido. He auditado la telemetría en tiempo real y todos los nodos de ARGOS corren estables. Puedes preguntarme sobre sensores específicos (lluvia, sismos, fuego, panel solar), mandos de dirección, el vuelo del dron o los juegos interactivos del aula.";
