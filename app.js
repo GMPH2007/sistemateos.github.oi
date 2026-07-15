@@ -2109,8 +2109,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (clean.includes('rol') || clean.includes('perfil') || clean.includes('docente') || clean.includes('operador') || clean.includes('público') || clean.includes('publico')) {
       return `Tu perfil actual en la plataforma es <strong>${state.currentProfile.toUpperCase()}</strong>. Cambiándolo en la barra superior puedes habilitar o bloquear mandos físicos y consolas avanzadas.`;
     }
-    if (clean.includes('quién eres') || clean.includes('quien eres') || clean.includes('argos') || clean.includes('creador') || clean.includes('robot') || clean.includes('plataforma')) {
-      return "<strong>ARGOS</strong> es una plataforma inteligente multi-agente diseñada para la prevención de desastres naturales y la educación STEAM. Combina un robot de orugas, un dron aéreo de reconocimiento y un panel de control con telemetría interactiva.";
+    if (clean.includes('creó') || clean.includes('creo') || clean.includes('creador')) {
+      return "El único que crea las cosas es **Dios**. Pero si quieres saber quién me fundó o diseñó, fue **Misael Pintado**, estudiante del Instituto Superior Hermanos Cárcamo de la carrera de Arquitectura de Plataforma y Servicios TI (APSTI).";
+    }
+    if (clean.includes('diseño') || clean.includes('diseno') || clean.includes('diseñó') || clean.includes('fundo') || clean.includes('fundó') || clean.includes('fundador') || clean.includes('diseñador') || clean.includes('diseñadora') || clean.includes('misael') || clean.includes('pintado') || clean.includes('cárcamo') || clean.includes('carcamo')) {
+      return "Fui fundado y diseñado por **Misael Pintado**, estudiante destacado del **Instituto Superior Hermanos Cárcamo** de la carrera de **Arquitectura de Plataforma y Servicios TI (APSTI)**. Él estructuró mi hardware y telemetría interactiva.";
+    }
+    if (clean.includes('quién eres') || clean.includes('quien eres') || clean.includes('argos') || clean.includes('robot') || clean.includes('plataforma')) {
+      return "<strong>ARGOS</strong> es una plataforma inteligente multi-agente diseñada para la prevención de desastres naturales y la educación STEAM. Fui diseñado y fundado por el estudiante **Misael Pintado** de la carrera de **Arquitectura de Plataforma y Servicios TI (APSTI)** del **Instituto Superior Hermanos Cárcamo**.";
     }
     if (clean.includes('hola') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes') || clean.includes('hey')) {
       return "¡Hola! Estoy listo para auditar el sistema. Pregúntame por sensores, clima, orugas, el dron, o las lecciones del aula STEAM.";
