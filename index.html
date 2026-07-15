@@ -13,7 +13,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=4.2">
+  <link rel="stylesheet" href="style.css?v=4.3">
 </head>
 <body class="theme-dark">
 
@@ -1018,8 +1018,13 @@
   </main>
 
   <!-- Futuristic Footer -->
-  <footer class="main-footer">
+  <footer class="main-footer" style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 10px;">
     <p>© 2026 Ecosistema Tecnológico ARGOS. Todos los derechos reservados. Diseñado para la resiliencia comunitaria y la formación STEAM.</p>
+    <p style="font-size: 10px; color: var(--text-muted); margin: 0;">
+      Este software es libre bajo la licencia 
+      <a href="#" id="btn-open-license" style="color: var(--accent-cyan); text-decoration: underline; cursor: pointer;">GNU AGPLv3</a>. 
+      Consulta nuestra <a href="#" id="btn-open-privacy" style="color: var(--accent-cyan); text-decoration: underline; cursor: pointer;">Política de Privacidad</a>.
+    </p>
   </footer>
 
   <!-- Floating AI Assistant Chatbot -->
@@ -1147,8 +1152,58 @@
     </div>
   </div>
 
+  <!-- Modal de Licencia GNU AGPLv3 -->
+  <div class="auth-modal-overlay hidden" id="license-modal-overlay">
+    <div class="auth-modal-card" style="max-width: 650px; border-color: var(--accent-cyan); box-shadow: 0 0 35px rgba(0, 240, 255, 0.15), var(--shadow-card);">
+      <div class="auth-modal-header" style="border-bottom: 1.5px solid rgba(0, 240, 255, 0.15);">
+        <h3 class="auth-modal-title"><i class="fa-solid fa-scale-balanced text-glow-cyan"></i> LICENCIA GNU AGPLv3</h3>
+        <button class="btn-close-modal" id="btn-close-license"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="auth-modal-body" style="max-height: 420px; overflow-y: auto; padding: 15px; font-family: monospace; font-size: 11px; line-height: 1.6; color: var(--text-secondary); background: rgba(0,0,0,0.4); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); text-align: left;">
+        <h4 style="color:#fff; margin-bottom: 5px;">GNU AFFERO GENERAL PUBLIC LICENSE</h4>
+        <p style="color:var(--text-muted); margin-bottom: 15px;">Version 3, 19 November 2007</p>
+        <p>Copyright (C) 2007 Free Software Foundation, Inc. &lt;https://fsf.org/&gt;<br>
+        Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.</p>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 15px 0;">
+        <h4 style="color:#fff; margin-bottom: 8px;">Preamble</h4>
+        <p>The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure cooperation with the community in the case of network server software.</p>
+        <p>The licenses for most software and other practical works are designed to take away your freedom to share and change the works. By contrast, our General Public Licenses are intended to guarantee your freedom to share and change all versions of a program--to make sure it remains free software for all its users.</p>
+        <p>When we speak of free software, we are referring to freedom, not price. Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for them if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs, and that you know you can do these things.</p>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 15px 0;">
+        <h4 style="color:#fff; margin-bottom: 8px;">TERMS AND CONDITIONS</h4>
+        <p><strong>0. Definitions:</strong> "This License" refers to version 3 of the GNU Affero General Public License. "The Program" refers to any copyrightable work licensed under this License.</p>
+        <p><strong>1. Source Code:</strong> The "source code" for a work means the preferred form of the work for making modifications to it. "Object code" means any non-source form of a work.</p>
+        <p><strong>2. Basic Permissions:</strong> All rights granted under this License are granted for the term of copyright on the Program, and are irrevocable provided the stated conditions are met.</p>
+        <p><strong>13. Remote Network Interaction:</strong> Notwithstanding any other provision of this License, if you modify the Program, your modified version must prominently offer all users interacting with it remotely through a computer network an opportunity to receive the Corresponding Source of your version by providing access to the Corresponding Source from a network server at no charge.</p>
+        <p><strong>15. Disclaimer of Warranty:</strong> THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. THE PROGRAM IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Politica de Privacidad -->
+  <div class="auth-modal-overlay hidden" id="privacy-modal-overlay">
+    <div class="auth-modal-card" style="max-width: 500px; border-color: var(--accent-green); box-shadow: 0 0 35px rgba(34, 197, 94, 0.15), var(--shadow-card);">
+      <div class="auth-modal-header" style="border-bottom: 1.5px solid rgba(34, 197, 94, 0.15);">
+        <h3 class="auth-modal-title"><i class="fa-solid fa-user-lock text-glow-green"></i> POLÍTICA DE PRIVACIDAD</h3>
+        <button class="btn-close-modal" id="btn-close-privacy"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="auth-modal-body" style="max-height: 400px; overflow-y: auto; padding: 15px; color: var(--text-secondary); text-align: left; font-size: 12px; line-height: 1.6;">
+        <h4 style="color:#fff; margin-bottom: 10px;"><i class="fa-solid fa-shield-halved"></i> Transparencia y Legalidad de Datos</h4>
+        <p>En el **Ecosistema Tecnológico ARGOS**, fundado por **Dayron Urbina Zapata** (Robótica y Hardware) y **Misael Pintado** (Programación y Control de Mandos), nos tomamos la privacidad muy en serio:</p>
+        
+        <ul style="margin-left: 20px; margin-bottom: 15px; list-style-type: square;">
+          <li><strong>Datos Locales:</strong> Toda tu información, contraseñas de sesión simuladas, configuraciones de roles y puntuación de juegos se guardan única y exclusivamente de forma local en tu navegador utilizando `localStorage`.</li>
+          <li><strong>Sin Servidores de Terceros:</strong> No enviamos tus datos personales, contraseñas ni logs de telemetría a servidores remotos ni a empresas de publicidad. El sistema es 100% autónomo y local-first.</li>
+          <li><strong>Código Transparente:</strong> Cumpliendo la licencia <strong>GNU AGPLv3</strong>, todo nuestro código es abierto y auditable para garantizar la seguridad de la comunidad frente a vulnerabilidades.</li>
+          <li><strong>Seguridad Integrada:</strong> Protegemos la plataforma con un escudo de cifrado de contraseñas y mitigación de intrusiones en la consola de telemetría.</li>
+        </ul>
+        <p style="font-size: 11px; color: var(--text-muted);">Última actualización: Julio 2026. Diseñado para la formación de resiliencia civil y educación STEAM.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Code Script imports -->
-  <script src="auth.js?v=4.2"></script>
-  <script src="app.js?v=4.2"></script>
+  <script src="auth.js?v=4.3"></script>
+  <script src="app.js?v=4.3"></script>
 </body>
 </html>
