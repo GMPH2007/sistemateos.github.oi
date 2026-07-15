@@ -754,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- INIT BOOTSTRAP ---
   // Run on startup
-  checkAndInjectExpertRole();
+  window.checkAndInjectExpertRole();
   const initialSession = getActiveSession();
   
   if (initialSession) {
