@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32bit integer
     }
-    return 'argos_' + Math.abs(hash).toString(16) + btoa(password).replace(/=/g, '');
+    return 'argos_' + Math.abs(hash).toString(16) + btoa(unescape(encodeURIComponent(password))).replace(/=/g, '');
   }
 
   // HTML Input Sanitizer (Prevents XSS/HTML Injection)
@@ -176,11 +176,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Initialize simulated DB & Sync
-  if (!localStorage.getItem('argos_users')) {
+  // Initialize simulated DB & Sync with error fallback
+  try {
+    const testParse = JSON.parse(localStorage.getItem('argos_users'));
+    if (!Array.isArray(testParse) || testParse.length === 0) {
+      localStorage.setItem('argos_users', JSON.stringify(DEFAULT_USERS));
+    } else {
+      migrateUserPasswords();
+    }
+  } catch (e) {
     localStorage.setItem('argos_users', JSON.stringify(DEFAULT_USERS));
-  } else {
-    migrateUserPasswords();
   }
   
   // Trigger cloud sync asynchronously at startup
