@@ -1,13 +1,20 @@
 <div align="center">
 
-# 🚀 ECOSISTEMA TECNOLÓGICO ARGOS
+# ⚡ ARGOS SYSTEM v5.20 ⚡
 
-[![Licencia: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Plataforma: ESP32](https://img.shields.io/badge/Platform-ESP32-red.svg)](https://www.espressif.com/en/products/socs/esp32)
-[![Lenguaje: JavaScript](https://img.shields.io/badge/Language-JavaScript-yellow.svg)](https://developer.mozilla.org/es/docs/Web/JavaScript)
-[![Tecnología: WebSockets](https://img.shields.io/badge/Tech-WebSockets-orange.svg)](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API)
-[![Diseño: Glow](https://img.shields.io/badge/Design-Futuristic_Glow-green.svg)](#)
-[![Seguridad: Shield](https://img.shields.io/badge/Security-Extreme_Shield-red.svg)](SECURITY.md)
+[![DEVELOPER: MISAEL PINTADO](https://img.shields.io/badge/DEVELOPER-MISAEL_PINTADO-00F0FF?style=for-the-badge&logo=github)](#)
+[![CO-DEVELOPER: DAYRON URBINA](https://img.shields.io/badge/CO--DEVELOPER-DAYRON_URBINA-A855F7?style=for-the-badge&logo=github)](#)
+[![SECURITY: HARDENED SHIELD](https://img.shields.io/badge/SECURITY-HARDENED_SHIELD-FF3E3E?style=for-the-badge&logo=shield)](SECURITY.md)
+[![DEPLOYMENT: GITHUB PAGES](https://img.shields.io/badge/DEPLOYMENT-GITHUB_PAGES-00FF66?style=for-the-badge&logo=googlechrome)](https://gmph2007.github.io/sistemateos.github.oi/)
+
+```text
+ █████╗ ██████╗  ██████╗  ██████╗ ███████╗
+██╔══██╗██╔══██╗██╔════╝ ██╔═══██╗██╔════╝
+███████║██████╔╝██║  ███╗██║   ██║███████╗
+██╔══██║██╔══██╗██║   ██║██║   ██║╚════██║
+██║  ██║██║  ██║╚██████╔╝╚██████╔╝███████║
+╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚══════╝
+```
 
 **Plataforma Autónoma de Monitoreo Ambiental, Prevención de Desastres y Educación STEAM**  
 *Un proyecto de código abierto, local-first y enfocado en la resiliencia civil de comunidades.*
