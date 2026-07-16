@@ -2458,7 +2458,58 @@ document.addEventListener('DOMContentLoaded', () => {
     return "Entendido. He auditado la telemetría en tiempo real y todos los nodos de ARGOS corren estables. Puedes preguntarme sobre sensores específicos (lluvia, sismos, fuego, panel solar), mandos de dirección, el vuelo del dron o los juegos interactivos del aula.";
   }
 
-  function handleSendChatMessage() {
+  // Load and save Gemini Key from UI input
+  const chatbotGeminiKeyInput = document.getElementById('chatbot-gemini-key');
+  if (chatbotGeminiKeyInput) {
+    const savedKey = localStorage.getItem('ARGOS_GEMINI_API_KEY');
+    if (savedKey) {
+      chatbotGeminiKeyInput.value = savedKey;
+    }
+    chatbotGeminiKeyInput.addEventListener('input', () => {
+      localStorage.setItem('ARGOS_GEMINI_API_KEY', chatbotGeminiKeyInput.value.trim());
+    });
+  }
+
+  async function fetchGeminiAIResponse(userMessage, apiKey) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const systemInstruction = 
+      "Eres el Asistente de IA de la plataforma de prevención civil y robótica ARGOS, " +
+      "co-creada por los estudiantes de APSTI Gerson Misael Pintado Zapata (Programador y Mandos) y Dayron Urbina Zapata (Ingeniero de Robótica y Chasis) " +
+      "del IESTP Hermanos Cárcamo (Paita, Piura). Tu deber es ayudar con consultas del robot, prevención de desastres (sismos, lluvias, incendios) " +
+      "y responder a cualquier pregunta del usuario (como programación, comida, etc.), " +
+      "manteniendo siempre una personalidad técnica de ciencia, robótica y resiliencia comunitaria. Responde de forma concisa (máximo 2-3 párrafos), usando formato HTML básico para negritas o listas.";
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `${systemInstruction}\n\nPregunta del usuario: ${userMessage}`
+            }]
+          }]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+        return data.candidates[0].content.parts[0].text;
+      }
+      return "Recibí una respuesta vacía del modelo de IA.";
+    } catch (e) {
+      console.warn("Gemini API call failed:", e);
+      return `[ERROR DE CONEXIÓN] No se pudo conectar con Gemini. Detalle: ${e.message}. Verifica que tu API Key sea correcta.`;
+    }
+  }
+
+  async function handleSendChatMessage() {
     if (!chatbotInput) return;
     const text = chatbotInput.value.trim();
     if (!text) return;
@@ -2483,17 +2534,28 @@ document.addEventListener('DOMContentLoaded', () => {
     chatbotMessages.appendChild(msgDiv);
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 
-    setTimeout(() => {
-      // Remove typing bubble
-      msgDiv.remove();
+    // Check locally first
+    const localResponse = getChatbotResponse(text);
+    const defaultFallback = "Entendido. He auditado la telemetría en tiempo real y todos los nodos de ARGOS corren estables. Puedes preguntarme sobre sensores específicos (lluvia, sismos, fuego, panel solar), mandos de dirección, el vuelo del dron o los juegos interactivos del aula.";
 
-      const response = getChatbotResponse(text);
-      appendChatMessage('ai', response);
-      
-      // Speak the answer text (strip HTML tags first for clean TTS)
-      const cleanTextForSpeech = response.replace(/<\/?[^>]+(>|$)/g, "");
+    const apiKey = chatbotGeminiKeyInput ? chatbotGeminiKeyInput.value.trim() : '';
+
+    if (localResponse !== defaultFallback || !apiKey) {
+      // Offline/Keyword match or no key provided
+      setTimeout(() => {
+        msgDiv.remove();
+        appendChatMessage('ai', localResponse);
+        const cleanTextForSpeech = localResponse.replace(/<\/?[^>]+(>|$)/g, "");
+        synth.speak(cleanTextForSpeech);
+      }, 1000);
+    } else {
+      // Fetch online response from Gemini API!
+      const aiResponse = await fetchGeminiAIResponse(text, apiKey);
+      msgDiv.remove();
+      appendChatMessage('ai', aiResponse);
+      const cleanTextForSpeech = aiResponse.replace(/<\/?[^>]+(>|$)/g, "");
       synth.speak(cleanTextForSpeech);
-    }, 1000);
+    }
   }
 
   if (chatbotSendBtn) {
