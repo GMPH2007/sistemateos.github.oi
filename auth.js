@@ -460,21 +460,56 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const currentRole = role || 'publico';
     
-    // Flight Control & Student Labs are always unlocked for all users (including guest public)
+    // Flight Control Lock
     if (flightCard) {
-      flightCard.classList.remove('panel-locked');
+      const lockOverlayFlight = document.getElementById('lock-overlay-flight');
+      if (currentRole === 'operador' || currentRole === 'docente' || currentRole === 'expert') {
+        flightCard.classList.remove('panel-locked');
+      } else {
+        flightCard.classList.add('panel-locked');
+        if (lockOverlayFlight) {
+          const title = lockOverlayFlight.querySelector('h4');
+          const desc = lockOverlayFlight.querySelector('p');
+          if (currentRole === 'estudiante') {
+            if (title) title.innerHTML = '<i class="fa-solid fa-lock"></i> SEGURIDAD ACTIVA';
+            if (desc) desc.textContent = "Los estudiantes no pueden operar la maquinaria física. Por favor accede a los simuladores de vuelo.";
+          } else {
+            if (title) title.innerHTML = 'ACCESO OPERADOR REQUERIDO';
+            if (desc) desc.textContent = "Inicia sesión como Operador Autorizado para desbloquear y controlar la navegación terrestre y aérea del robot.";
+          }
+        }
+      }
     }
     
+    // Student Module (STEAM Labs) Lock
     if (studentModule) {
-      studentModule.classList.remove('panel-locked');
+      const lockOverlayLabs = document.getElementById('lock-overlay-labs');
+      if (currentRole !== 'publico') {
+        studentModule.classList.remove('panel-locked');
+      } else {
+        studentModule.classList.add('panel-locked');
+        if (lockOverlayLabs) {
+          const title = lockOverlayLabs.querySelector('h4');
+          const desc = lockOverlayLabs.querySelector('p');
+          if (title) title.innerHTML = 'REGISTRO REQUERIDO';
+          if (desc) desc.textContent = "Inicia sesión o regístrate en la plataforma para participar de la trivia y misiones STEAM.";
+        }
+      }
     }
     
-    // Teacher Console is unlocked for 'docente', 'operador' and 'expert'
+    // Teacher Module Lock
     if (teacherModule) {
-      if (currentRole === 'docente' || currentRole === 'operador' || currentRole === 'expert') {
+      const lockOverlayTeacher = document.getElementById('lock-overlay-teacher');
+      if (currentRole === 'docente' || currentRole === 'expert') {
         teacherModule.classList.remove('panel-locked');
       } else {
         teacherModule.classList.add('panel-locked');
+        if (lockOverlayTeacher) {
+          const title = lockOverlayTeacher.querySelector('h4');
+          const desc = lockOverlayTeacher.querySelector('p');
+          if (title) title.innerHTML = 'ACCESO DOCENTE EXCLUSIVO';
+          if (desc) desc.textContent = "Este panel administrativo está reservado para docentes certificados. Permite calificar y auditar registros.";
+        }
       }
     }
   }
