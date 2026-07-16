@@ -2130,6 +2130,23 @@ document.addEventListener('DOMContentLoaded', () => {
              "• <strong>Estructura del Proyecto:</strong> Organizado bajo directorios `/commands`, `/events` e `/index.js` inicial.";
     }
 
+    // Gemini API Key Rotator Proxy Server / jwadow
+    if (clean.includes('rotator') || clean.includes('rotador') || clean.includes('proxy') || clean.includes('api key rotator') || clean.includes('key rotator') || clean.includes('keys gemini')) {
+      return "El <strong>Gemini API Key Rotator Proxy Server (de jwadow)</strong> es un proxy inverso diseñado para optimizar el consumo de la API de Gemini:<br>" +
+             "• <strong>Rotación Inteligente:</strong> Administra un pool de claves API de Gemini y las rota a cada petición para evitar el agotamiento de cuotas gratuitas.<br>" +
+             "• <strong>Mitigación de Errores 429:</strong> Si una clave es bloqueada por exceso de velocidad de peticiones (RPM/TPM), el servidor proxy la pone en lista de espera e inyecta la siguiente clave activa de forma transparente para la aplicación.<br>" +
+             "• <strong>Arquitectura Ligera:</strong> Ideal para desplegar en microservicios y acoplar a plataformas como ARGOS para inferencia masiva y gratuita.";
+    }
+
+    // Premium Laravel Template / Ahmadjamil888
+    if (clean.includes('laravel') || clean.includes('laravel template') || clean.includes('ahmadjamil') || clean.includes('plantilla laravel') || clean.includes('php laravel')) {
+      return "La plantilla <strong>PREMIUM-LARAVEL-template (de Ahmadjamil888)</strong> es un framework estructurado para chatbots de inteligencia artificial en PHP:<br>" +
+             "• <strong>Arquitectura Laravel 12.x:</strong> Incorpora controladores y migraciones nativas para autenticar operadores (`/login` y `/register`) y enrutar las salas de chat.<br>" +
+             "• <strong>Diseño Black & White:</strong> El frontend cuenta con un tema minimalista y profesional en blanco y negro, diseñado con TailwindCSS y hojas de estilo personalizadas.<br>" +
+             "• <strong>Mapeo de Base de Datos MySQL:</strong> Guarda conversaciones completas, datos de sesiones de operador e historiales de mensajes.<br>" +
+             "• <strong>Conector de Gemini:</strong> Integra el SDK de Google para dar respuestas dinámicas de IA conversacional en el dashboard.";
+    }
+
     // Redes Neuronales / CNN
     if (clean.includes('red neuronal') || clean.includes('redes neuronales') || clean.includes('cnn') || clean.includes('convolucional')) {
       return "ARGOS utiliza <strong>Redes Neuronales Convolucionales (CNN)</strong> para el procesamiento visual.<br>" +
