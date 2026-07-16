@@ -554,26 +554,32 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(devices => {
           const videoDevices = devices.filter(device => device.kind === 'videoinput');
           if (camDeviceSelect) {
-            if (camDeviceSelect.options.length === 0) {
-              videoDevices.forEach((device, index) => {
-                const opt = document.createElement('option');
-                opt.value = device.deviceId;
-                opt.textContent = device.label || `Cámara USB ${index + 1}`;
-                camDeviceSelect.appendChild(opt);
-              });
-              
-              if (stream) {
-                const activeTrack = stream.getVideoTracks()[0];
-                if (activeTrack) {
-                  const settings = activeTrack.getSettings();
-                  if (settings && settings.deviceId) {
-                    camDeviceSelect.value = settings.deviceId;
-                  }
+            const oldVal = camDeviceSelect.value;
+            camDeviceSelect.innerHTML = '';
+            
+            videoDevices.forEach((device, index) => {
+              const opt = document.createElement('option');
+              opt.value = device.deviceId;
+              opt.textContent = device.label || `Cámara USB ${index + 1}`;
+              camDeviceSelect.appendChild(opt);
+            });
+            
+            if (stream) {
+              const activeTrack = stream.getVideoTracks()[0];
+              if (activeTrack) {
+                const settings = activeTrack.getSettings();
+                if (settings && settings.deviceId) {
+                  camDeviceSelect.value = settings.deviceId;
                 }
               }
+            } else if (oldVal && videoDevices.some(d => d.deviceId === oldVal)) {
+              camDeviceSelect.value = oldVal;
+            } else if (videoDevices.length > 0) {
+              camDeviceSelect.value = videoDevices[0].deviceId;
             }
             
-            if (videoDevices.length > 1) {
+            // Show device selector if we have cameras connected
+            if (videoDevices.length >= 1) {
               if (camDeviceContainer) camDeviceContainer.classList.remove('hidden');
             } else {
               if (camDeviceContainer) camDeviceContainer.classList.add('hidden');
@@ -590,8 +596,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function startLiveCameraStream(preferredDeviceId = null) {
     const camSource = camSourceSelect ? camSourceSelect.value : 'simulado';
     
-    // Stop any existing stream first to avoid conflicts
-    stopLiveCameraStream();
+    // Stop old stream, but do NOT wipe dropdown options if switching device
+    stopLiveCameraStream(preferredDeviceId ? false : true);
     
     if (camSource === 'esp32') {
       if (camDeviceContainer) camDeviceContainer.classList.add('hidden');
@@ -632,7 +638,6 @@ document.addEventListener('DOMContentLoaded', () => {
           appendLog('console', '[CAM] Cámara física USB/Tipo-C conectada con éxito.', 'success');
           synth.speak("Cámara USB conectada.");
           
-          // Enumerate devices once permission is granted
           enumerateVideoDevices(stream);
         })
         .catch(err => {
@@ -648,21 +653,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function stopLiveCameraStream() {
-    // Stop ESP32
+  function stopLiveCameraStream(clearDevices = true) {
     liveCameraImage.removeAttribute('src');
     liveStreamActive = false;
     
-    // Stop USB
     if (localVideoStream) {
       localVideoStream.getTracks().forEach(track => track.stop());
       localVideoStream = null;
     }
     localVideoElement.srcObject = null;
     
-    // Reset devices list
-    if (camDeviceSelect) camDeviceSelect.innerHTML = '';
-    if (camDeviceContainer) camDeviceContainer.classList.add('hidden');
+    if (clearDevices) {
+      if (camDeviceSelect) camDeviceSelect.innerHTML = '';
+      if (camDeviceContainer) camDeviceContainer.classList.add('hidden');
+    }
   }
 
   // Bind change event on camera source select
@@ -684,6 +688,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const selectedDeviceId = camDeviceSelect.value;
       if (selectedDeviceId) {
         startLiveCameraStream(selectedDeviceId);
+      }
+    });
+  }
+
+  // Monitor USB device changes (Plug & Play webcams)
+  if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+    navigator.mediaDevices.addEventListener('devicechange', () => {
+      const currentSource = camSourceSelect ? camSourceSelect.value : 'simulado';
+      if (currentSource === 'usb') {
+        appendLog('console', '[CAM] Cambio de hardware detectado en puertos USB. Re-escaneando cámaras...', 'info');
+        enumerateVideoDevices(localVideoStream);
       }
     });
   }
