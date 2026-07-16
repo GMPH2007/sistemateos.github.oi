@@ -531,12 +531,24 @@ document.addEventListener('DOMContentLoaded', () => {
   let liveStreamActive = false;
   const liveCameraImage = new Image();
 
-  // USB Video DOM Elements (Created dynamically)
-  const localVideoElement = document.createElement('video');
-  localVideoElement.autoplay = true;
-  localVideoElement.playsInline = true;
-  localVideoElement.muted = true;
-  let localVideoStream = null;
+  // USB Video DOM Elements (Created dynamically for multi-camera support)
+  const localVideoElement1 = document.createElement('video');
+  localVideoElement1.autoplay = true;
+  localVideoElement1.playsInline = true;
+  localVideoElement1.muted = true;
+  let localVideoStream1 = null;
+
+  const localVideoElement2 = document.createElement('video');
+  localVideoElement2.autoplay = true;
+  localVideoElement2.playsInline = true;
+  localVideoElement2.muted = true;
+  let localVideoStream2 = null;
+
+  const localVideoElement3 = document.createElement('video');
+  localVideoElement3.autoplay = true;
+  localVideoElement3.playsInline = true;
+  localVideoElement3.muted = true;
+  let localVideoStream3 = null;
 
   liveCameraImage.onload = () => {
     liveStreamActive = true;
@@ -617,33 +629,84 @@ document.addEventListener('DOMContentLoaded', () => {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         appendLog('console', '[CAM] Inicializando cámara física USB/Tipo-C...', 'warning');
         
-        const constraints = {
-          video: {
-            width: { ideal: 640 },
-            height: { ideal: 480 }
+        navigator.mediaDevices.enumerateDevices().then(devices => {
+          const videoDevices = devices.filter(d => d.kind === 'videoinput');
+          if (videoDevices.length === 0) {
+            throw new Error("No hay dispositivos de entrada de video.");
           }
-        };
-        
-        if (preferredDeviceId) {
-          constraints.video.deviceId = { exact: preferredDeviceId };
-        }
-        
-        navigator.mediaDevices.getUserMedia(constraints)
-        .then(stream => {
-          localVideoStream = stream;
-          localVideoElement.srcObject = stream;
-          localVideoElement.onloadedmetadata = () => {
-            localVideoElement.play().catch(e => console.warn("Video play failed:", e));
-          };
-          appendLog('console', '[CAM] Cámara física USB/Tipo-C conectada con éxito.', 'success');
-          synth.speak("Cámara USB conectada.");
           
-          enumerateVideoDevices(stream);
-        })
-        .catch(err => {
-          console.error("Error accessing local webcam:", err);
-          appendLog('console', '[ERROR CAM] No se pudo acceder a la cámara USB/Tipo-C. Verifique los permisos del navegador.', 'error');
-          synth.speak("Error al conectar la cámara USB.");
+          const devId1 = preferredDeviceId || videoDevices[0].deviceId;
+          const devId2 = (videoDevices.length >= 2) ? videoDevices[1].deviceId : null;
+          const devId3 = (videoDevices.length >= 3) ? videoDevices[2].deviceId : null;
+
+          // Request stream 1
+          const constraints1 = {
+            video: {
+              deviceId: { ideal: devId1 },
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            }
+          };
+          navigator.mediaDevices.getUserMedia(constraints1).then(stream1 => {
+            localVideoStream1 = stream1;
+            localVideoElement1.srcObject = stream1;
+            localVideoElement1.onloadedmetadata = () => {
+              localVideoElement1.play().catch(e => console.warn("Video 1 play failed:", e));
+            };
+            appendLog('console', '[CAM] Cámara 1 (Frontal) conectada con éxito.', 'success');
+            enumerateVideoDevices(stream1);
+          }).catch(err => {
+            console.error("Error accessing camera 1:", err);
+            appendLog('console', '[ERROR CAM 1] No se pudo acceder a la Cámara 1.', 'error');
+          });
+
+          // Request stream 2 if second device exists
+          if (devId2) {
+            const constraints2 = {
+              video: {
+                deviceId: { ideal: devId2 },
+                width: { ideal: 640 },
+                height: { ideal: 480 }
+              }
+            };
+            navigator.mediaDevices.getUserMedia(constraints2).then(stream2 => {
+              localVideoStream2 = stream2;
+              localVideoElement2.srcObject = stream2;
+              localVideoElement2.onloadedmetadata = () => {
+                localVideoElement2.play().catch(e => console.warn("Video 2 play failed:", e));
+              };
+              appendLog('console', '[CAM] Cámara 2 (Trasera) conectada con éxito.', 'success');
+            }).catch(err => {
+              console.error("Error accessing camera 2:", err);
+            });
+          }
+
+          // Request stream 3 if third device exists
+          if (devId3) {
+            const constraints3 = {
+              video: {
+                deviceId: { ideal: devId3 },
+                width: { ideal: 640 },
+                height: { ideal: 480 }
+              }
+            };
+            navigator.mediaDevices.getUserMedia(constraints3).then(stream3 => {
+              localVideoStream3 = stream3;
+              localVideoElement3.srcObject = stream3;
+              localVideoElement3.onloadedmetadata = () => {
+                localVideoElement3.play().catch(e => console.warn("Video 3 play failed:", e));
+              };
+              appendLog('console', '[CAM] Cámara 3 (Dron) conectada con éxito.', 'success');
+            }).catch(err => {
+              console.error("Error accessing camera 3:", err);
+            });
+          }
+          
+          synth.speak("Cámaras USB conectadas.");
+        }).catch(err => {
+          console.error("Error setting up multi-streams:", err);
+          appendLog('console', '[ERROR CAM] Error al mapear cámaras USB múltiples.', 'error');
+          synth.speak("Error al conectar las cámaras.");
         });
       } else {
         appendLog('console', '[ERROR CAM] La API de cámara no es compatible con este navegador.', 'error');
@@ -657,11 +720,18 @@ document.addEventListener('DOMContentLoaded', () => {
     liveCameraImage.removeAttribute('src');
     liveStreamActive = false;
     
-    if (localVideoStream) {
-      localVideoStream.getTracks().forEach(track => track.stop());
-      localVideoStream = null;
-    }
-    localVideoElement.srcObject = null;
+    [localVideoStream1, localVideoStream2, localVideoStream3].forEach(stream => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    });
+    localVideoStream1 = null;
+    localVideoStream2 = null;
+    localVideoStream3 = null;
+
+    localVideoElement1.srcObject = null;
+    localVideoElement2.srcObject = null;
+    localVideoElement3.srcObject = null;
     
     if (clearDevices) {
       if (camDeviceSelect) camDeviceSelect.innerHTML = '';
@@ -698,7 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const currentSource = camSourceSelect ? camSourceSelect.value : 'simulado';
       if (currentSource === 'usb') {
         appendLog('console', '[CAM] Cambio de hardware detectado en puertos USB. Re-escaneando cámaras...', 'info');
-        enumerateVideoDevices(localVideoStream);
+        enumerateVideoDevices(localVideoStream1);
       }
     });
   }
@@ -882,9 +952,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
               // fallback
             }
-          } else if (camSource === 'usb' && localVideoStream && localVideoElement.readyState >= 2) {
+          } else if (camSource === 'usb' && localVideoStream1 && localVideoElement1.readyState >= 2) {
             try {
-              ctxFront.drawImage(localVideoElement, 0, 0, wF, hF);
+              ctxFront.drawImage(localVideoElement1, 0, 0, wF, hF);
               drewRealCamera = true;
             } catch (e) {
               // fallback
@@ -951,39 +1021,52 @@ document.addEventListener('DOMContentLoaded', () => {
       const wR = canvasTrasera.width;
       const hR = canvasTrasera.height;
       if (wR > 0 && hR > 0) {
-        ctxRear.fillStyle = '#020205';
-        ctxRear.fillRect(0, 0, wR, hR);
-        
-        ctxRear.fillStyle = 'rgba(0, 230, 118, 0.03)';
-        ctxRear.strokeStyle = 'rgba(0, 230, 118, 0.25)';
-        ctxRear.beginPath();
-        ctxRear.moveTo(wR * 0.2, hR);
-        ctxRear.lineTo(wR * 0.35, hR * 0.75);
-        ctxRear.lineTo(wR * 0.65, hR * 0.75);
-        ctxRear.lineTo(wR * 0.8, hR);
-        ctxRear.closePath();
-        ctxRear.fill();
-        ctxRear.stroke();
+        let drewRealCameraRear = false;
+        const camSource = camSourceSelect ? camSourceSelect.value : 'simulado';
+        if (camSource === 'usb' && localVideoStream2 && localVideoElement2.readyState >= 2) {
+          try {
+            ctxRear.drawImage(localVideoElement2, 0, 0, wR, hR);
+            drewRealCameraRear = true;
+          } catch (e) {
+            // fallback
+          }
+        }
 
-        ctxRear.beginPath();
-        ctxRear.moveTo(wR * 0.5, hR);
-        ctxRear.lineTo(wR * 0.5, hR * 0.75);
-        ctxRear.stroke();
-        
-        ctxRear.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-        ctxRear.beginPath();
-        ctxRear.moveTo(wR * 0.35, hR * 0.75);
-        ctxRear.lineTo(wR * 0.48, hR * 0.5);
-        ctxRear.moveTo(wR * 0.65, hR * 0.75);
-        ctxRear.lineTo(wR * 0.52, hR * 0.5);
-        ctxRear.stroke();
-        
-        ctxRear.fillStyle = 'rgba(255, 107, 0, 0.08)';
-        ctxRear.strokeStyle = 'rgba(255, 107, 0, 0.3)';
-        ctxRear.beginPath();
-        ctxRear.arc(wR * 0.35, hR * 0.48, 12, 0, Math.PI * 2);
-        ctxRear.fill();
-        ctxRear.stroke();
+        if (!drewRealCameraRear) {
+          ctxRear.fillStyle = '#020205';
+          ctxRear.fillRect(0, 0, wR, hR);
+          
+          ctxRear.fillStyle = 'rgba(0, 230, 118, 0.03)';
+          ctxRear.strokeStyle = 'rgba(0, 230, 118, 0.25)';
+          ctxRear.beginPath();
+          ctxRear.moveTo(wR * 0.2, hR);
+          ctxRear.lineTo(wR * 0.35, hR * 0.75);
+          ctxRear.lineTo(wR * 0.65, hR * 0.75);
+          ctxRear.lineTo(wR * 0.8, hR);
+          ctxRear.closePath();
+          ctxRear.fill();
+          ctxRear.stroke();
+
+          ctxRear.beginPath();
+          ctxRear.moveTo(wR * 0.5, hR);
+          ctxRear.lineTo(wR * 0.5, hR * 0.75);
+          ctxRear.stroke();
+          
+          ctxRear.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+          ctxRear.beginPath();
+          ctxRear.moveTo(wR * 0.35, hR * 0.75);
+          ctxRear.lineTo(wR * 0.48, hR * 0.5);
+          ctxRear.moveTo(wR * 0.65, hR * 0.75);
+          ctxRear.lineTo(wR * 0.52, hR * 0.5);
+          ctxRear.stroke();
+          
+          ctxRear.fillStyle = 'rgba(255, 107, 0, 0.08)';
+          ctxRear.strokeStyle = 'rgba(255, 107, 0, 0.3)';
+          ctxRear.beginPath();
+          ctxRear.arc(wR * 0.35, hR * 0.48, 12, 0, Math.PI * 2);
+          ctxRear.fill();
+          ctxRear.stroke();
+        }
 
         if (aiBoxTrasera) {
           if (Math.floor(frameCount / 240) % 3 === 1) {
@@ -1016,9 +1099,9 @@ document.addEventListener('DOMContentLoaded', () => {
           } catch (e) {
             // fallback
           }
-        } else if (camSource === 'usb' && localVideoStream && localVideoElement.readyState >= 2) {
+        } else if (camSource === 'usb' && localVideoStream3 && localVideoElement3.readyState >= 2) {
           try {
-            ctxDrone.drawImage(localVideoElement, 0, 0, wD, hD);
+            ctxDrone.drawImage(localVideoElement3, 0, 0, wD, hD);
             drewRealCameraDrone = true;
           } catch (e) {
             // fallback
@@ -3030,6 +3113,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedMission = null;
   let activeRobotX = 10;
   let activeRobotY = 50;
+  let lastRobotX = 10;
+  let lastRobotY = 50;
   let misionesScore = 0;
   
   // Transit Routing panel state
@@ -3042,6 +3127,8 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedMission = null;
     activeRobotX = 10;
     activeRobotY = 50;
+    lastRobotX = 10;
+    lastRobotY = 50;
     misionesScore = 0;
     isRouting = false;
     mapMissions.forEach(m => m.completed = false);
@@ -3184,7 +3271,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             <!-- Trajectory Path drawing overlay -->
             <svg class="svg-path-overlay">
-              <line x1="10%" y1="50%" x2="${activeRobotX}%" y2="${activeRobotY}%" class="svg-path-line" />
+              <line x1="${lastRobotX}%" y1="${lastRobotY}%" x2="${activeRobotX}%" y2="${activeRobotY}%" class="svg-path-line" />
             </svg>
             
             <div class="map-base-hangar">
@@ -3215,16 +3302,40 @@ document.addEventListener('DOMContentLoaded', () => {
     isRouting = true;
     selectedMission = null;
     targetMission = mission;
-    activeRobotX = mission.x;
-    activeRobotY = mission.y;
+
+    const startX = activeRobotX;
+    const startY = activeRobotY;
+    const destX = mission.x;
+    const destY = mission.y;
+    lastRobotX = startX;
+    lastRobotY = startY;
     routingProgress = 0;
 
     renderMisionesMap();
     synth.beep(800, 'sine', 0.08);
 
     if (routingTimer) clearInterval(routingTimer);
+    
+    const robotEl = document.getElementById('map-robot-element');
+    const svgLine = document.querySelector('.svg-path-line');
+
     routingTimer = setInterval(() => {
-      routingProgress += 10;
+      routingProgress += 5; // move in 5% increments
+      const t = routingProgress / 100;
+      activeRobotX = startX + (destX - startX) * t;
+      activeRobotY = startY + (destY - startY) * t;
+
+      // Update robot position in DOM
+      if (robotEl) {
+        robotEl.style.left = `${activeRobotX}%`;
+        robotEl.style.top = `${activeRobotY}%`;
+      }
+      // Update SVG line x2/y2 in DOM
+      if (svgLine) {
+        svgLine.setAttribute('x2', `${activeRobotX}%`);
+        svgLine.setAttribute('y2', `${activeRobotY}%`);
+      }
+
       const progressFill = document.getElementById('routing-progress-fill');
       if (progressFill) {
         progressFill.style.width = `${routingProgress}%`;
@@ -3236,6 +3347,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (routingProgress >= 100) {
         clearInterval(routingTimer);
         isRouting = false;
+        activeRobotX = destX;
+        activeRobotY = destY;
+        lastRobotX = destX;
+        lastRobotY = destY;
         selectedMission = targetMission;
         targetMission = null;
         
@@ -3246,7 +3361,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         renderMisionesMap();
       }
-    }, 150);
+    }, 80);
   };
 
   window.checkMissionAnswer = function(optIdx, btnEl) {
