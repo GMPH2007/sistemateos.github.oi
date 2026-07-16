@@ -2645,17 +2645,65 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         msgDiv.remove();
         appendChatMessage('ai', localResponse);
-        const cleanTextForSpeech = localResponse.replace(/<\/?[^>]+(>|$)/g, "");
-        synth.speak(cleanTextForSpeech);
+        if (!isChatbotMuted) {
+          const cleanTextForSpeech = localResponse.replace(/<\/?[^>]+(>|$)/g, "");
+          synth.speak(cleanTextForSpeech);
+        }
       }, 1000);
     } else {
       // Fetch online response from Gemini API!
       const aiResponse = await fetchGeminiAIResponse(text, apiKey);
       msgDiv.remove();
       appendChatMessage('ai', aiResponse);
-      const cleanTextForSpeech = aiResponse.replace(/<\/?[^>]+(>|$)/g, "");
-      synth.speak(cleanTextForSpeech);
+      if (!isChatbotMuted) {
+        const cleanTextForSpeech = aiResponse.replace(/<\/?[^>]+(>|$)/g, "");
+        synth.speak(cleanTextForSpeech);
+      }
     }
+  }
+
+  // Mute / Unmute TTS controller
+  const chatbotMuteBtn = document.getElementById('chatbot-mute-btn');
+  const chatbotClearBtn = document.getElementById('chatbot-clear-btn');
+  let isChatbotMuted = false;
+
+  function updateMuteBtnUI() {
+    if (!chatbotMuteBtn) return;
+    if (isChatbotMuted) {
+      chatbotMuteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+      chatbotMuteBtn.style.color = '#ff3e3e';
+      chatbotMuteBtn.title = "Activar Voz (TTS)";
+    } else {
+      chatbotMuteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+      chatbotMuteBtn.style.color = 'var(--accent-cyan)';
+      chatbotMuteBtn.title = "Silenciar Voz (TTS)";
+    }
+  }
+
+  if (chatbotMuteBtn) {
+    const savedMute = localStorage.getItem('ARGOS_CHATBOT_MUTED') === 'true';
+    isChatbotMuted = savedMute;
+    updateMuteBtnUI();
+
+    chatbotMuteBtn.addEventListener('click', () => {
+      isChatbotMuted = !isChatbotMuted;
+      localStorage.setItem('ARGOS_CHATBOT_MUTED', isChatbotMuted);
+      updateMuteBtnUI();
+      synth.beep(600, 'sine', 0.05);
+    });
+  }
+
+  if (chatbotClearBtn) {
+    chatbotClearBtn.addEventListener('click', () => {
+      if (chatbotMessages) {
+        chatbotMessages.innerHTML = `
+          <div class="chat-msg ai">
+            ¡Historial limpiado! Soy el asistente virtual de ARGOS. ¿En qué puedo ayudarte ahora?
+          </div>
+        `;
+        synth.beep(400, 'sine', 0.08);
+      }
+    });
   }
 
   if (chatbotSendBtn) {
