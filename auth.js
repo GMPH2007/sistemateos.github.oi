@@ -840,17 +840,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 3. Anti-Debugging Loop (Freeze DevTools debugging)
-    setInterval(() => {
-      (function() {
-        const t1 = performance.now();
-        debugger;
-        const t2 = performance.now();
-        if (t2 - t1 > 100) {
-          console.warn("[🛡️ SHIELD] Intrusión detectada.");
-        }
-      })();
-    }, 1000);
+    // 3. Anti-Debugging Loop (Freeze DevTools debugging, bypassed on local environments for development)
+    const _0xloc = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+    if (!_0xloc) {
+      setInterval(() => {
+        (function() {
+          const t1 = performance.now();
+          debugger;
+          const t2 = performance.now();
+          if (t2 - t1 > 100) {
+            console.warn("[🛡️ SHIELD] Intrusión detectada.");
+          }
+        })();
+      }, 1000);
+    }
 
   })();
 
