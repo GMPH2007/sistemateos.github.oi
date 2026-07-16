@@ -34,7 +34,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=6.4">
+  <link rel="stylesheet" href="style.css?v=6.5">
 </head>
 <body class="theme-dark">
   <!-- Top Scroll Progress Indicator -->
@@ -1090,6 +1090,7 @@
       <div class="chatbot-api-config" style="padding: 6px 12px; background: rgba(0,0,0,0.45); border-bottom: 1.5px solid rgba(0,240,255,0.15); display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 9px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
         <span style="color: var(--accent-cyan); white-space: nowrap;"><i class="fa-solid fa-key"></i> GEMINI KEY:</span>
         <input type="password" id="chatbot-gemini-key" placeholder="Pega tu API Key para activar IA..." style="flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.25); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-family: monospace; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--accent-cyan)';" onblur="this.style.borderColor='rgba(0,240,255,0.25)';">
+        <span id="chatbot-api-status" style="color: #ff3e3e; white-space: nowrap; font-size: 8px; animation: pulseFlashing 0.8s infinite alternate;"><i class="fa-solid fa-circle"></i> LOCAL</span>
       </div>
 
       <div class="chatbot-messages" id="chatbot-messages">
@@ -1297,7 +1298,7 @@
   </div>
 
   <!-- Code Script imports -->
-  <script src="auth.js?v=6.4"></script>
-  <script src="app.js?v=6.4"></script>
+  <script src="auth.js?v=6.5"></script>
+  <script src="app.js?v=6.5"></script>
 </body>
 </html>
