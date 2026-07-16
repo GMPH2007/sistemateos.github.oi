@@ -34,7 +34,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=6.8">
+  <link rel="stylesheet" href="style.css?v=6.9">
 </head>
 <body class="theme-dark">
   <!-- Top Scroll Progress Indicator -->
@@ -1083,7 +1083,11 @@
         <div class="chatbot-title">
           <i class="fa-solid fa-circle-nodes"></i> Asistente de IA ARGOS
         </div>
-        <button class="chatbot-close-btn" id="chatbot-close"><i class="fa-solid fa-xmark"></i></button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button id="chatbot-mute-btn" title="Silenciar/Activar Voz de IA" style="background:none; border:none; color:var(--accent-cyan); cursor:pointer; font-size:10px; padding:2px;"><i class="fa-solid fa-volume-high"></i></button>
+          <button id="chatbot-clear-btn" title="Limpiar Historial de Chat" style="background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size:10px; padding:2px;" onmouseover="this.style.color='#ff3e3e';" onmouseout="this.style.color='rgba(255,255,255,0.4)';"><i class="fa-solid fa-trash-can"></i></button>
+          <button class="chatbot-close-btn" id="chatbot-close" style="margin-left:4px;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
       </div>
       
       <!-- Configuración de API Key de Gemini en Caliente -->
@@ -1282,23 +1286,43 @@
         <h3 class="auth-modal-title"><i class="fa-solid fa-user-lock text-glow-green"></i> POLÍTICA DE PRIVACIDAD</h3>
         <button class="btn-close-modal" id="btn-close-privacy"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="auth-modal-body" style="max-height: 400px; overflow-y: auto; padding: 15px; color: var(--text-secondary); text-align: left; font-size: 12px; line-height: 1.6;">
-        <h4 style="color:#fff; margin-bottom: 10px;"><i class="fa-solid fa-shield-halved"></i> Transparencia y Legalidad de Datos</h4>
-        <p>En el **Ecosistema Tecnológico ARGOS**, fundado por **Dayron Urbina Zapata** (Robótica y Hardware) y **Misael Pintado** (Programación y Control de Mandos), nos tomamos la privacidad muy en serio:</p>
+      <div class="auth-modal-body" style="max-height: 400px; overflow-y: auto; padding: 15px; color: var(--text-secondary); text-align: left; font-size: 11px; line-height: 1.6;">
+        <h4 style="color:#fff; margin-bottom: 10px;"><i class="fa-solid fa-shield-halved text-glow-green"></i> Directiva de Privacidad y Soberanía de Datos</h4>
+        <p>En el **Ecosistema Tecnológico ARGOS**, co-fundado por **Gerson Misael Pintado Zapata** (Programación y Control de Mandos) y **Dayron Urbina Zapata** (Diseño de Hardware y Orugas), aplicamos una política de privacidad absoluta alineada a las mejores prácticas de ciberseguridad industrial y transparencia de datos:</p>
         
-        <ul style="margin-left: 20px; margin-bottom: 15px; list-style-type: square;">
-          <li><strong>Datos Locales:</strong> Toda tu información, contraseñas de sesión simuladas, configuraciones de roles y puntuación de juegos se guardan única y exclusivamente de forma local en tu navegador utilizando `localStorage`.</li>
-          <li><strong>Sin Servidores de Terceros:</strong> No enviamos tus datos personales, contraseñas ni logs de telemetría a servidores remotos ni a empresas de publicidad. El sistema es 100% autónomo y local-first.</li>
-          <li><strong>Código Transparente:</strong> Cumpliendo la licencia <strong>GNU AGPLv3</strong>, todo nuestro código es abierto y auditable para garantizar la seguridad de la comunidad frente a vulnerabilidades.</li>
-          <li><strong>Seguridad Integrada:</strong> Protegemos la plataforma con un escudo de cifrado de contraseñas y mitigación de intrusiones en la consola de telemetría.</li>
-        </ul>
-        <p style="font-size: 11px; color: var(--text-muted);">Última actualización: Julio 2026. Diseñado para la formación de resiliencia civil y educación STEAM.</p>
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
+          <h5 style="color:#fff; margin-bottom: 5px;"><i class="fa-solid fa-database" style="color:var(--accent-green);"></i> 1. Almacenamiento Local (Local-First Design)</h5>
+          <p>Toda tu información es de tu propiedad y se procesa únicamente en tu máquina cliente. No se envían credenciales a bases de datos en la nube de terceros. Las siguientes llaves se guardan en el `localStorage` de tu navegador:</p>
+          <ul style="margin-left: 15px; margin-bottom: 5px; list-style-type: square; font-family: monospace;">
+            <li><strong>ARGOS_SESSION:</strong> Identidad, nombre del operador y rol activo de privilegios.</li>
+            <li><strong>ARGOS_USERS_DB:</strong> Base de datos local cifrada con tus cuentas y contraseñas.</li>
+            <li><strong>ARGOS_GEMINI_API_KEY:</strong> Token cifrado del modelo para consultas de inteligencia artificial.</li>
+            <li><strong>ARGOS_ARCADE_SCORE:</strong> Historial de puntaje y rachas acumuladas en el Terminal Arcade.</li>
+          </ul>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
+          <h5 style="color:#fff; margin-bottom: 5px;"><i class="fa-solid fa-key" style="color:var(--accent-cyan);"></i> 2. Transmisión del Token de Gemini API</h5>
+          <p>Tu clave API de Gemini ingresada en el chatbot se transmite cifrada mediante protocolo HTTPS directamente a los servidores oficiales de Google (`googleapis.com`) para la inferencia de lenguaje natural. Nuestro código **no guarda, no intercepta y no retransmite** tu API Key a ningún servidor secundario.</p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
+          <h5 style="color:#fff; margin-bottom: 5px;"><i class="fa-solid fa-cookie-bite" style="color:var(--accent-orange);"></i> 3. Directiva de Cero Cookies (No-Tracking Policy)</h5>
+          <p>Garantizamos soberanía total: **no utilizamos cookies de rastreo**, scripts de análisis publicitario (como Google Analytics o Facebook Pixel) ni cargamos telemetría oculta que comprometa tus metadatos. El software corre de forma completamente estanca.</p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+          <h5 style="color:#fff; margin-bottom: 5px;"><i class="fa-solid fa-scale-balanced" style="color:var(--accent-cyan);"></i> 4. Cumplimiento Licencia GNU AGPLv3</h5>
+          <p>En conformidad con la licencia GNU AGPLv3, el código de la plataforma es de libre auditoría para validar que no existan puertas traseras (backdoors) ni filtraciones de información cívica.</p>
+        </div>
+
+        <p style="font-size: 10px; color: var(--text-muted); margin-top: 15px; text-align: center;">Última actualización: Julio 2026. Ecosistema Tecnológico de Prevención ARGOS.</p>
       </div>
     </div>
   </div>
 
   <!-- Code Script imports -->
-  <script src="auth.js?v=6.8"></script>
-  <script src="app.js?v=6.8"></script>
+  <script src="auth.js?v=6.9"></script>
+  <script src="app.js?v=6.9"></script>
 </body>
 </html>
