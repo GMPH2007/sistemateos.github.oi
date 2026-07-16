@@ -2121,6 +2121,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return "¡Uff! Déjame decirte que su mamá es una mamasita rica, hermosa, preciosa y sumamente divina. ¡Un total encanto de mujer!";
     }
 
+    // Discord JS Moderation Bot / TFAGaming / Bots Discord
+    if (clean.includes('discord') || clean.includes('tfagaming') || clean.includes('moderacion bot') || clean.includes('moderador') || clean.includes('bots discord') || clean.includes('discordjs')) {
+      return "El <strong>Discord.js Moderation Bot (arquitectura de TFAGaming)</strong> es una plataforma de automatización de servidores escrita en Node.js usando **discord.js v14**:<br>" +
+             "• <strong>Handlers Modulares:</strong> Utiliza un **Command Handler** y **Event Handler** dinámicos para registrar comandos Slash de la API de Discord de manera limpia y sin archivos sobrecargados.<br>" +
+             "• <strong>Comandos Tácticos:</strong> Incluye moderación en caliente como `/ban`, `/kick`, `/mute`, `/unmute` y `/warn` respaldados por una base de datos **MongoDB** (Mongoose) para registrar el historial de infracciones de los miembros.<br>" +
+             "• <strong>Ciberseguridad del Bot:</strong> Resguarda las claves de la aplicación en un archivo `.env` (`process.env.DISCORD_TOKEN`) para evitar que piratas informáticos roben el token del bot al subir el código a GitHub.<br>" +
+             "• <strong>Estructura del Proyecto:</strong> Organizado bajo directorios `/commands`, `/events` e `/index.js` inicial.";
+    }
+
     // Redes Neuronales / CNN
     if (clean.includes('red neuronal') || clean.includes('redes neuronales') || clean.includes('cnn') || clean.includes('convolucional')) {
       return "ARGOS utiliza <strong>Redes Neuronales Convolucionales (CNN)</strong> para el procesamiento visual.<br>" +
