@@ -34,7 +34,7 @@
   <!-- Chart.js for real-time telemetry graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=6.3">
+  <link rel="stylesheet" href="style.css?v=6.4">
 </head>
 <body class="theme-dark">
   <!-- Top Scroll Progress Indicator -->
@@ -545,7 +545,7 @@
         </div>
 
         <!-- RIGHT BOTTOM: Terrestrial & Aerial Flight Control Panels -->
-        <div class="cockpit-card flight-card" id="flight-control-card">
+        <div class="cockpit-card flight-card panel-locked" id="flight-control-card">
           <div class="card-header">
             <h3><i class="fa-solid fa-cubes"></i> MANDOS DE NAVEGACIÓN Y DESPLIEGUE DRON</h3>
             <span class="system-level" id="flight-system-status">SISTEMA LOCK</span>
@@ -671,7 +671,7 @@
           
           <!-- Tabbed view based on profile -->
           <!-- STUDENT VIEWS -->
-          <div class="steam-interactive-card" id="student-module">
+          <div class="steam-interactive-card panel-locked" id="student-module">
             <div class="card-header">
               <h3><i class="fa-solid fa-flask"></i> Laboratorios Virtuales de Exploración</h3>
               <span class="tag-status" id="student-labs-progress">COMPLETADOS: 0/3</span>
@@ -817,7 +817,7 @@
           </div>
 
           <!-- TEACHER VIEWS (Conditional UI) -->
-          <div class="steam-interactive-card" id="teacher-module">
+          <div class="steam-interactive-card panel-locked" id="teacher-module">
             <div class="card-header">
               <h3><i class="fa-solid fa-folder-open"></i> Consola del Docente</h3>
               <span class="tag-status">SESIÓN DE AULA ACTIVA</span>
@@ -1290,7 +1290,7 @@
   </div>
 
   <!-- Code Script imports -->
-  <script src="auth.js?v=6.3"></script>
-  <script src="app.js?v=6.3"></script>
+  <script src="auth.js?v=6.4"></script>
+  <script src="app.js?v=6.4"></script>
 </body>
 </html>
