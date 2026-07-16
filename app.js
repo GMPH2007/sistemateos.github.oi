@@ -2460,13 +2460,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load and save Gemini Key from UI input
   const chatbotGeminiKeyInput = document.getElementById('chatbot-gemini-key');
+  const chatbotApiStatus = document.getElementById('chatbot-api-status');
+
+  function updateChatbotApiStatus() {
+    if (!chatbotApiStatus || !chatbotGeminiKeyInput) return;
+    const hasKey = chatbotGeminiKeyInput.value.trim().length > 0;
+    if (hasKey) {
+      chatbotApiStatus.style.color = '#00ff66';
+      chatbotApiStatus.innerHTML = '<i class="fa-solid fa-circle"></i> GEMINI';
+    } else {
+      chatbotApiStatus.style.color = '#ff3e3e';
+      chatbotApiStatus.innerHTML = '<i class="fa-solid fa-circle"></i> LOCAL';
+    }
+  }
+
   if (chatbotGeminiKeyInput) {
     const savedKey = localStorage.getItem('ARGOS_GEMINI_API_KEY');
     if (savedKey) {
       chatbotGeminiKeyInput.value = savedKey;
     }
+    updateChatbotApiStatus();
+    
     chatbotGeminiKeyInput.addEventListener('input', () => {
       localStorage.setItem('ARGOS_GEMINI_API_KEY', chatbotGeminiKeyInput.value.trim());
+      updateChatbotApiStatus();
     });
   }
 
