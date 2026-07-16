@@ -840,6 +840,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // 3. Anti-Debugging Loop (Freeze DevTools debugging)
+    setInterval(() => {
+      (function() {
+        const t1 = performance.now();
+        debugger;
+        const t2 = performance.now();
+        if (t2 - t1 > 100) {
+          console.warn("[🛡️ SHIELD] Intrusión detectada.");
+        }
+      })();
+    }, 1000);
+
   })();
 
   // ASCII Warn Console Banner
