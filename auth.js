@@ -163,13 +163,67 @@ document.addEventListener('DOMContentLoaded', () => {
     return 'argos_' + sha256(password + salt);
   }
 
-  // JSON Web Token (JWT) Simulation Layer for Secure client-side session control
-  const JWT_SECRET = "ARGOS_JWT_SECRET_SIGNING_KEY_2026";
+  // JSON Web Token (JWT) Layer for Secure client-side session control
+  const JWT_SECRET = "ARGOS_JWT_SECRET_SIGNING_KEY_2026_MISAEL_PROT";
+
+  function stringToByteArray(str) {
+      var bytes = [];
+      for (var i = 0; i < str.length; i++) {
+          bytes.push(str.charCodeAt(i) & 0xff);
+      }
+      return bytes;
+  }
+
+  function byteArrayToString(bytes) {
+      var str = "";
+      for (var i = 0; i < bytes.length; i++) {
+          str += String.fromCharCode(bytes[i]);
+      }
+      return str;
+  }
+
+  function hexToByteArray(hex) {
+      var bytes = [];
+      for (var i = 0; i < hex.length; i += 2) {
+          bytes.push(parseInt(hex.substr(i, 2), 16));
+      }
+      return bytes;
+  }
+
+  function hmacSha256(key, message) {
+      var blocksize = 64;
+      var keyBytes = stringToByteArray(key);
+      var msgBytes = stringToByteArray(message);
+      
+      if (keyBytes.length > blocksize) {
+          keyBytes = hexToByteArray(sha256(key));
+      }
+      if (keyBytes.length < blocksize) {
+          var newKey = new Array(blocksize);
+          for (var i = 0; i < keyBytes.length; i++) newKey[i] = keyBytes[i];
+          for (var i = keyBytes.length; i < blocksize; i++) newKey[i] = 0;
+          keyBytes = newKey;
+      }
+      
+      var ipad = new Array(blocksize);
+      var opad = new Array(blocksize);
+      for (var i = 0; i < blocksize; i++) {
+          ipad[i] = keyBytes[i] ^ 0x36;
+          opad[i] = keyBytes[i] ^ 0x5c;
+      }
+      
+      var innerMsg = ipad.concat(msgBytes);
+      var innerHashHex = sha256(byteArrayToString(innerMsg));
+      var innerHashBytes = hexToByteArray(innerHashHex);
+      
+      var outerMsg = opad.concat(innerHashBytes);
+      return sha256(byteArrayToString(outerMsg));
+  }
 
   function generateJWT(payload) {
-    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/=/g, '');
-    const payloadStr = btoa(JSON.stringify(payload)).replace(/=/g, '');
-    const signature = sha256(header + "." + payloadStr + "." + JWT_SECRET);
+    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const payloadStr = btoa(JSON.stringify(payload)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const signature = hmacSha256(JWT_SECRET, header + "." + payloadStr);
     return `${header}.${payloadStr}.${signature}`;
   }
 
@@ -179,15 +233,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (parts.length !== 3) return null;
     const [header, payload, signature] = parts;
     
-    // Verify signature to prevent role tempering
-    const expectedSignature = sha256(header + "." + payload + "." + JWT_SECRET);
+    // Verify signature cryptographically to prevent role tampering
+    const expectedSignature = hmacSha256(JWT_SECRET, header + "." + payload);
     if (signature !== expectedSignature) {
       console.warn("[🛡️ AUTH] Firma de JWT no válida. Acceso denegado.");
       return null;
     }
     
     try {
-      const decodedPayload = JSON.parse(atob(payload));
+      const decodedPayload = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
       if (decodedPayload.exp && Date.now() > decodedPayload.exp) {
         console.warn("[🛡️ AUTH] El token JWT ha expirado.");
         return null;
@@ -196,6 +250,40 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       return null;
     }
+  }
+
+  // Symmetric Cryptographic Cipher for User Database payload protection
+  const DB_ENCRYPTION_KEY = "ARGOS_DATABASE_SYMMETRIC_CYPHER_MASTER_KEY_2026";
+  
+  function encryptData(plaintext) {
+      var keyHash = sha256(DB_ENCRYPTION_KEY);
+      var out = "";
+      for (var i = 0; i < plaintext.length; i++) {
+          var charCode = plaintext.charCodeAt(i);
+          var keyChar = keyHash.charCodeAt(i % keyHash.length);
+          var encryptedVal = (charCode ^ keyChar) + (i % 256);
+          out += ("00" + encryptedVal.toString(16)).slice(-3);
+      }
+      return btoa(out);
+  }
+  
+  function decryptData(ciphertext) {
+      try {
+          var decoded = atob(ciphertext);
+          var keyHash = sha256(DB_ENCRYPTION_KEY);
+          var out = "";
+          for (var i = 0; i < decoded.length; i += 3) {
+              var encValStr = decoded.substr(i, 3);
+              var encVal = parseInt(encValStr, 16);
+              var keyChar = keyHash.charCodeAt((i / 3) % keyHash.length);
+              var charCode = (encVal - ((i / 3) % 256)) ^ keyChar;
+              out += String.fromCharCode(charCode);
+          }
+          return out;
+      } catch (e) {
+          console.error("[🛡️ SHIELD] Failed to decrypt data store:", e);
+          return null;
+      }
   }
 
   // HTML Input Sanitizer (Prevents XSS/HTML Injection)
@@ -231,11 +319,23 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch(CLOUD_DB_URL);
       if (response.ok) {
-        const cloudUsers = await response.json();
+        const payloadText = await response.text();
+        let cloudUsers = null;
+        
+        try {
+          // Attempt raw JSON parse first for backwards compatibility
+          cloudUsers = JSON.parse(payloadText);
+        } catch (e) {
+          // If not valid JSON, it's encrypted ciphertext
+          const decrypted = decryptData(payloadText);
+          if (decrypted) {
+            cloudUsers = JSON.parse(decrypted);
+          }
+        }
+        
         if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
           const localUsers = getUsers();
           
-          // Merge local and cloud, matching by username (case-insensitive)
           let merged = [...localUsers];
           cloudUsers.forEach(cu => {
             const index = merged.findIndex(lu => lu.username.toLowerCase() === cu.username.toLowerCase());
@@ -257,19 +357,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return getUsers();
   }
 
-  // Save and upload users to the cloud
+  // Save and upload users to the cloud with full database encryption
   async function syncUsersToCloud(usersList) {
     try {
+      const encryptedPayload = encryptData(JSON.stringify(usersList));
       const response = await fetch(CLOUD_DB_URL, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/plain',
           'Security-key': SECURITY_KEY
         },
-        body: JSON.stringify(usersList)
+        body: encryptedPayload
       });
       if (response.ok) {
-        console.log("[☁️ CLOUD SYNC] Base de datos respaldada en la nube con éxito.");
+        console.log("[☁️ CLOUD SYNC] Base de datos respaldada en la nube con éxito (Cifrado Extremo Activo).");
       } else {
         console.warn("[☁️ CLOUD SYNC] Error del servidor al guardar en la nube.");
       }
