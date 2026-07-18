@@ -82,18 +82,120 @@ window.togglePasswordVisibility = function(inputId, buttonEl) {
 document.addEventListener('DOMContentLoaded', () => {
   // --- DATABASE & SESSION STATE MANAGEMENT ---
   
+  // Secure SHA-256 Implementation in pure JS
+  function sha256(ascii) {
+      function rightRotate(value, amount) {
+          return (value >>> amount) | (value << (32 - amount));
+      }
+      var mathPow = Math.pow;
+      var maxWord = mathPow(2, 32);
+      var lengthProperty = 'length';
+      var i, j;
+      var result = '';
+      var words = [];
+      var asciiLength = ascii[lengthProperty];
+      var hash = sha256.h = sha256.h || [];
+      var k = sha256.k = sha256.k || [];
+      var primeCounter = k[lengthProperty];
+      var isPrime = {};
+      for (var candidate = 2; primeCounter < 64; candidate++) {
+          if (!isPrime[candidate]) {
+              for (i = 0; i < 313; i += candidate) {
+                  isPrime[i] = 1;
+              }
+              hash[primeCounter] = (mathPow(candidate, .5)*maxWord)|0;
+              k[primeCounter++] = (mathPow(candidate, 1/3)*maxWord)|0;
+          }
+      }
+      ascii += '\x80';
+      while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+      for (i = 0; i < ascii[lengthProperty]; i++) {
+          var charCode = ascii.charCodeAt(i);
+          if (charCode >> 8) return '';
+          words[i >> 2] |= charCode << (24 - i % 4 * 8);
+      }
+      words[words[lengthProperty]] = ((asciiLength * 8) / maxWord) | 0;
+      words[words[lengthProperty]] = (asciiLength * 8);
+      var hashCopy = hash.slice(0);
+      for (i = 0; i < words[lengthProperty]; i += 16) {
+          var w = words.slice(i, i + 16);
+          var oldHash = hash.slice(0);
+          for (j = 0; j < 64; j++) {
+              var wj = w[j];
+              if (j >= 16) {
+                  var s0 = rightRotate(w[j - 15], 7) ^ rightRotate(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+                  var s1 = rightRotate(w[j - 2], 17) ^ rightRotate(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+                  wj = w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+              }
+              var ch = (hash[4] & hash[5]) ^ (~hash[4] & hash[6]);
+              var maj = (hash[0] & hash[1]) ^ (hash[0] & hash[2]) ^ (hash[1] & hash[2]);
+              var temp1 = (hash[7] + (rightRotate(hash[4], 6) ^ rightRotate(hash[4], 11) ^ rightRotate(hash[4], 25)) + ch + k[j] + wj) | 0;
+              var temp2 = ((rightRotate(hash[0], 2) ^ rightRotate(hash[0], 13) ^ rightRotate(hash[0], 22)) + maj) | 0;
+              hash[7] = hash[6];
+              hash[6] = hash[5];
+              hash[5] = hash[4];
+              hash[4] = (hash[3] + temp1) | 0;
+              hash[3] = hash[2];
+              hash[2] = hash[1];
+              hash[1] = hash[0];
+              hash[0] = (temp1 + temp2) | 0;
+          }
+          for (j = 0; j < 8; j++) {
+              hash[j] = (hash[j] + oldHash[j]) | 0;
+          }
+      }
+      for (i = 0; i < 8; i++) {
+          for (j = 3; j >= 0; j--) {
+              var byte = (hash[i] >> (j * 8)) & 255;
+              result += (byte < 16 ? '0' : '') + byte.toString(16);
+          }
+      }
+      for (i = 0; i < 8; i++) {
+          hash[i] = hashCopy[i];
+      }
+      return result;
+  }
+
   // Secure salted hash password function
   function hashPassword(password) {
     if (password.startsWith('argos_')) return password; // Already hashed
     const salt = "ARGOS_SECURE_SALT_2026_MISAEL_DAYRON";
-    const salted = password + salt;
-    let hash = 0;
-    for (let i = 0; i < salted.length; i++) {
-      const char = salted.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
+    return 'argos_' + sha256(password + salt);
+  }
+
+  // JSON Web Token (JWT) Simulation Layer for Secure client-side session control
+  const JWT_SECRET = "ARGOS_JWT_SECRET_SIGNING_KEY_2026";
+
+  function generateJWT(payload) {
+    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/=/g, '');
+    const payloadStr = btoa(JSON.stringify(payload)).replace(/=/g, '');
+    const signature = sha256(header + "." + payloadStr + "." + JWT_SECRET);
+    return `${header}.${payloadStr}.${signature}`;
+  }
+
+  function verifyJWT(token) {
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [header, payload, signature] = parts;
+    
+    // Verify signature to prevent role tempering
+    const expectedSignature = sha256(header + "." + payload + "." + JWT_SECRET);
+    if (signature !== expectedSignature) {
+      console.warn("[🛡️ AUTH] Firma de JWT no válida. Acceso denegado.");
+      return null;
     }
-    return 'argos_' + Math.abs(hash).toString(16) + btoa(unescape(encodeURIComponent(password))).replace(/=/g, '');
+    
+    try {
+      const decodedPayload = JSON.parse(atob(payload));
+      if (decodedPayload.exp && Date.now() > decodedPayload.exp) {
+        console.warn("[🛡️ AUTH] El token JWT ha expirado.");
+        return null;
+      }
+      return decodedPayload;
+    } catch (e) {
+      return null;
+    }
   }
 
   // HTML Input Sanitizer (Prevents XSS/HTML Injection)
@@ -120,8 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { fullname: "Prof. Alejandro Silva", username: "docente", password: hashPassword("123"), role: "docente" }
   ];
 
-  const CLOUD_DB_URL = "https://extendsclass.com/api/json-storage/bin/dadaefb";
-  const SECURITY_KEY = "ARGOS_SECURITY_TOKEN_2026";
+  // Obfuscated cloud credentials to hide URLs and keys from plain-text scrapers
+  const CLOUD_DB_URL = atob("aHR0cHM6Ly9leHRlbmRzY2xhc3MuY29tL2FwaS9qc29uLXN0b3JhZ2UvYmluL2RhZGFlZmI=");
+  const SECURITY_KEY = atob("QVJHT1NfU0VDVVJJVFlfVE9LRU5fMjAyNg==");
 
   // Fetch and sync users from the cloud
   async function syncUsersFromCloud() {
@@ -139,7 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (index === -1) {
               merged.push(cu);
             } else {
-              // Update local with cloud details
               merged[index] = cu;
             }
           });
@@ -223,19 +325,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getActiveSession() {
-    try {
-      return JSON.parse(localStorage.getItem('argos_session')) || null;
-    } catch (e) {
-      return null;
-    }
+    const token = localStorage.getItem('argos_session_token');
+    return verifyJWT(token);
   }
 
   function setActiveSession(user) {
-    localStorage.setItem('argos_session', JSON.stringify(user));
+    const token = generateJWT({
+      fullname: user.fullname,
+      username: user.username,
+      role: user.role,
+      exp: Date.now() + 24 * 60 * 60 * 1000 // 24 hours session
+    });
+    localStorage.setItem('argos_session_token', token);
   }
 
   function removeActiveSession() {
-    localStorage.removeItem('argos_session');
+    localStorage.removeItem('argos_session_token');
   }
 
   // --- ELEMENT SELECTORS ---
