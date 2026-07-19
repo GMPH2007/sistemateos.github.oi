@@ -2541,72 +2541,35 @@ document.addEventListener('DOMContentLoaded', () => {
     return "Entendido. He auditado la telemetría en tiempo real y todos los nodos de ARGOS corren estables. Puedes preguntarme sobre sensores específicos (lluvia, sismos, fuego, panel solar), mandos de dirección, el vuelo del dron o los juegos interactivos del aula.";
   }
 
-  // Load and save Gemini Key from UI input
+  // ============================================================
+  // GEMINI AI - DESACTIVADO (Modo Solo Local / Offline)
+  // Para reactivar: elimina este bloque y restaura el original.
+  // ============================================================
   const chatbotGeminiKeyInput = document.getElementById('chatbot-gemini-key');
   const chatbotApiStatus = document.getElementById('chatbot-api-status');
 
-  function updateChatbotApiStatus() {
-    if (!chatbotApiStatus || !chatbotGeminiKeyInput) return;
-    const hasKey = chatbotGeminiKeyInput.value.trim().length > 0;
-    if (hasKey) {
-      chatbotApiStatus.style.color = '#00ff66';
-      chatbotApiStatus.innerHTML = '<i class="fa-solid fa-circle"></i> GEMINI';
-    } else {
-      chatbotApiStatus.style.color = '#ff3e3e';
-      chatbotApiStatus.innerHTML = '<i class="fa-solid fa-circle"></i> LOCAL';
-    }
-  }
-
+  // Clear any previously saved key and lock the input field
+  localStorage.removeItem('ARGOS_GEMINI_API_KEY');
   if (chatbotGeminiKeyInput) {
-    const savedKey = localStorage.getItem('ARGOS_GEMINI_API_KEY');
-    if (savedKey) {
-      chatbotGeminiKeyInput.value = savedKey;
-    }
-    updateChatbotApiStatus();
-    
-    chatbotGeminiKeyInput.addEventListener('input', () => {
-      localStorage.setItem('ARGOS_GEMINI_API_KEY', chatbotGeminiKeyInput.value.trim());
-      updateChatbotApiStatus();
-    });
+    chatbotGeminiKeyInput.value = '';
+    chatbotGeminiKeyInput.disabled = true;
+    chatbotGeminiKeyInput.placeholder = 'Bot offline activado — sin consumo de créditos';
+    chatbotGeminiKeyInput.style.opacity = '0.4';
+    chatbotGeminiKeyInput.style.cursor = 'not-allowed';
   }
 
+  function updateChatbotApiStatus() {
+    if (!chatbotApiStatus) return;
+    chatbotApiStatus.style.color = '#ff8c00';
+    chatbotApiStatus.innerHTML = '<i class="fa-solid fa-circle"></i> LOCAL';
+  }
+  updateChatbotApiStatus();
+
+  // fetchGeminiAIResponse - DESACTIVADA para evitar consumo de creditos
+  // El bot opera 100% offline con respuestas locales.
   async function fetchGeminiAIResponse(userMessage, apiKey) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const systemInstruction = 
-      "Eres el Asistente de IA de la plataforma de prevención civil y robótica ARGOS, " +
-      "co-creada por los estudiantes de APSTI Gerson Misael Pintado Zapata (Programador y Mandos) y Dayron Urbina Zapata (Ingeniero de Robótica y Chasis) " +
-      "del IESTP Hermanos Cárcamo (Paita, Piura). Tu deber es ayudar con consultas del robot, prevención de desastres (sismos, lluvias, incendios) " +
-      "y responder a cualquier pregunta del usuario (como programación, comida, etc.), " +
-      "manteniendo siempre una personalidad técnica de ciencia, robótica y resiliencia comunitaria. Responde de forma concisa (máximo 2-3 párrafos), usando formato HTML básico para negritas o listas.";
-
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `${systemInstruction}\n\nPregunta del usuario: ${userMessage}`
-            }]
-          }]
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-        return data.candidates[0].content.parts[0].text;
-      }
-      return "Recibí una respuesta vacía del modelo de IA.";
-    } catch (e) {
-      console.warn("Gemini API call failed:", e);
-      return `[ERROR DE CONEXIÓN] No se pudo conectar con Gemini. Detalle: ${e.message}. Verifica que tu API Key sea correcta.`;
-    }
+    // API calls disabled - return local fallback only
+    return "[MODO OFFLINE] El asistente ARGOS opera sin conexión a la IA en la nube para proteger los créditos del desarrollador. Puedes preguntarme sobre sensores, el robot, sismos, incendios o lluvias y responderé con la base de conocimiento local.";
   }
 
   async function handleSendChatMessage() {
@@ -2634,32 +2597,16 @@ document.addEventListener('DOMContentLoaded', () => {
     chatbotMessages.appendChild(msgDiv);
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 
-    // Check locally first
+    // MODO OFFLINE: Siempre usa respuesta local, NUNCA llama a la API de Gemini
     const localResponse = getChatbotResponse(text);
-    const defaultFallback = "Entendido. He auditado la telemetría en tiempo real y todos los nodos de ARGOS corren estables. Puedes preguntarme sobre sensores específicos (lluvia, sismos, fuego, panel solar), mandos de dirección, el vuelo del dron o los juegos interactivos del aula.";
-
-    const apiKey = chatbotGeminiKeyInput ? chatbotGeminiKeyInput.value.trim() : '';
-
-    if (localResponse !== defaultFallback || !apiKey) {
-      // Offline/Keyword match or no key provided
-      setTimeout(() => {
-        msgDiv.remove();
-        appendChatMessage('ai', localResponse);
-        if (!isChatbotMuted) {
-          const cleanTextForSpeech = localResponse.replace(/<\/?[^>]+(>|$)/g, "");
-          synth.speak(cleanTextForSpeech);
-        }
-      }, 1000);
-    } else {
-      // Fetch online response from Gemini API!
-      const aiResponse = await fetchGeminiAIResponse(text, apiKey);
+    setTimeout(() => {
       msgDiv.remove();
-      appendChatMessage('ai', aiResponse);
+      appendChatMessage('ai', localResponse);
       if (!isChatbotMuted) {
-        const cleanTextForSpeech = aiResponse.replace(/<\/?[^>]+(>|$)/g, "");
+        const cleanTextForSpeech = localResponse.replace(/<\/?[^>]+(>|$)/g, "");
         synth.speak(cleanTextForSpeech);
       }
-    }
+    }, 900);
   }
 
   // Mute / Unmute TTS controller
